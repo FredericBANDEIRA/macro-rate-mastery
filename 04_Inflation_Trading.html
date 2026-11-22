@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflation Trading — Macro & Rates Academy</title>
+    <meta name="description" content="TIPS mechanics, breakeven inflation, real rates, zero-coupon inflation swaps (ZCIS), the cash-swap basis, and inflation risk premia trading.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 04</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Inflation Trading</h1>
+            <p class="subtitle">TIPS mechanics, breakeven inflation rates, real yield curves, zero-coupon inflation swaps (ZCIS), the cash-swap basis, and inflation risk premia trading.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-fisher">1. The Fisher Identity & Breakevens</button>
+            <button class="nav-tab" data-tab="tab-tips">2. TIPS Mechanics & Indexation</button>
+            <button class="nav-tab" data-tab="tab-swaps">3. Inflation Swaps & Cash-Swap Basis</button>
+            <button class="nav-tab" data-tab="tab-strategies">4. Breakeven Trading Strategies</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: The Fisher Identity & Breakevens -->
+        <div class="tab-panel active" id="tab-fisher">
+            <div class="card">
+                <h2>📐 The Fisher Decomposition of Sovereign Yields</h2>
+                <p>Every nominal government bond yield ($y_{\text{nom}}$) can be decomposed into three distinct economic building blocks:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Extended Fisher Identity</div>
+                    $$y_{\text{nom}} = r_{\text{real}} + \pi^e + \text{IRP}$$
+                </div>
+
+                <p>Where:</p>
+                <ul>
+                    <li>$r_{\text{real}}$: The <strong>Real Yield</strong>, directly observed from Treasury Inflation-Protected Securities (TIPS). Reflects pure real growth expectations and the scarcity of real capital.</li>
+                    <li>$\pi^e$: <strong>Expected Inflation</strong> over the life of the bond.</li>
+                    <li>$\text{IRP}$: The <strong>Inflation Risk Premium</strong>, the extra yield investors demand to bear the uncertainty of future purchasing power erosion.</li>
+                </ul>
+
+                <h3>The Breakeven Inflation Rate (BEI)</h3>
+                <p>The <strong>Breakeven Inflation Rate</strong> is the spread between the yield of a nominal Treasury and an equal-maturity TIPS:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Breakeven Inflation Formula</div>
+                    $$\text{BEI} = y_{\text{nom}} - r_{\text{real}} = \pi^e + \text{IRP}$$
+                </div>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>The Breakeven Hurdle:</strong> If actual cumulative headline CPI inflation over the bond's life averages <strong>higher than the BEI</strong> at purchase, TIPS outperform the nominal bond. If realized inflation falls below the BEI, the nominal bond outperforms.</div>
+                </div>
+
+                <h3>The 5y5y Forward Inflation Rate</h3>
+                <p>Front-end breakevens (e.g. 2Y) are heavily distorted by oil prices, supply bottlenecks, and near-term CPI base effects. To evaluate true long-term inflation anchoring, macro strategists compute the <strong>5-Year, 5-Year Forward Inflation Expectation Rate ($F_{5,5}$)</strong>:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">5y5y Forward Inflation Approximation</div>
+                    $$F_{5,5} \approx 2 \times \text{BEI}_{10\text{Y}} - \text{BEI}_{5\text{Y}}$$
+                </div>
+                <p>If the 5Y BEI is $2.20\%$ and the 10Y BEI is $2.40\%$, the market-implied expected inflation over the 5-year period starting 5 years from now is $2 \times 2.40\% - 2.20\% = 2.60\%$.</p>
+            </div>
+
+            <!-- Interactive Breakeven Decomposition Simulator -->
+            <div class="card">
+                <h2>🧮 Interactive Fisher Decomposition & 5y5y Forward Calculator</h2>
+                <p>Adjust nominal Treasury yields and TIPS real yields across 5Y and 10Y tenors to observe how breakeven inflation and 5y5y forwards reprice.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="fshNom5">5Y Nominal Yield: <span class="val-badge" id="valFshNom5">4.10%</span></label>
+                        <input type="range" id="fshNom5" min="1.0" max="7.0" step="0.05" value="4.10">
+                    </div>
+                    <div class="control-group">
+                        <label for="fshReal5">5Y TIPS Real Yield: <span class="val-badge" id="valFshReal5">1.80%</span></label>
+                        <input type="range" id="fshReal5" min="-1.0" max="4.0" step="0.05" value="1.80">
+                    </div>
+                    <div class="control-group">
+                        <label for="fshNom10">10Y Nominal Yield: <span class="val-badge" id="valFshNom10">4.30%</span></label>
+                        <input type="range" id="fshNom10" min="1.0" max="7.0" step="0.05" value="4.30">
+                    </div>
+                    <div class="control-group">
+                        <label for="fshReal10">10Y TIPS Real Yield: <span class="val-badge" id="valFshReal10">1.95%</span></label>
+                        <input type="range" id="fshReal10" min="-1.0" max="4.0" step="0.05" value="1.95">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">5Y Breakeven Inflation</div>
+                        <div class="kpi-value" id="kpiBEI5">2.30%</div>
+                        <div class="kpi-sub">Medium-Term Anchor</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">10Y Breakeven Inflation</div>
+                        <div class="kpi-value" id="kpiBEI10">2.35%</div>
+                        <div class="kpi-sub">Long-Term Equilibrium</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">5y5y Forward Rate</div>
+                        <div class="kpi-value" id="kpiFwd55">2.40%</div>
+                        <div class="kpi-sub" id="kpiFwdStatus">Anchored near 2-2.5%</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Breakeven Curve Slope (5s10s)</div>
+                        <div class="kpi-value" id="kpiCurveBEI">+5 bps</div>
+                        <div class="kpi-sub">Mildly Upward Sloping</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetFisher">Reinit Baseline Yields</button>
+                    <button class="btn btn-secondary" id="btnPresetCommodityShock">Preset: Oil Supply Shock (Front-End Inversion)</button>
+                    <button class="btn btn-secondary" id="btnPresetDeanchored">Preset: Long-Run De-Anchoring Risk</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: TIPS Mechanics & Indexation -->
+        <div class="tab-panel" id="tab-tips">
+            <div class="card">
+                <h2>📜 Treasury Inflation-Protected Securities (TIPS) Mechanics</h2>
+                <p>Unlike standard nominal Treasuries where coupons and principal are fixed in dollar terms, TIPS provide direct purchasing power protection by indexing the bond's <strong>Principal Value</strong> to the non-seasonally adjusted US Consumer Price Index (CPI-U).</p>
+
+                <h3>Principal Adjustment & Cash Flows</h3>
+                <div class="formula-block">
+                    <div class="formula-label">TIPS Principal Indexation</div>
+                    $$\text{Index Ratio}_t = \frac{\text{Ref CPI}_t}{\text{Ref CPI}_{\text{base}}}$$
+                    $$\text{Adjusted Principal}_t = \text{Base Par Value} \times \text{Index Ratio}_t$$
+                    $$\text{Semi-Annual Coupon}_t = \frac{c_{\text{real}}}{2} \times \text{Adjusted Principal}_t$$
+                </div>
+
+                <h3>Key Structural Features of TIPS</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Mechanism</th>
+                                <th>Desk Trading Implication</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>3-Month CPI Lag</strong></td>
+                                <td>$\text{Ref CPI}_t$ is calculated via daily linear interpolation of the CPI-U figures published 3 months and 2 months prior.</td>
+                                <td>Creates predictable "carry" when near-term CPI prints are known. Traders front-run known inflation prints.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>The Deflation Floor</strong></td>
+                                <td>At maturity, the Treasury pays $\max(\text{Adjusted Principal}_T, \text{Base Par})$.</td>
+                                <td>Acts as an embedded put option on cumulative inflation. Newly issued TIPS trade at a slight premium during deflationary scares.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phantom Income Tax</strong></td>
+                                <td>In taxable accounts, annual upward adjustments to principal are taxed as ordinary income even before the bond matures.</td>
+                                <td>Concentrates TIPS ownership in tax-exempt entities (pensions, endowments, central banks).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive TIPS Simulator -->
+            <div class="card">
+                <h2>📈 Interactive TIPS Cash Flow & Index Ratio Simulator</h2>
+                <p>Simulate a 10-year TIPS bond with an initial face value of $100,000 under varying annual inflation scenarios.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="tipCoupon">Real Coupon Rate ($c_{\text{real}}$): <span class="val-badge" id="valTipCoupon">2.00%</span></label>
+                        <input type="range" id="tipCoupon" min="0.25" max="4.00" step="0.25" value="2.00">
+                    </div>
+                    <div class="control-group">
+                        <label for="tipInf">Annual CPI Inflation ($\pi$): <span class="val-badge" id="valTipInf">3.5%</span></label>
+                        <input type="range" id="tipInf" min="-2.0" max="8.0" step="0.5" value="3.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="tipMat">Maturity (Years): <span class="val-badge" id="valTipMat">10 Years</span></label>
+                        <input type="range" id="tipMat" min="5" max="30" step="5" value="10">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Final Adjusted Principal</div>
+                        <div class="kpi-value" id="kpiAdjPrincipal">$141,060</div>
+                        <div class="kpi-sub" id="kpiIndexRatio">Index Ratio: 1.4106</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Final Year Coupon</div>
+                        <div class="kpi-value" id="kpiFinalCoupon">$2,821 / yr</div>
+                        <div class="kpi-sub">Grows with inflation</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Total Cash Flows Paid</div>
+                        <div class="kpi-value" id="kpiTotalCash">$164,850</div>
+                        <div class="kpi-sub">Coupons + Redemption</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Nominal Bond Payoff (Equiv)</div>
+                        <div class="kpi-value" id="kpiNominalComp">$145,000</div>
+                        <div class="kpi-sub" id="kpiTIPSAdvantage">TIPS Outperforms by $19.8k</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">TIPS Principal & Cash Flow Growth Trajectory</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Adjusted Principal ($)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Cumulative Annual Coupon ($)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartTIPS"></canvas>
+                    <div class="chart-hud" id="hudTIPS"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetTIPS">Reinit TIPS Baseline</button>
+                    <button class="btn btn-secondary" id="btnPresetDeflation">Simulate Deflation Scenario (-1.5%)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Inflation Swaps & Cash-Swap Basis -->
+        <div class="tab-panel" id="tab-swaps">
+            <div class="card">
+                <h2>🔄 Zero-Coupon Inflation Swaps (ZCIS)</h2>
+                <p>While cash TIPS represent an indexed debt security, the interbank derivative market trades <strong>Zero-Coupon Inflation Swaps (ZCIS)</strong>. In a ZCIS, party A pays a fixed compounded rate ($K$), and party B pays the actual realized percentage change in CPI over the tenor $T$:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Zero-Coupon Inflation Swap Settlement</div>
+                    $$\text{Fixed Leg Payout} = \text{Notional} \times \left[ (1 + K)^T - 1 \right]$$
+                    $$\text{Floating Leg Payout} = \text{Notional} \times \left[ \frac{\text{CPI}_T}{\text{CPI}_0} - 1 \right]$$
+                </div>
+
+                <h3>The Cash-Swap Basis</h3>
+                <p>In theory, the Breakeven rate of cash TIPS and the ZCIS swap rate should be identical. In practice, the swap rate almost always trades <strong>higher</strong> than the cash breakeven rate:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Cash-Swap Basis Formula</div>
+                    $$\text{Basis} = \text{ZCIS Swap Rate} - \text{Cash TIPS Breakeven}$$
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Driver of the Cash-Swap Basis</th>
+                                <th>Why it Widens the Spread</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>TIPS Liquidity Premium</strong></td>
+                                <td>Cash TIPS are less liquid than off-the-run nominal Treasuries. Investors demand higher real yields on TIPS, which artificially depresses cash breakevens.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Balance Sheet & Financing Costs</strong></td>
+                                <td>Buying cash TIPS requires balance sheet capacity and repo funding. Derivative swaps are unfunded and require only margin collateral.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>End-User Demand Asymmetry</strong></td>
+                                <td>Corporations and liability-driven pension funds (LDI) prefer paying fixed on inflation swaps to hedge long-dated liabilities without selling cash assets.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div><strong>The March 2020 Liquidity Crisis:</strong> During the pandemic market crash, primary dealers faced severe balance sheet constraints. 10Y Cash TIPS breakevens collapsed to <strong>0.55%</strong>, while 10Y Inflation Swaps traded at <strong>1.15%</strong>. The cash-swap basis blew out to an unprecedented <strong>60 bps</strong>! Hedge funds that put on the basis trade (Long Cash TIPS / Pay Fixed Swap) generated massive alpha as the Fed intervened.</div>
+                </div>
+            </div>
+
+            <!-- Interactive Cash-Swap Basis Analyzer -->
+            <div class="card">
+                <h2>🔬 Cash-Swap Basis & Arbitrage Scanner</h2>
+                <p>Input cash yields and derivative inflation swap rates across maturities to identify rich/cheap dislocations in the inflation term structure.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="basNomYield">10Y Nominal Treasury: <span class="val-badge" id="valBasNomYield">4.30%</span></label>
+                        <input type="range" id="basNomYield" min="2.00" max="6.50" step="0.05" value="4.30">
+                    </div>
+                    <div class="control-group">
+                        <label for="basRealYield">10Y TIPS Real Yield: <span class="val-badge" id="valBasRealYield">2.05%</span></label>
+                        <input type="range" id="basRealYield" min="0.00" max="4.00" step="0.05" value="2.05">
+                    </div>
+                    <div class="control-group">
+                        <label for="basSwapRate">10Y ZCIS Swap Rate: <span class="val-badge" id="valBasSwapRate">2.42%</span></label>
+                        <input type="range" id="basSwapRate" min="1.00" max="4.50" step="0.02" value="2.42">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Cash Breakeven (BEI)</div>
+                        <div class="kpi-value" id="kpiCashBEI">2.25%</div>
+                        <div class="kpi-sub">Nominal - TIPS</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Inflation Swap Rate</div>
+                        <div class="kpi-value" id="kpiSwapRateDisp">2.42%</div>
+                        <div class="kpi-sub">Derivative Pricing</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">The Cash-Swap Basis</div>
+                        <div class="kpi-value" id="kpiBasisBps">+17 bps</div>
+                        <div class="kpi-sub" id="kpiBasisStatus">Normal Liquidity Range</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Relative Value Desk Signal</div>
+                        <div class="kpi-value" id="kpiBasisTrade">Cash TIPS Cheap</div>
+                        <div class="kpi-sub">Long Cash / Pay Swap</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetBasis">Reinit Basis Baseline</button>
+                    <button class="btn btn-secondary" id="btnPresetCrisisBasis">Simulate Liquidity Stress (+45 bps Basis)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Breakeven Trading Strategies -->
+        <div class="tab-panel" id="tab-strategies">
+            <div class="card">
+                <h2>🎯 The 4 Core Inflation Desk Strategies</h2>
+                <p>Global macro rates desks deploy four primary trade structures to monetize views on inflation, central bank credibility, and liquidity dislocations:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Strategy</th>
+                                <th>Position Structure</th>
+                                <th>Macro Catalyst</th>
+                                <th>DV01 / Risk Profile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Outright Breakeven Trade</strong></td>
+                                <td>Long TIPS / Short Nominal Treasury</td>
+                                <td>Commodity surge, supply chain blockages, sticky wage inflation exceeding consensus.</td>
+                                <td><strong>Duration-Neutral (DV01 = 0)</strong>. Immune to parallel rate shifts; pure bet on $\Delta \text{BEI}$.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Real Yield Directional Bet</strong></td>
+                                <td>Outright Long or Short TIPS</td>
+                                <td>Shift in the natural real neutral interest rate ($r^*$) or aggressive economic growth re-rating.</td>
+                                <td>Full real duration risk. Unhedged against nominal yields.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Breakeven Curve Trades</strong></td>
+                                <td>Long 2Y Breakeven / Short 10Y Breakeven (Curve Flattener)</td>
+                                <td>Immediate geopolitical oil spike that central banks will aggressively fight in the medium term.</td>
+                                <td>Curve-neutral. Front end expands violently while long end stays anchored by monetary credibility.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Cash-Swap Basis Arbitrage</strong></td>
+                                <td>Long Cash TIPS / Pay Fixed ZCIS Swap</td>
+                                <td>Market panic causes TIPS liquidity discount to blow out to unsustainable levels.</td>
+                                <td>Zero duration and zero inflation risk. Pure convergence trade as liquidity normalizes.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Breakeven Trade Simulator -->
+            <div class="card">
+                <h2>⚡ DV01-Neutral Breakeven Trade Constructor & P&L Engine</h2>
+                <p>Construct a duration-neutral long breakeven trade (Long TIPS / Short Nominal Treasury) and simulate dollar P&L across independent shifts in nominal and real yields.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="strTargetDV01">Target Leg DV01 ($): <span class="val-badge" id="valStrDV01">$50,000</span></label>
+                        <input type="range" id="strTargetDV01" min="10000" max="200000" step="5000" value="50000">
+                    </div>
+                    <div class="control-group">
+                        <label for="strNomShift">Nominal Yield Shift: <span class="val-badge" id="valStrNomShift">+15 bps</span></label>
+                        <input type="range" id="strNomShift" min="-100" max="100" step="5" value="15">
+                    </div>
+                    <div class="control-group">
+                        <label for="strRealShift">TIPS Real Yield Shift: <span class="val-badge" id="valStrRealShift">-10 bps</span></label>
+                        <input type="range" id="strRealShift" min="-100" max="100" step="5" value="-10">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Breakeven Shift ($\Delta \text{BEI}$)</div>
+                        <div class="kpi-value" id="kpiBEIShift">+25 bps</div>
+                        <div class="kpi-sub">Breakeven Expands</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Nominal Leg P&L (Short)</div>
+                        <div class="kpi-value" id="kpiPnLNom">-$750,000</div>
+                        <div class="kpi-sub">Rate Rose 15 bps</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">TIPS Leg P&L (Long)</div>
+                        <div class="kpi-value" id="kpiPnLReal">+$500,000</div>
+                        <div class="kpi-sub">Real Rate Dropped 10 bps</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Net Trade P&L</div>
+                        <div class="kpi-value" id="kpiNetPnL">+$1,250,000</div>
+                        <div class="kpi-sub" id="kpiPnLSummary">Profitable Breakeven Expansion</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Breakeven P&L Surface Across Inflation Shifts</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Net Breakeven P&L ($)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartStrategy"></canvas>
+                    <div class="chart-hud" id="hudStrategy"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetStrat">Reinit Strategy Baseline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Inflation Trading & TIPS Interview Masterclass</h2>
+                <p>Institutional interviewers on macro rates desks, global macro hedge funds, and sovereign bond pods probe deeply into inflation indexation lags, real yield curve dynamics, and the cash-swap basis. Click each card to reveal the desk breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"10Y nominal Treasuries yield 4.50% and 10Y TIPS yield 2.10%. Walk me through the exact decomposition of the 2.40% breakeven rate and what it tells you about market expectations."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The 2.40% breakeven spread ($4.50\% - 2.10\%$) is <strong>not pure expected inflation</strong>. By the Fisher decomposition, it consists of two distinct components:</p>
+                    <div class="formula-block">
+                        $$\text{BEI}_{10\text{Y}} = \mathbb{E}[\pi_{10\text{Y}}] + \text{Inflation Risk Premium (IRP)} - \text{TIPS Liquidity Discount}$$
+                    </div>
+                    <ul>
+                        <li><strong>Expected Inflation ($\mathbb{E}[\pi]$):</strong> The market's consensus forecast for annualized headline CPI over the next decade (~2.15%).</li>
+                        <li><strong>Inflation Risk Premium (IRP):</strong> Extra yield investors demand to bear the purchasing power uncertainty of holding nominal fixed cash flows (+35 bps).</li>
+                        <li><strong>TIPS Liquidity Discount:</strong> Because TIPS are slightly less liquid than nominal Treasuries, their real yield is ~10 bps higher than fair value, which depresses the observed breakeven by 10 bps.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Bottom Line:</strong> If survey expectations (e.g. Michigan 5Y-10Y or SPF) are 2.20%, the remaining ~20 bps in the breakeven rate represents the net inflation risk premium.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"How does the 3-month CPI indexation lag create a seasonal carry trade in TIPS? How do macro traders position across Q1 vs Q4?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> TIPS principal is indexed to <strong>Non-Seasonally Adjusted (NSA) CPI-U</strong> with a 2-to-3 month interpolation lag:</p>
+                    <ul>
+                        <li><strong>Strong Seasonal Carry (Q1 / Spring):</strong> Historically, US prices rise rapidly in January, February, and March (apparel price resets, annual fee updates, energy rebound). Because of the lag, this high inflation is applied to TIPS principal indexation during <strong>March, April, and May</strong>, delivering massive positive carry (sometimes annualized at 5–8%).</li>
+                        <li><strong>Weak Seasonal Carry (Q4 / Autumn):</strong> In autumn (September–November), gasoline prices drop and holiday discounting sets in. NSA CPI frequently prints negative. TIPS principal shrinks or stays flat in <strong>November, December, and January</strong>, generating negative carry.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Execution:</strong> Macro desks systematically go <em>Long Front-End Breakevens in late winter</em> to harvest seasonal carry, and <em>roll out or short breakevens in late summer</em> before the autumn deflationary prints hit the index ratio.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"Why do central banks watch the 5y5y forward inflation rate ($F_{5,5}$) rather than the 5Y or 10Y spot breakeven?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Spot breakevens over the 1Y to 5Y horizon are heavily contaminated by transitory cyclical noise: commodity price shocks, supply disruptions, and fiscal stimulus checks:</p>
+                    <ul>
+                        <li>The <strong>5y5y forward rate</strong> strips out the immediate 5-year cyclical horizon and measures expected inflation between Year 6 and Year 10:
+                        $$F_{5,5} \approx 2 \times \text{BEI}_{10\text{Y}} - \text{BEI}_{5\text{Y}}$$</li>
+                        <li>Over a horizon 5 to 10 years out, current transitory supply shocks will have completely decayed. Therefore, $F_{5,5}$ represents the market's assessment of <strong>pure central bank monetary credibility</strong>.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Policy Threshold:</strong> If 5Y breakevens spike to 3.5% due to an oil shock but 5y5y forwards remain glued to 2.25%, the Fed can afford to "look through" the shock. If 5y5y forwards climb above 2.75%, the Fed knows its credibility is slipping and will hike aggressively.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"What is the Cash-Swap Basis in the inflation market, and what happened to it during the March 2020 liquidity shock?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The Cash-Swap Basis is the difference between the derivative Zero-Coupon Inflation Swap (ZCIS) rate and the cash TIPS breakeven rate ($\text{Basis} = \text{Swap} - \text{Cash}$):</p>
+                    <ul>
+                        <li>In normal times, the basis trades between +10 and +20 bps due to the TIPS liquidity premium and the convenience of unfunded swap contracts.</li>
+                        <li>In March 2020, as the pandemic escalated, a global scramble for US Dollar cash forced leveraged hedge funds to liquidate funded cash assets. Primary dealers' balance sheets became clogged with inventory and hit regulatory leverage limits (SLR).</li>
+                        <li>Dealers could not absorb cash TIPS sales, causing cash real yields to surge and 10Y cash breakevens to plunge to <strong>0.55%</strong>. Meanwhile, 10Y inflation swaps only dropped to <strong>1.15%</strong>. The basis exploded to <strong>+60 bps</strong>!</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The Arbitrage:</strong> The dislocation had nothing to do with inflation fundamentals—it was pure balance sheet scarcity. Once the Fed launched unlimited QE and exempted Treasuries from the Supplementary Leverage Ratio (SLR), the basis normalized back to 15 bps.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"Walk me through setting up a $50k DV01 duration-neutral long breakeven trade using 10Y nominal Treasuries and 10Y TIPS."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> To construct a pure breakeven position that is immune to parallel shifts in real rates:</p>
+                    <ul>
+                        <li><strong>Leg 1 (Long TIPS):</strong> Buy 10Y TIPS to capture +$50,000 DV01. If the 10Y TIPS has a modified duration of 8.2 years and price of 100, its DV01 per $10k face is $8.20. You purchase:
+                        $$\text{Notional}_{\text{TIPS}} = \frac{\$50,000}{\$8.20 / \$10,000} \approx \$61.0\text{M}$$</li>
+                        <li><strong>Leg 2 (Short Nominal Treasury):</strong> Short 10Y nominal notes to sell -$50,000 DV01. If the 10Y nominal note has a modified duration of 7.8 years and price of 100, its DV01 per $10k face is $7.80. You short:
+                        $$\text{Notional}_{\text{Nominal}} = \frac{\$50,000}{\$7.80 / \$10,000} \approx \$64.1\text{M}$$</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Trade P&L:</strong> If global yields rise by 50 bps in parallel (both nominal and real yields rise by 50 bps), your net P&L is approximately zero ($-\$2.5\text{M} + \$2.5\text{M} = 0$). If inflation expectations rise and the breakeven widens by 15 bps, your profit is exactly: $\text{DV01} \times \Delta \text{BEI} = \$50,000 \times 15 = +\$750,000$.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Inflation Cheat Sheet -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Inflation Trading Fast-Reference Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Instrument / Metric</th>
+                                <th>Definition</th>
+                                <th>Primary Value Driver</th>
+                                <th>Desk Trading Use</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>10Y Breakeven (BEI)</strong></td>
+                                <td>$y_{\text{nom}} - r_{\text{real}}$</td>
+                                <td>Headline CPI expectations + Inflation Risk Premium</td>
+                                <td>Core macro expression for inflation views.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5y5y Forward Rate</strong></td>
+                                <td>$2 \times \text{BEI}_{10\text{Y}} - \text{BEI}_{5\text{Y}}$</td>
+                                <td>Long-run monetary policy credibility & term premia</td>
+                                <td>Monitored by Fed/ECB; purest gauge of de-anchoring.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Index Ratio</strong></td>
+                                <td>$\text{Ref CPI}_t / \text{Ref CPI}_{\text{base}}$</td>
+                                <td>Cumulative NSA CPI growth since bond issuance</td>
+                                <td>Determines current adjusted principal and dollar coupons.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cash-Swap Basis</strong></td>
+                                <td>$\text{ZCIS Rate} - \text{Cash BEI}$</td>
+                                <td>TIPS liquidity discount & dealer balance sheet limits</td>
+                                <td>Relative value convergence trading (Mean reversion).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TIPS Deflation Floor</strong></td>
+                                <td>$\max(\text{Adjusted Principal}, \text{Par})$</td>
+                                <td>Cumulative deflation over bond lifespan</td>
+                                <td>Option value increases when breakevens are near zero.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 04: Inflation Trading · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 1: Fisher Decomposition Calculator ===== */
+        (function() {
+            const inNom5 = document.getElementById('fshNom5');
+            const inReal5 = document.getElementById('fshReal5');
+            const inNom10 = document.getElementById('fshNom10');
+            const inReal10 = document.getElementById('fshReal10');
+
+            const valNom5 = document.getElementById('valFshNom5');
+            const valReal5 = document.getElementById('valFshReal5');
+            const valNom10 = document.getElementById('valFshNom10');
+            const valReal10 = document.getElementById('valFshReal10');
+
+            const kpiBEI5 = document.getElementById('kpiBEI5');
+            const kpiBEI10 = document.getElementById('kpiBEI10');
+            const kpiFwd55 = document.getElementById('kpiFwd55');
+            const kpiFwdStatus = document.getElementById('kpiFwdStatus');
+            const kpiCurveBEI = document.getElementById('kpiCurveBEI');
+
+            function compute() {
+                const nom5 = parseFloat(inNom5.value);
+                const real5 = parseFloat(inReal5.value);
+                const nom10 = parseFloat(inNom10.value);
+                const real10 = parseFloat(inReal10.value);
+
+                valNom5.textContent = nom5.toFixed(2) + '%';
+                valReal5.textContent = real5.toFixed(2) + '%';
+                valNom10.textContent = nom10.toFixed(2) + '%';
+                valReal10.textContent = real10.toFixed(2) + '%';
+
+                const bei5 = nom5 - real5;
+                const bei10 = nom10 - real10;
+                const fwd55 = 2 * bei10 - bei5;
+                const curveBEIBps = Math.round((bei10 - bei5) * 100);
+
+                kpiBEI5.textContent = bei5.toFixed(2) + '%';
+                kpiBEI10.textContent = bei10.toFixed(2) + '%';
+                kpiFwd55.textContent = fwd55.toFixed(2) + '%';
+                kpiCurveBEI.textContent = (curveBEIBps >= 0 ? '+' : '') + curveBEIBps + ' bps';
+
+                if (fwd55 > 2.80) {
+                    kpiFwdStatus.textContent = 'De-Anchoring Risk (High)';
+                } else if (fwd55 < 1.80) {
+                    kpiFwdStatus.textContent = 'Deflationary Drag (Sub-2%)';
+                } else {
+                    kpiFwdStatus.textContent = 'Well Anchored (2.0% - 2.5%)';
+                }
+            }
+
+            [inNom5, inReal5, inNom10, inReal10].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetFisher').addEventListener('click', () => {
+                inNom5.value = "4.10"; inReal5.value = "1.80"; inNom10.value = "4.30"; inReal10.value = "1.95"; compute();
+            });
+
+            document.getElementById('btnPresetCommodityShock').addEventListener('click', () => {
+                inNom5.value = "4.90"; inReal5.value = "1.60"; inNom10.value = "4.40"; inReal10.value = "1.90"; compute();
+            });
+
+            document.getElementById('btnPresetDeanchored').addEventListener('click', () => {
+                inNom5.value = "4.20"; inReal5.value = "1.50"; inNom10.value = "4.80"; inReal10.value = "1.80"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 2: TIPS Simulator & Canvas ===== */
+        (function() {
+            const inCpn = document.getElementById('tipCoupon');
+            const inInf = document.getElementById('tipInf');
+            const inMat = document.getElementById('tipMat');
+
+            const valCpn = document.getElementById('valTipCoupon');
+            const valInf = document.getElementById('valTipInf');
+            const valMat = document.getElementById('valTipMat');
+
+            const kpiAdj = document.getElementById('kpiAdjPrincipal');
+            const kpiRatio = document.getElementById('kpiIndexRatio');
+            const kpiFinalCpn = document.getElementById('kpiFinalCoupon');
+            const kpiTotalCash = document.getElementById('kpiTotalCash');
+            const kpiNomComp = document.getElementById('kpiNominalComp');
+            const kpiAdvantage = document.getElementById('kpiTIPSAdvantage');
+
+            const canvas = document.getElementById('chartTIPS');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudTIPS');
+
+            let trajectory = [];
+
+            function compute() {
+                const cReal = parseFloat(inCpn.value) / 100;
+                const pi = parseFloat(inInf.value) / 100;
+                const mat = parseInt(inMat.value);
+
+                valCpn.textContent = (cReal * 100).toFixed(2) + '%';
+                valInf.textContent = (pi * 100).toFixed(1) + '%';
+                valMat.textContent = mat + ' Years';
+
+                const basePar = 100000;
+                trajectory = [];
+
+                let cumPrincipal = basePar;
+                let cumCoupons = 0;
+
+                for (let yr = 0; yr <= mat; yr++) {
+                    const rawIndexRatio = Math.pow(1 + pi, yr);
+                    // Floor applied at maturity or during hold
+                    const effIndexRatio = (yr === mat && rawIndexRatio < 1.0) ? 1.0 : rawIndexRatio;
+                    cumPrincipal = basePar * effIndexRatio;
+                    const annualCpn = cumPrincipal * cReal;
+                    if (yr > 0) cumCoupons += annualCpn;
+
+                    trajectory.push({
+                        yr,
+                        principal: cumPrincipal,
+                        cumCpn: cumCoupons,
+                        annualCpn
+                    });
+                }
+
+                const finalItem = trajectory[trajectory.length - 1];
+                kpiAdj.textContent = '$' + Math.round(finalItem.principal).toLocaleString();
+                kpiRatio.textContent = 'Index Ratio: ' + (finalItem.principal / basePar).toFixed(4);
+                kpiFinalCpn.textContent = '$' + Math.round(finalItem.annualCpn).toLocaleString() + ' / yr';
+
+                const totalCash = finalItem.principal + finalItem.cumCpn;
+                kpiTotalCash.textContent = '$' + Math.round(totalCash).toLocaleString();
+
+                // Nominal comparison (Base nominal rate ~ 4.5% fixed)
+                const nomRate = 0.045;
+                const nomTotal = basePar + (basePar * nomRate * mat);
+                kpiNomComp.textContent = '$' + Math.round(nomTotal).toLocaleString();
+
+                const diff = totalCash - nomTotal;
+                if (diff >= 0) {
+                    kpiAdvantage.textContent = 'TIPS Outperforms by $' + Math.round(diff).toLocaleString();
+                    kpiAdvantage.style.color = 'var(--green)';
+                } else {
+                    kpiAdvantage.textContent = 'Nominal Outperforms by $' + Math.round(Math.abs(diff)).toLocaleString();
+                    kpiAdvantage.style.color = 'var(--red)';
+                }
+
+                drawChart();
+            }
+
+            function drawChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 60, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const maxP = Math.max(160000, ...trajectory.map(d => d.principal * 1.1));
+                const minP = 60000;
+
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let p = minP; p <= maxP; p += 30000) {
+                    const py = padT + plotH * ((maxP - p) / (maxP - minP));
+                    ctx.fillText('$' + (p / 1000).toFixed(0) + 'k', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsP = [];
+                const ptsC = [];
+
+                trajectory.forEach((d, i) => {
+                    const px = padL + (i / (trajectory.length - 1)) * plotW;
+                    const pyP = padT + plotH * ((maxP - d.principal) / (maxP - minP));
+                    const pyC = padT + plotH * ((maxP - (100000 + d.cumCpn)) / (maxP - minP));
+                    ptsP.push({x: px, y: pyP, d});
+                    ptsC.push({x: px, y: pyC, d});
+                    if (d.yr % 2 === 0 || d.yr === trajectory.length - 1) {
+                        ctx.fillText('Y' + d.yr, px, H - padB + 16);
+                    }
+                });
+
+                // Principal line (Navy)
+                ctx.beginPath();
+                ptsP.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Cumulative Coupons line (Red dashed)
+                ctx.beginPath();
+                ptsC.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 60, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(trajectory.length - 1, Math.max(0, Math.round(ratio * (trajectory.length - 1))));
+                const item = trajectory[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (trajectory.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Year:</span> <span class="hud-val">Y${item.yr}</span></div>
+                    <div class="hud-row"><span class="hud-label">Adjusted Principal:</span> <span class="hud-val" style="color:#1a3a6b">$${Math.round(item.principal).toLocaleString()}</span></div>
+                    <div class="hud-row"><span class="hud-label">Annual Coupon:</span> <span class="hud-val">$${Math.round(item.annualCpn).toLocaleString()}</span></div>
+                    <div class="hud-row"><span class="hud-label">Cumulative Coupons:</span> <span class="hud-val" style="color:#a63d3d">$${Math.round(item.cumCpn).toLocaleString()}</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inCpn, inInf, inMat].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetTIPS').addEventListener('click', () => {
+                inCpn.value = "2.00"; inInf.value = "3.5"; inMat.value = "10"; compute();
+            });
+
+            document.getElementById('btnPresetDeflation').addEventListener('click', () => {
+                inCpn.value = "2.00"; inInf.value = "-1.5"; inMat.value = "10"; compute();
+            });
+
+            window.addEventListener('resize', drawChart);
+            compute();
+        })();
+
+        /* ===== Tab 3: Cash-Swap Basis Calculator ===== */
+        (function() {
+            const inNom = document.getElementById('basNomYield');
+            const inReal = document.getElementById('basRealYield');
+            const inSwap = document.getElementById('basSwapRate');
+
+            const valNom = document.getElementById('valBasNomYield');
+            const valReal = document.getElementById('valBasRealYield');
+            const valSwap = document.getElementById('valBasSwapRate');
+
+            const kpiCashBEI = document.getElementById('kpiCashBEI');
+            const kpiSwapDisp = document.getElementById('kpiSwapRateDisp');
+            const kpiBasisBps = document.getElementById('kpiBasisBps');
+            const kpiBasisStatus = document.getElementById('kpiBasisStatus');
+            const kpiBasisTrade = document.getElementById('kpiBasisTrade');
+
+            function compute() {
+                const nom = parseFloat(inNom.value);
+                const real = parseFloat(inReal.value);
+                const swap = parseFloat(inSwap.value);
+
+                valNom.textContent = nom.toFixed(2) + '%';
+                valReal.textContent = real.toFixed(2) + '%';
+                valSwap.textContent = swap.toFixed(2) + '%';
+
+                const cashBEI = nom - real;
+                const basisBps = Math.round((swap - cashBEI) * 100);
+
+                kpiCashBEI.textContent = cashBEI.toFixed(2) + '%';
+                kpiSwapDisp.textContent = swap.toFixed(2) + '%';
+                kpiBasisBps.textContent = (basisBps >= 0 ? '+' : '') + basisBps + ' bps';
+
+                if (basisBps > 30) {
+                    kpiBasisStatus.textContent = 'Extreme Liquidity Dislocation';
+                    kpiBasisTrade.textContent = 'Strong Buy: Long Cash / Pay Swap';
+                } else if (basisBps < 5) {
+                    kpiBasisStatus.textContent = 'Tight Basis / Swaps Cheap';
+                    kpiBasisTrade.textContent = 'Short Cash / Receive Swap';
+                } else {
+                    kpiBasisStatus.textContent = 'Normal Liquidity Range';
+                    kpiBasisTrade.textContent = 'Neutral / Fairly Valued';
+                }
+            }
+
+            [inNom, inReal, inSwap].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetBasis').addEventListener('click', () => {
+                inNom.value = "4.30"; inReal.value = "2.05"; inSwap.value = "2.42"; compute();
+            });
+
+            document.getElementById('btnPresetCrisisBasis').addEventListener('click', () => {
+                inNom.value = "4.10"; inReal.value = "2.40"; inSwap.value = "2.15"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 4: Strategy Simulator & Canvas ===== */
+        (function() {
+            const inDV01 = document.getElementById('strTargetDV01');
+            const inNomShift = document.getElementById('strNomShift');
+            const inRealShift = document.getElementById('strRealShift');
+
+            const valDV01 = document.getElementById('valStrDV01');
+            const valNomShift = document.getElementById('valStrNomShift');
+            const valRealShift = document.getElementById('valStrRealShift');
+
+            const kpiShift = document.getElementById('kpiBEIShift');
+            const kpiPnLNom = document.getElementById('kpiPnLNom');
+            const kpiPnLReal = document.getElementById('kpiPnLReal');
+            const kpiNetPnL = document.getElementById('kpiNetPnL');
+            const kpiSummary = document.getElementById('kpiPnLSummary');
+
+            const canvas = document.getElementById('chartStrategy');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudStrategy');
+
+            let surfacePoints = [];
+
+            function compute() {
+                const targetDV01 = parseFloat(inDV01.value);
+                const nomShiftBps = parseFloat(inNomShift.value);
+                const realShiftBps = parseFloat(inRealShift.value);
+
+                valDV01.textContent = '$' + targetDV01.toLocaleString();
+                valNomShift.textContent = (nomShiftBps >= 0 ? '+' : '') + nomShiftBps + ' bps';
+                valRealShift.textContent = (realShiftBps >= 0 ? '+' : '') + realShiftBps + ' bps';
+
+                // Breakeven Shift = NomShift - RealShift
+                const beiShiftBps = nomShiftBps - realShiftBps;
+                kpiShift.textContent = (beiShiftBps >= 0 ? '+' : '') + beiShiftBps + ' bps';
+
+                // Short Nominal PnL = -NomShift * TargetDV01
+                const pnlNom = -nomShiftBps * targetDV01;
+                // Long TIPS PnL = -RealShift * TargetDV01 (falling real yields boost TIPS price)
+                const pnlReal = -realShiftBps * targetDV01;
+
+                const netPnL = pnlNom + pnlReal; // Or: beiShiftBps * targetDV01 ... wait:
+                // If Long Breakeven:
+                // We profit when Breakeven rises (Nominal up or TIPS real yield down).
+                // Long TIPS: benefits when real yield falls (P rises): + (-realShift) * DV01
+                // Short Nominal: benefits when nominal yield rises: Wait!
+                // A short bond position PROFITS when yield rises!
+                // If nominal yield rises by +15 bps: Short nominal PnL = +15 * DV01 = +$750,000!
+                // Let's verify: Long Breakeven = Long TIPS / Short Nominal.
+                // Breakeven = Nom - Real.
+                // If Nom rises by 15 bps and Real drops by 10 bps:
+                // BEI changes by +15 - (-10) = +25 bps!
+                // PnL should be +25 * DV01 = +$1,250,000.
+                const truePnLNom = nomShiftBps * targetDV01;
+                const truePnLReal = -realShiftBps * targetDV01;
+                const trueNet = truePnLNom + truePnLReal;
+
+                kpiPnLNom.textContent = (truePnLNom >= 0 ? '+$' : '-$') + Math.abs(Math.round(truePnLNom)).toLocaleString();
+                kpiPnLReal.textContent = (truePnLReal >= 0 ? '+$' : '-$') + Math.abs(Math.round(truePnLReal)).toLocaleString();
+                kpiNetPnL.textContent = (trueNet >= 0 ? '+$' : '-$') + Math.abs(Math.round(trueNet)).toLocaleString();
+
+                kpiNetPnL.style.color = trueNet >= 0 ? 'var(--green)' : 'var(--red)';
+                kpiSummary.textContent = trueNet >= 0 ? 'Profitable Breakeven Expansion' : 'Breakeven Compression Drawdown';
+
+                // Construct Payoff Line across Breakeven shifts from -50 bps to +50 bps
+                surfacePoints = [];
+                for (let dBEI = -50; dBEI <= 50; dBEI += 5) {
+                    surfacePoints.push({
+                        dBEI,
+                        pnl: dBEI * targetDV01
+                    });
+                }
+
+                drawStrategyChart(beiShiftBps, trueNet);
+            }
+
+            function drawStrategyChart(currentBEI, currentNet) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 60, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const maxPnL = 3000000;
+                const minPnL = -3000000;
+
+                // Zero line
+                const zeroY = padT + plotH * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let p = -2; p <= 2; p += 1) {
+                    const py = padT + plotH * ((maxPnL - p * 1e6) / (maxPnL - minPnL));
+                    ctx.fillText((p >= 0 ? '+$' : '-$') + Math.abs(p) + 'M', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                for (let d = -50; d <= 50; d += 25) {
+                    const px = padL + plotW * ((d + 50) / 100);
+                    ctx.fillText((d >= 0 ? '+' : '') + d + ' bps', px, H - padB + 16);
+                }
+
+                // Plot PnL Line
+                ctx.beginPath();
+                surfacePoints.forEach((p, i) => {
+                    const px = padL + plotW * ((p.dBEI + 50) / 100);
+                    const py = padT + plotH * ((maxPnL - p.pnl) / (maxPnL - minPnL));
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Operating Point
+                const optX = padL + plotW * ((Math.max(-50, Math.min(50, currentBEI)) + 50) / 100);
+                const optY = padT + plotH * ((maxPnL - Math.max(minPnL, Math.min(maxPnL, currentNet))) / (maxPnL - minPnL));
+
+                ctx.beginPath();
+                ctx.arc(optX, optY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#a63d3d';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 60, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(surfacePoints.length - 1, Math.max(0, Math.round(ratio * (surfacePoints.length - 1))));
+                const item = surfacePoints[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">BEI Shift:</span> <span class="hud-val">${(item.dBEI >= 0 ? '+' : '') + item.dBEI} bps</span></div>
+                    <div class="hud-row"><span class="hud-label">Projected P&L:</span> <span class="hud-val" style="color:#1a3a6b">${(item.pnl >= 0 ? '+$' : '-$') + Math.abs(Math.round(item.pnl)).toLocaleString()}</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inDV01, inNomShift, inRealShift].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetStrat').addEventListener('click', () => {
+                inDV01.value = "50000"; inNomShift.value = "15"; inRealShift.value = "-10"; compute();
+            });
+
+            window.addEventListener('resize', compute);
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

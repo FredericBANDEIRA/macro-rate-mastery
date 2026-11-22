@@ -420,12 +420,12 @@ Below is how each new academy maps to your main website. All academies live unde
 | Academy | Card Title | Description (for card) | Tags |
 |---------|-----------|------------------------|------|
 | ✅ Options | Options Mastery | *Already live* | `HTML` `CSS` `Quantitative Finance` `Derivatives` |
-| Fixed Income | Fixed Income Academy | A rigorous guide to bond pricing, yield curves, duration, convexity, swaps, and interest rate risk. | `HTML` `CSS` `Fixed Income` `Rates` |
+| ✅ Fixed Income | Fixed Income Academy | A rigorous guide to bond pricing, yield curves, duration, convexity, swaps, and interest rate risk. | `HTML` `CSS` `Fixed Income` `Rates` |
 | Credit Markets | Credit Academy | CDS mechanics, credit spreads, default modeling, and credit curve construction — from fundamentals to index tranches. | `HTML` `CSS` `Credit` `CDS` |
 | FX Markets | FX Academy | Currency conventions, forwards, swaps, carry trades, and macro drivers of FX — from G10 to EM. | `HTML` `CSS` `FX` `Macro` |
 | Commodities | Commodities Academy | Futures curves, storage economics, seasonality, and trading strategies across energy, metals, and agriculture. | `HTML` `CSS` `Commodities` `Futures` |
 | Equity | Equity Academy | Valuation frameworks, financial statement analysis, sector rotation, and index/ETF mechanics. | `HTML` `CSS` `Equity` `Valuation` |
-| Macro & Rates | Macro & Rates Academy | Central bank mechanics, yield curve trades, economic indicators, and macro regime frameworks. | `HTML` `CSS` `Macro` `Rates Strategy` |
+| ✅ Macro & Rates | Macro & Rates Academy | Central bank mechanics, yield curve trades, economic indicators, and macro regime frameworks. | `HTML` `CSS` `Macro` `Rates Strategy` |
 | Money Markets | Money Markets Academy | T-bills, repo mechanics, central bank operations, and the plumbing of short-term funding markets. | `HTML` `CSS` `Money Markets` `Repo` |
 | Portfolio Mgmt | Portfolio Academy | Modern portfolio theory, factor models, risk budgeting, performance attribution, and asset allocation. | `HTML` `CSS` `Portfolio Management` `Risk` |
 | Microstructure | Microstructure Academy | Order book dynamics, market making, price discovery, execution algorithms, and market impact. | `HTML` `CSS` `Microstructure` `Execution` |

@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Indicators — Macro & Rates Academy</title>
+    <meta name="description" content="Macro economic release calendar, NFP, CPI, ISM PMIs, the Citi Economic Surprise Index (CESI), nowcasting, and market reaction functions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 06</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Economic Indicators</h1>
+            <p class="subtitle">The macro data calendar hierarchy, NFP & CPI mechanics, the Citi Economic Surprise Index (CESI), GDP nowcasting, and market reaction functions.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-calendar">1. Data Calendar & Hierarchy</button>
+            <button class="nav-tab" data-tab="tab-cesi">2. The Surprise Index (CESI)</button>
+            <button class="nav-tab" data-tab="tab-bigthree">3. The Big Three Releases</button>
+            <button class="nav-tab" data-tab="tab-nowcasting">4. Real-Time Nowcasting</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: Data Calendar & Hierarchy -->
+        <div class="tab-panel active" id="tab-calendar">
+            <div class="card">
+                <h2>📅 The Monthly Macro Release Calendar Rhythm</h2>
+                <p>On an institutional rates or macro trading desk, every month follows a strict chronological heartbeat. Data releases fall into distinct waves that systematically update market pricing for central bank terminal rates:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cycle Phase</th>
+                                <th>Primary Releases</th>
+                                <th>Timing</th>
+                                <th>Desk Focus & Positioning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Week 1: The Jobs Shockwave</strong></td>
+                                <td>ISM Manufacturing PMI, ADP Employment, ISM Services PMI, <strong>Non-Farm Payrolls (NFP)</strong>, Unemployment Rate, Average Hourly Earnings (AHE).</td>
+                                <td>1st business day through 1st Friday (8:30 / 10:00 AM ET)</td>
+                                <td>Peak monthly volatility. Front-end 2Y yields reprice terminal rate expectations; SOFR futures options experience maximum gamma risk.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Week 2: The Inflation Gauntlet</strong></td>
+                                <td><strong>Consumer Price Index (CPI)</strong>, Producer Price Index (PPI), NFIB Small Business Optimism, Monthly Treasury Statement.</td>
+                                <td>Mid-month (8:30 AM ET)</td>
+                                <td>TIPS breakeven curves reprice; core inflation MoM determines whether central banks maintain restrictive policy stances.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Week 3: Real Activity & Housing</strong></td>
+                                <td>Retail Sales, Industrial Production & Capacity Utilization, Housing Starts & Building Permits, Philly Fed & Empire Manufacturing.</td>
+                                <td>Third week (8:30 / 9:15 / 10:00 AM ET)</td>
+                                <td>Atlanta Fed GDPNow receives major updates; assesses real consumer resilience and business capital expenditure.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Week 4: The Official Deflator & Sentiment</strong></td>
+                                <td>S&P Flash PMIs, Durable Goods Orders, <strong>Core PCE Deflator</strong> (Personal Consumption Expenditures), University of Michigan Final Sentiment.</td>
+                                <td>Fourth week / Month-end</td>
+                                <td>Core PCE confirms official Fed inflation benchmark; month-end duration rebalancing by pension funds and benchmark bond indices.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Leading vs. Coincident vs. Lagging Indicators</h3>
+                <p>A fatal mistake in macro forecasting is trading lagging data as if it were predictive. The macro cycle must be analyzed across three distinct temporal horizons:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Classification</th>
+                                <th>Key Economic Indicators</th>
+                                <th>Why it Matters</th>
+                                <th>Rates Desk Transmission</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Leading Indicators</strong></td>
+                                <td>Weekly Initial Jobless Claims, ISM New Orders, Building Permits, 2s10s Yield Curve Slope, University of Michigan Consumer Expectations.</td>
+                                <td>Turns <strong>before</strong> the overall economy enters recession or expansion.</td>
+                                <td>Drives forward swap curves and steepener/flattener structural positioning.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Coincident Indicators</strong></td>
+                                <td>Non-Farm Payrolls, Industrial Production, Real Manufacturing & Trade Sales, Real Personal Income.</td>
+                                <td>Moves in lockstep with the current state of output. Used by NBER to date recessions.</td>
+                                <td>Triggers immediate algorithmic repricing on release day.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Lagging Indicators</strong></td>
+                                <td>Unemployment Rate (U-3), Core CPI Inflation, Average Duration of Unemployment, Commercial Bank Loan Delinquencies.</td>
+                                <td>Turns only <strong>after</strong> an economic trend is already firmly entrenched.</td>
+                                <td>Confirms central bank reaction functions; provides justification for past policy moves.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: The Surprise Index (CESI) -->
+        <div class="tab-panel" id="tab-cesi">
+            <div class="card">
+                <h2>⚡ The Citi Economic Surprise Index (CESI)</h2>
+                <p>Markets do not trade on whether economic data is "good" or "bad" in absolute terms. Markets trade exclusively on whether data prints <strong>better or worse than consensus expectations</strong>:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Economic Surprise Index Definition</div>
+                    $$\text{Surprise}_i = \frac{\text{Actual Value}_i - \text{Bloomberg Consensus}_i}{\text{Historical Standard Deviation } \sigma_i}$$
+                    $$\text{CESI}_t = \sum_{i=1}^n w_i \times \text{Surprise}_i \times e^{-\lambda (t - t_i)}$$
+                </div>
+
+                <p>Where $w_i$ is the market-impact weight of release $i$, and $\lambda$ represents an exponential decay factor over a 3-month rolling window.</p>
+
+                <h3>The Mean-Reverting Nature of CESI</h3>
+                <p>The Surprise Index is a stationary, mean-reverting oscillator typically bounded between <strong>$-80$</strong> and <strong>$+80$</strong>:</p>
+                <ul>
+                    <li><strong>Extreme Positive Readings ($> +50$):</strong> Analysts and forecasters continually revise their consensus estimates higher to catch up with strong prints. Eventually, the hurdle becomes impossibly high, setting up inevitable downside misses.</li>
+                    <li><strong>Extreme Negative Readings ($< -50$):</strong> Pervasive pessimism causes economists to slash forecasts. Once expectations are sufficiently low, incoming data easily beats the depressed bar, causing the index to rebound.</li>
+                </ul>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>The "Good News is Bad News" Regime Shift:</strong>
+                    <ul>
+                        <li><strong>Inflationary / Overheating Regime:</strong> Strong economic surprises ($+CESI$) lead to higher rate hike odds $\rightarrow$ 2Y yields surge $\rightarrow$ equity multiples compress. <em>"Good news is bad news."</em></li>
+                        <li><strong>Recessionary / Recovery Regime:</strong> Strong economic surprises provide relief that earnings will survive $\rightarrow$ credit spreads tighten $\rightarrow$ equities rally $\rightarrow$ yields rise moderately. <em>"Good news is good news."</em></li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Surprise Index Simulator -->
+            <div class="card">
+                <h2>🧮 Interactive Surprise Index Oscillator & Market Regime Engine</h2>
+                <p>Dial the current CESI level and macro regime to evaluate mean-reversion expectations and project cross-asset reaction functions.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="cesiLevel">Current Surprise Index (CESI): <span class="val-badge" id="valCESI">+45</span></label>
+                        <input type="range" id="cesiLevel" min="-80" max="80" step="5" value="45">
+                    </div>
+                    <div class="control-group">
+                        <label for="cesiRegime">Macro Regime Mode: <span class="val-badge" id="valRegime">Late Cycle (Inflation Focus)</span></label>
+                        <select id="cesiRegime">
+                            <option value="late">Late Cycle (Inflation Focus - "Good is Bad")</option>
+                            <option value="recession">Recession / Growth Scare ("Good is Good")</option>
+                            <option value="goldilocks">Goldilocks (Neutral / Balanced)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Consensus Hurdle Height</div>
+                        <div class="kpi-value" id="kpiHurdle">Elevated / High</div>
+                        <div class="kpi-sub">Forecasts stretched high</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">3M Mean-Reversion Bias</div>
+                        <div class="kpi-value" id="kpiReversion">Downward Drift</div>
+                        <div class="kpi-sub">Negative surprises probable</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">2Y Treasury Yield Drift</div>
+                        <div class="kpi-value" id="kpiYieldBias">+12 bps Upward Pressure</div>
+                        <div class="kpi-sub">Hawkish Fed pricing</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Cross-Asset Strategy</div>
+                        <div class="kpi-value" id="kpiStrategy">Bear Flattener / Fade Cyclicals</div>
+                        <div class="kpi-sub">Prepare for surprise rollover</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">12-Month Simulated CESI Oscillator vs. 2Y Treasury Yield Repricing</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Economic Surprise Index</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> 2Y Treasury Yield Path (%)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartCESI"></canvas>
+                    <div class="chart-hud" id="hudCESI"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetCESI">Reinit Baseline Parameters</button>
+                    <button class="btn btn-secondary" id="btnPresetPeakPessimism">Preset: Peak Pessimism (CESI = -70)</button>
+                    <button class="btn btn-secondary" id="btnPresetPeakEuphoria">Preset: Peak Euphoria (CESI = +75)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: The Big Three Releases -->
+        <div class="tab-panel" id="tab-bigthree">
+            <div class="card">
+                <h2>💥 The Big Three: NFP, CPI & ISM Manufacturing</h2>
+                <p>On rates and FX desks, three reports generate over 70% of algorithmic execution volume and intraday basis dislocations:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indicator</th>
+                                <th>First 10-Second Checklist</th>
+                                <th>Subcomponent Nuances</th>
+                                <th>Immediate Rates Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Non-Farm Payrolls (NFP)</strong></td>
+                                <td>1. Headline Payroll vs. Cons.<br>2. Net 2-month revisions.<br>3. Unemployment Rate ($U3$).<br>4. Average Hourly Earnings (MoM).</td>
+                                <td>Divergence between Establishment Survey (Payrolls) and Household Survey ($u$, labor force). If $u$ rises due to higher participation, it is non-inflationary.</td>
+                                <td>$\pm 50\text{k}$ headline surprise moves 2Y yields by <strong>6–14 bps</strong> in the first 2 minutes.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consumer Price Index (CPI)</strong></td>
+                                <td>1. Core CPI MoM (rounded to 3 decimals!).<br>2. SuperCore Services ex-housing.<br>3. Owners' Equivalent Rent (OER).</td>
+                                <td>Core MoM of 0.28% rounds to 0.3% in media headlines, but the desk models unrounded 0.284% to calculate annualization accurately.</td>
+                                <td>$\pm 0.1\%$ Core MoM surprise triggers violent repricing: <strong>10–20 bps</strong> on 2Y Treasuries.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISM Manufacturing PMI</strong></td>
+                                <td>1. Headline PMI vs. 50.<br>2. <strong>New Orders</strong>.<br>3. <strong>Prices Paid</strong>.<br>4. Employment sub-index.</td>
+                                <td>Prices Paid provides an early pipeline preview of PPI/CPI. New Orders minus Inventories ($NO - Inv$) is the premier leading cyclical indicator.</td>
+                                <td>$\pm 1.5$ pt surprise moves 5Y belly yields by <strong>4–8 bps</strong>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Release Surprise Repricer -->
+            <div class="card">
+                <h2>⚡ Interactive Release Surprise & Yield Curve Repricer</h2>
+                <p>Select an economic release and apply standard-deviation surprise magnitudes to calculate the instant estimated yield curve reaction across tenors.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="relType">Release Event: <span class="val-badge" id="valRelType">Non-Farm Payrolls (NFP)</span></label>
+                        <select id="relType">
+                            <option value="nfp">Non-Farm Payrolls (NFP)</option>
+                            <option value="cpi">Core CPI Inflation</option>
+                            <option value="ism">ISM Manufacturing PMI</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="relSurprise">Surprise Magnitude: <span class="val-badge" id="valRelSurprise">+1.5 $\sigma$ Beat</span></label>
+                        <input type="range" id="relSurprise" min="-3.0" max="3.0" step="0.5" value="1.5">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">2Y Treasury Yield Move</div>
+                        <div class="kpi-value" id="kpiMove2Y">+11.2 bps</div>
+                        <div class="kpi-sub">Front-end repricing</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">10Y Treasury Yield Move</div>
+                        <div class="kpi-value" id="kpiMove10Y">+5.8 bps</div>
+                        <div class="kpi-sub">Term structure transmission</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">2s10s Curve Slope Move</div>
+                        <div class="kpi-value" id="kpiMove2s10s">-5.4 bps</div>
+                        <div class="kpi-sub" id="kpiCurveAction">Bear Flattener</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Fed Next Meeting Odds</div>
+                        <div class="kpi-value" id="kpiFedOdds">+18% Hike / Hold</div>
+                        <div class="kpi-sub">Hawkish policy repricing</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Instantaneous Yield Curve Shift Profile (2Y, 5Y, 10Y, 30Y)</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Yield Move (bps)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartCurveReaction"></canvas>
+                    <div class="chart-hud" id="hudCurveReaction"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetRelease">Reinit Release Parameters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Real-Time Nowcasting -->
+        <div class="tab-panel" id="tab-nowcasting">
+            <div class="card">
+                <h2>🛰️ Real-Time Macro Nowcasting & High-Frequency Data</h2>
+                <p>Quarterly GDP is published with a 1-to-2 month lag and is heavily revised. To trade effectively, macro desks rely on <strong>Dynamic Factor Models</strong> that synthesize dozens of high-frequency data points to estimate current-quarter real GDP in real time:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nowcasting Model</th>
+                                <th>Methodology</th>
+                                <th>Key Sensitivities</th>
+                                <th>Desk Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Atlanta Fed GDPNow</strong></td>
+                                <td>Mathematical aggregation of Bureau of Economic Analysis (BEA) subcomponents (Personal Consumption, Equipment Investment, Net Exports). No subjective adjustments.</td>
+                                <td>Retail Sales, Real PCE, Durable Goods, Construction Spending, Advance Trade Balance.</td>
+                                <td>The industry gold standard benchmark. Updates immediately after major 8:30 AM and 10:00 AM data releases.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>New York Fed Staff Nowcast</strong></td>
+                                <td>Dynamic Factor Model (DFM) using Kalman filtering across 38 monthly macroeconomic time series.</td>
+                                <td>Soft sentiment survey data (ISM, PMIs) as well as hard output figures.</td>
+                                <td>Smoother than GDPNow; less prone to wild swings from single volatile inventory releases.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>High-Frequency Alternative Data Signals</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Alternative / High-Frequency Data</th>
+                                <th>Release Cadence</th>
+                                <th>What it Previews</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Weekly Initial Jobless Claims</strong></td>
+                                <td>Every Thursday, 8:30 AM ET</td>
+                                <td>First real-time indicator of corporate layoffs. Breaking above 260k indicates cyclical labor market deterioration.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of America / Chase Credit Card Spending</strong></td>
+                                <td>Weekly aggregates</td>
+                                <td>Previews the official monthly Retail Sales report with 80%+ directional correlation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TSA Checkpoint Passenger Counts</strong></td>
+                                <td>Daily (7-day MA)</td>
+                                <td>Pure real-time gauge of consumer travel discretionary spending and airline capacity.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Port of Los Angeles Container Inbound Volume</strong></td>
+                                <td>Monthly / Bi-weekly</td>
+                                <td>Previews retail inventory restocking, goods demand, and supply chain shipping rates.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Nowcast Tracker -->
+            <div class="card">
+                <h2>📈 Interactive GDPNow Tracking Engine</h2>
+                <p>Simulate how incoming monthly data surprises adjust the Atlanta Fed GDPNow estimate relative to the Blue Chip consensus forecast.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="nowRetail">Retail Sales Surprise: <span class="val-badge" id="valNowRetail">+0.6% Beat</span></label>
+                        <input type="range" id="nowRetail" min="-1.5" max="1.5" step="0.1" value="0.6">
+                    </div>
+                    <div class="control-group">
+                        <label for="nowDurables">Durable Goods Capital Goods: <span class="val-badge" id="valNowDurables">+0.4% Beat</span></label>
+                        <input type="range" id="nowDurables" min="-2.0" max="2.0" step="0.2" value="0.4">
+                    </div>
+                    <div class="control-group">
+                        <label for="nowTrade">Trade Deficit Revision ($B): <span class="val-badge" id="valNowTrade">-$3.0B Drag</span></label>
+                        <input type="range" id="nowTrade" min="-10.0" max="10.0" step="1.0" value="-3.0">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Current GDPNow Estimate</div>
+                        <div class="kpi-value" id="kpiGDPNow">2.85%</div>
+                        <div class="kpi-sub">Annualized Real GDP</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Blue Chip Consensus</div>
+                        <div class="kpi-value" id="kpiBlueChip">1.90%</div>
+                        <div class="kpi-sub">Wall Street Median</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Nowcast Growth Premium</div>
+                        <div class="kpi-value" id="kpiNowPremium">+95 bps</div>
+                        <div class="kpi-sub">Above Consensus Bar</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Implied Rates Stance</div>
+                        <div class="kpi-value" id="kpiNowBias">Bearish Duration</div>
+                        <div class="kpi-sub">Fade recession pricing</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetNow">Reinit Baseline Nowcast</button>
+                    <button class="btn btn-secondary" id="btnPresetRecessionNow">Simulate Sudden Economic Slump</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Economic Indicators & Data Trading Interview Masterclass</h2>
+                <p>Institutional interviewers on macro rates desks, fixed income hedge funds, and multi-asset trading pods evaluate your real-time execution intuition, revision analysis, and subcomponent dissection. Click each card to reveal the breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"Walk me through how you prepare for an 8:30 AM ET CPI release on a rates desk. What exact numbers do you look at in the first 10 seconds?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> At 8:29:55 AM, your eyes are not on headline YoY inflation. Algorithmic traders and desk heads execute on a strict priority sequence:</p>
+                    <ol>
+                        <li><strong>Core CPI MoM (Unrounded):</strong> You immediately check the unrounded Core CPI MoM figure. A 0.284% print rounds to +0.3% in news headlines, but if consensus was 0.300%, the unrounded number was actually a <em>slight dovish miss</em>.</li>
+                        <li><strong>SuperCore Services (Core Services ex-Housing):</strong> This measures pure domestic wage-driven inflation (medical care, auto repairs, airfares, personal services). If SuperCore drops from 0.45% to 0.15%, the Fed will view it as structural disinflation even if headline prints high due to gasoline.</li>
+                        <li><strong>Owners' Equivalent Rent (OER) & Primary Rent:</strong> Accounting for ~40% of Core CPI, you check if shelter inflation is cooling in line with private real-time lease indices (Zillow, Apartment List).</li>
+                    </ol>
+                    <div class="qa-key-point">
+                        <strong>Trading Action:</strong> If Core MoM beats by +0.1% driven by SuperCore, 2Y yields will spike 12–18 bps. The desk immediately sells front-end SOFR futures and flattens 2s10s.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"NFP prints at +280k vs. +180k expected, but the prior two months are revised down by a cumulative -110k. How does the market interpret and trade this?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> In the first 5 seconds, retail algorithms trigger an automatic buy-USD / sell-Treasuries knee-jerk on the headline +280k beat. Within 30 seconds, institutional desks calculate the <strong>Net 3-Month Payroll Change</strong>:</p>
+                    <div class="formula-block">
+                        $$\text{True Net Jobs Added} = +280\text{k} - 110\text{k} \text{ (Revisions)} = +170\text{k}$$
+                    </div>
+                    <ul>
+                        <li>The net addition of +170k is actually <strong>below the original consensus of +180k</strong>!</li>
+                        <li>Furthermore, persistent large negative revisions indicate that the initial response rate from employers to the BLS survey is low, signaling underlying softening in the labor market.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The "Fade the Print" Trade:</strong> Macro desks deliberately fade the initial algorithmic knee-jerk. They buy Treasuries (fading the yield spike) as the broader market realizes that the labor trend is decelerating, causing yields to reverse completely within 15 minutes.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"Why does the rates market frequently react more violently to the ISM Prices Paid sub-index than to the headline PMI?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> While headline ISM PMI reflects manufacturing output momentum, the <strong>Prices Paid sub-index</strong> is the premier leading indicator of goods inflation in the pipeline:</p>
+                    <ul>
+                        <li>Manufacturing companies report whether they are paying higher, lower, or unchanged prices for raw materials, energy, logistics, and inputs.</li>
+                        <li>Prices Paid leads the Producer Price Index (PPI) and Core Goods CPI by <strong>1 to 2 months</strong>.</li>
+                        <li>If headline PMI comes in slightly soft at 49.5, but Prices Paid unexpectedly surges from 52.0 to 61.5, rates desks interpret this as an immediate <strong>stagflationary signal</strong>.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Market Transmission:</strong> Inflation breakevens (especially 2Y TIPS breakevens) reprice higher, and rate cuts are immediately priced out of short-dated futures.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"What is the Citi Economic Surprise Index, why is it structurally mean-reverting, and how do macro funds exploit extreme readings (+60 or -60)?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The CESI measures the weighted standard-deviation beats or misses of macroeconomic data relative to consensus forecasts. It is mathematically mean-reverting due to the psychological behavior of economic forecasters:</p>
+                    <ul>
+                        <li><strong>When CESI hits +60:</strong> Forecasters have been chasing strong data higher for months. Consensus estimates become overly aggressive. The bar is now set too high $\rightarrow$ downside surprises become mathematically inevitable.</li>
+                        <li><strong>The Contrarian Trade:</strong> When CESI reaches $+60$, macro funds put on <strong>Long Duration (Buy Treasuries)</strong> positions, anticipating that upcoming data will disappoint the elevated consensus, driving yields down.</li>
+                        <li>Conversely, when CESI drops to $-60$, widespread doom is priced into forecasts. Even mediocre data beats expectations $\rightarrow$ funds put on <strong>Short Duration</strong> trades.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Empirical Rule:</strong> Do not buy Treasuries when CESI is at -70 (priced for disaster); buy Treasuries when CESI is at +70 (priced for perfection).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"Why is Initial Jobless Claims considered the premier high-frequency leading indicator of the economic cycle?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Unlike monthly surveys which take weeks to aggregate and are subject to massive revisions, Initial Jobless Claims are reported <strong>weekly every Thursday at 8:30 AM ET</strong> by state unemployment insurance offices:</p>
+                    <ul>
+                        <li>It represents a hard administrative count of newly unemployed individuals filing for statutory benefits.</li>
+                        <li>In every US recession since 1960, Initial Jobless Claims have bottomed and turned higher <strong>2 to 4 months before</strong> the official recession began.</li>
+                        <li>When 4-week moving average claims break upward through historical benchmark bands (e.g. crossing from 210k to 260k+), it provides conclusive confirmation that corporate hiring freezes have transitioned into active layoffs.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Action:</strong> A sustained breakout in weekly claims triggers immediate bull steepening positioning in 2s10s curves as the desk front-runs future emergency rate cuts.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Economic Indicators Cheat Sheet -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Economic Release Master Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Release Name</th>
+                                <th>Reporting Agency</th>
+                                <th>Release Day / Time</th>
+                                <th>Typical Consensus 1$\sigma$</th>
+                                <th>Immediate Rates Desk Play</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Non-Farm Payrolls (NFP)</strong></td>
+                                <td>Bureau of Labor Statistics (BLS)</td>
+                                <td>First Friday, 8:30 AM ET</td>
+                                <td>$\pm 45\text{k}$ jobs</td>
+                                <td>2Y Treasury volatility; check revisions & wages.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consumer Price Index (CPI)</strong></td>
+                                <td>Bureau of Labor Statistics (BLS)</td>
+                                <td>Mid-month, 8:30 AM ET</td>
+                                <td>$\pm 0.1\%$ Core MoM</td>
+                                <td>TIPS breakeven repricing; unrounded Core MoM focus.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISM Manufacturing PMI</strong></td>
+                                <td>Institute for Supply Management</td>
+                                <td>1st business day, 10:00 AM ET</td>
+                                <td>$\pm 1.2$ pts</td>
+                                <td>New Orders vs. Prices Paid cross-check.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Initial Jobless Claims</strong></td>
+                                <td>Department of Labor (DoL)</td>
+                                <td>Every Thursday, 8:30 AM ET</td>
+                                <td>$\pm 12\text{k}$ filings</td>
+                                <td>Real-time labor pulse; 4-week moving average.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Retail Sales (Control Group)</strong></td>
+                                <td>US Census Bureau</td>
+                                <td>Mid-month, 8:30 AM ET</td>
+                                <td>$\pm 0.3\%$ MoM</td>
+                                <td>Feeds directly into Atlanta Fed GDPNow personal consumption.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 06: Economic Indicators · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 2: CESI Simulator & Canvas ===== */
+        (function() {
+            const inCESI = document.getElementById('cesiLevel');
+            const inRegime = document.getElementById('cesiRegime');
+
+            const valCESI = document.getElementById('valCESI');
+            const valRegime = document.getElementById('valRegime');
+
+            const kpiHurdle = document.getElementById('kpiHurdle');
+            const kpiReversion = document.getElementById('kpiReversion');
+            const kpiYield = document.getElementById('kpiYieldBias');
+            const kpiStrat = document.getElementById('kpiStrategy');
+
+            const canvas = document.getElementById('chartCESI');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudCESI');
+
+            const regimeLabels = {
+                late: 'Late Cycle (Inflation Focus - "Good is Bad")',
+                recession: 'Recession / Growth Scare ("Good is Good")',
+                goldilocks: 'Goldilocks (Neutral / Balanced)'
+            };
+
+            let simSeries = [];
+
+            function compute() {
+                const cesi = parseFloat(inCESI.value);
+                const regime = inRegime.value;
+
+                valCESI.textContent = (cesi >= 0 ? '+' : '') + cesi;
+                valRegime.textContent = regimeLabels[regime];
+
+                if (cesi > 40) {
+                    kpiHurdle.textContent = 'Elevated / High';
+                    kpiReversion.textContent = 'Downward Reversion Probable';
+                } else if (cesi < -40) {
+                    kpiHurdle.textContent = 'Deeply Depressed / Low';
+                    kpiReversion.textContent = 'Upward Rebound Probable';
+                } else {
+                    kpiHurdle.textContent = 'Neutral Consensus Bar';
+                    kpiReversion.textContent = 'Range-Bound Oscillation';
+                }
+
+                // Yield bias rule
+                let yieldBps;
+                if (regime === 'late') {
+                    yieldBps = Math.round(cesi * 0.28);
+                    kpiYield.textContent = (yieldBps >= 0 ? '+' : '') + yieldBps + ' bps Upward Pressure';
+                    kpiStrat.textContent = cesi > 30 ? 'Bear Flattener / Fade Cyclicals' : 'Bull Steepener / Buy Duration';
+                } else if (regime === 'recession') {
+                    yieldBps = Math.round(cesi * 0.15);
+                    kpiYield.textContent = (yieldBps >= 0 ? '+' : '') + yieldBps + ' bps Relief Move';
+                    kpiStrat.textContent = cesi > 30 ? 'Risk-On / Credit Tightening' : 'Max Long Duration / Defensives';
+                } else {
+                    yieldBps = Math.round(cesi * 0.10);
+                    kpiYield.textContent = (yieldBps >= 0 ? '+' : '') + yieldBps + ' bps Steady Carry';
+                    kpiStrat.textContent = 'Carry Trades / Curve Stability';
+                }
+
+                // Build 12-Month Mean-Reverting Simulation Path
+                simSeries = [];
+                let curCESI = cesi;
+                let curYield = 4.50;
+
+                for (let m = 0; m <= 12; m++) {
+                    simSeries.push({
+                        month: 'M' + m,
+                        cesi: curCESI,
+                        yieldVal: curYield
+                    });
+                    // Ornstein-Uhlenbeck mean-reversion: dCESI = -0.25 * CESI
+                    curCESI = curCESI * 0.78 + (Math.sin(m * 0.8) * 8);
+                    curYield = curYield + (curCESI * 0.0035);
+                }
+
+                drawCESIChart();
+            }
+
+            function drawCESIChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minCESI = -90, maxCESI = 90;
+                const minY = 3.5, maxY = 5.5;
+
+                // Zero line for CESI
+                const zeroY = padT + plotH * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let c = -80; c <= 80; c += 40) {
+                    const py = padT + plotH * ((maxCESI - c) / (maxCESI - minCESI));
+                    ctx.fillText((c >= 0 ? '+' : '') + c, padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsCESI = [];
+                const ptsY = [];
+
+                simSeries.forEach((d, i) => {
+                    const px = padL + (i / (simSeries.length - 1)) * plotW;
+                    const pyCESI = padT + plotH * ((maxCESI - d.cesi) / (maxCESI - minCESI));
+                    const pyY = padT + plotH * ((maxY - d.yieldVal) / (maxY - minY));
+                    ptsCESI.push({x: px, y: pyCESI, d});
+                    ptsY.push({x: px, y: pyY, d});
+                    ctx.fillText(d.month, px, H - padB + 16);
+                });
+
+                // Plot CESI Line (Navy)
+                ctx.beginPath();
+                ptsCESI.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsCESI.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#1a3a6b';
+                    ctx.fill();
+                });
+
+                // Plot Yield Line (Red dashed)
+                ctx.beginPath();
+                ptsY.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(simSeries.length - 1, Math.max(0, Math.round(ratio * (simSeries.length - 1))));
+                const item = simSeries[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (simSeries.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Horizon:</span> <span class="hud-val">${item.month}</span></div>
+                    <div class="hud-row"><span class="hud-label">CESI:</span> <span class="hud-val" style="color:#1a3a6b">${(item.cesi >= 0 ? '+' : '') + item.cesi.toFixed(1)}</span></div>
+                    <div class="hud-row"><span class="hud-label">2Y Yield:</span> <span class="hud-val" style="color:#a63d3d">${item.yieldVal.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inCESI, inRegime].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetCESI').addEventListener('click', () => {
+                inCESI.value = "45"; inRegime.value = "late"; compute();
+            });
+
+            document.getElementById('btnPresetPeakPessimism').addEventListener('click', () => {
+                inCESI.value = "-70"; inRegime.value = "recession"; compute();
+            });
+
+            document.getElementById('btnPresetPeakEuphoria').addEventListener('click', () => {
+                inCESI.value = "75"; inRegime.value = "late"; compute();
+            });
+
+            window.addEventListener('resize', drawCESIChart);
+            compute();
+        })();
+
+        /* ===== Tab 3: Release Repricer & Canvas ===== */
+        (function() {
+            const inRel = document.getElementById('relType');
+            const inSurp = document.getElementById('relSurprise');
+
+            const valRel = document.getElementById('valRelType');
+            const valSurp = document.getElementById('valRelSurprise');
+
+            const kpi2Y = document.getElementById('kpiMove2Y');
+            const kpi10Y = document.getElementById('kpiMove10Y');
+            const kpiSlope = document.getElementById('kpiMove2s10s');
+            const kpiAction = document.getElementById('kpiCurveAction');
+            const kpiOdds = document.getElementById('kpiFedOdds');
+
+            const canvas = document.getElementById('chartCurveReaction');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudCurveReaction');
+
+            const releaseNames = {
+                nfp: 'Non-Farm Payrolls (NFP)',
+                cpi: 'Core CPI Inflation',
+                ism: 'ISM Manufacturing PMI'
+            };
+
+            let reactionPoints = [];
+
+            function compute() {
+                const rel = inRel.value;
+                const sigma = parseFloat(inSurp.value);
+
+                valRel.textContent = releaseNames[rel];
+                valSurp.textContent = (sigma >= 0 ? '+' : '') + sigma.toFixed(1) + ' σ ' + (sigma >= 0 ? 'Beat' : 'Miss');
+
+                // Beta multipliers per 1-sigma surprise
+                let beta2Y, beta10Y;
+                if (rel === 'nfp') {
+                    beta2Y = 7.5;
+                    beta10Y = 3.8;
+                } else if (rel === 'cpi') {
+                    beta2Y = 9.5;
+                    beta10Y = 4.2;
+                } else {
+                    beta2Y = 4.0;
+                    beta10Y = 2.8;
+                }
+
+                const move2Y = sigma * beta2Y;
+                const move10Y = sigma * beta10Y;
+                const slopeMove = move10Y - move2Y;
+
+                kpi2Y.textContent = (move2Y >= 0 ? '+' : '') + move2Y.toFixed(1) + ' bps';
+                kpi10Y.textContent = (move10Y >= 0 ? '+' : '') + move10Y.toFixed(1) + ' bps';
+                kpiSlope.textContent = (slopeMove >= 0 ? '+' : '') + slopeMove.toFixed(1) + ' bps';
+
+                if (sigma > 0) {
+                    kpiAction.textContent = 'Bear Flattener (Front End Leads)';
+                    kpiOdds.textContent = '+' + Math.round(sigma * 14) + '% Rate Hike / Higher Terminal';
+                } else if (sigma < 0) {
+                    kpiAction.textContent = 'Bull Steepener (Front End Cuts)';
+                    kpiOdds.textContent = '+' + Math.round(Math.abs(sigma) * 16) + '% Rate Cut Odds';
+                } else {
+                    kpiAction.textContent = 'Neutral / In Line';
+                    kpiOdds.textContent = 'No Change';
+                }
+
+                reactionPoints = [
+                    { tenor: '2Y', move: move2Y },
+                    { tenor: '5Y', move: move2Y * 0.75 + move10Y * 0.25 },
+                    { tenor: '10Y', move: move10Y },
+                    { tenor: '30Y', move: move10Y * 0.70 }
+                ];
+
+                drawCurveReaction();
+            }
+
+            function drawCurveReaction() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const maxMove = 30, minMove = -30;
+
+                // Zero line
+                const zeroY = padT + plotH * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let m = -20; m <= 20; m += 10) {
+                    const py = padT + plotH * ((maxMove - m) / (maxMove - minMove));
+                    ctx.fillText((m >= 0 ? '+' : '') + m + ' bps', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const pts = [];
+
+                reactionPoints.forEach((d, i) => {
+                    const px = padL + (i / (reactionPoints.length - 1)) * plotW;
+                    const py = padT + plotH * ((maxMove - d.move) / (maxMove - minMove));
+                    pts.push({x: px, y: py, d});
+                    ctx.fillText(d.tenor, px, H - padB + 16);
+                });
+
+                ctx.beginPath();
+                pts.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                pts.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = p.d.move >= 0 ? '#a63d3d' : '#1a7a45';
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(reactionPoints.length - 1, Math.max(0, Math.round(ratio * (reactionPoints.length - 1))));
+                const item = reactionPoints[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (reactionPoints.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Tenor:</span> <span class="hud-val">${item.tenor}</span></div>
+                    <div class="hud-row"><span class="hud-label">Yield Shift:</span> <span class="hud-val" style="color:#1a3a6b">${(item.move >= 0 ? '+' : '') + item.move.toFixed(2)} bps</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inRel, inSurp].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetRelease').addEventListener('click', () => {
+                inRel.value = "nfp"; inSurp.value = "1.5"; compute();
+            });
+
+            window.addEventListener('resize', drawCurveReaction);
+            compute();
+        })();
+
+        /* ===== Tab 4: Nowcasting Simulator ===== */
+        (function() {
+            const inRetail = document.getElementById('nowRetail');
+            const inDur = document.getElementById('nowDurables');
+            const inTrade = document.getElementById('nowTrade');
+
+            const valRetail = document.getElementById('valNowRetail');
+            const valDur = document.getElementById('valNowDurables');
+            const valTrade = document.getElementById('valNowTrade');
+
+            const kpiNow = document.getElementById('kpiGDPNow');
+            const kpiPrem = document.getElementById('kpiNowPremium');
+            const kpiBias = document.getElementById('kpiNowBias');
+
+            function compute() {
+                const retail = parseFloat(inRetail.value);
+                const durables = parseFloat(inDur.value);
+                const trade = parseFloat(inTrade.value);
+
+                valRetail.textContent = (retail >= 0 ? '+' : '') + retail.toFixed(1) + '% ' + (retail >= 0 ? 'Beat' : 'Miss');
+                valDur.textContent = (durables >= 0 ? '+' : '') + durables.toFixed(1) + '% ' + (durables >= 0 ? 'Beat' : 'Miss');
+                valTrade.textContent = (trade >= 0 ? '+$' : '-$') + Math.abs(trade).toFixed(1) + 'B ' + (trade >= 0 ? 'Surplus' : 'Drag');
+
+                // Baseline Blue Chip = 1.90%
+                const blueChip = 1.90;
+                // Sensitivities: Retail +1% = +0.85% GDP; Durables +1% = +0.35% GDP; Trade +$10B = +0.40% GDP
+                const gdpNow = blueChip + (retail * 0.85) + (durables * 0.35) + (trade * 0.04);
+
+                kpiNow.textContent = gdpNow.toFixed(2) + '%';
+                const premiumBps = Math.round((gdpNow - blueChip) * 100);
+                kpiPrem.textContent = (premiumBps >= 0 ? '+' : '') + premiumBps + ' bps';
+
+                if (gdpNow > 2.50) {
+                    kpiBias.textContent = 'Bearish Duration / Above Trend';
+                    kpiBias.style.color = 'var(--red)';
+                } else if (gdpNow < 1.00) {
+                    kpiBias.textContent = 'Bullish Duration / Growth Scare';
+                    kpiBias.style.color = 'var(--green)';
+                } else {
+                    kpiBias.textContent = 'Neutral / Trend Growth';
+                    kpiBias.style.color = 'var(--accent)';
+                }
+            }
+
+            [inRetail, inDur, inTrade].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetNow').addEventListener('click', () => {
+                inRetail.value = "0.6"; inDur.value = "0.4"; inTrade.value = "-3.0"; compute();
+            });
+
+            document.getElementById('btnPresetRecessionNow').addEventListener('click', () => {
+                inRetail.value = "-1.2"; inDur.value = "-1.6"; inTrade.value = "-8.0"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Regimes — Macro & Rates Academy</title>
+    <meta name="description" content="Risk-on/risk-off dynamics, cross-asset leading signals (Copper/Gold, Credit OAS, Dollar Smile), Markov regime-switching models, and Risk Parity mechanics.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 07</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Macro Regimes & Cross-Asset Signals</h1>
+            <p class="subtitle">Risk-on / risk-off dynamics, cross-asset leading signals (Copper/Gold, HY Credit Spreads, Dollar Smile), Markov regime-switching models, and Risk Parity mechanics.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-roro">1. Risk-On / Risk-Off (RORO)</button>
+            <button class="nav-tab" data-tab="tab-signals">2. Cross-Asset Leading Signals</button>
+            <button class="nav-tab" data-tab="tab-markov">3. Markov Regime-Switching</button>
+            <button class="nav-tab" data-tab="tab-riskparity">4. Risk Parity & Volatility Drag</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: Risk-On / Risk-Off (RORO) -->
+        <div class="tab-panel active" id="tab-roro">
+            <div class="card">
+                <h2>🌐 The Anatomy of Risk-On / Risk-Off (RORO)</h2>
+                <p>During periods of heightened global macro uncertainty, idiosyncratic company fundamentals take a backseat to broad <strong>systemic regime shifts</strong>. Asset classes coordinate into two distinct camps based on liquidity, credit risk, and volatility beta:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Asset Class</th>
+                                <th>Risk-On (Reflation / Expansion)</th>
+                                <th>Risk-Off (Crisis / Deleveraging)</th>
+                                <th>Desk Transmission Mechanism</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Equities</strong></td>
+                                <td>Broad rally; Cyclicals, Small Caps, Tech outperform.</td>
+                                <td>Sharp selloff; Defensives (Utilities, Staples) outperform on a relative basis.</td>
+                                <td>Equity risk premia compress during risk-on; earnings multiples expand.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sovereign Debt (US Treasuries, Bunds)</strong></td>
+                                <td>Yields rise (prices fall); curve steepens.</td>
+                                <td><strong>Violent flight-to-safety rally</strong>; yields plunge, front end aggressively cuts priced.</td>
+                                <td>Duration acts as a shock absorber when growth collapses.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Corporate Credit (High Yield / IG)</strong></td>
+                                <td>Spreads compress to cyclical tights (CDX HY &lt; 350 bps).</td>
+                                <td>Spreads blow out (CDX HY &gt; 550–800 bps); liquidity illiquidity premia spike.</td>
+                                <td>Credit leads equity: default risk surfaces in bond pricing first.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Currencies (FX)</strong></td>
+                                <td>Commodity FX (AUD, CAD, NZD) and EM carry rally; USD weakens.</td>
+                                <td><strong>US Dollar surges</strong> (cash hoarding); JPY and CHF rally as carry trades unwind.</td>
+                                <td>High-yielding carry currencies are liquidated to cover home margin calls.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Commodities</strong></td>
+                                <td>Crude Oil, Copper, Industrial Metals surge on physical demand.</td>
+                                <td>Cyclical commodities collapse; <strong>Gold acts as monetary safe haven</strong>.</td>
+                                <td>Demand destruction priced into oil and metals.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Volatility (VIX, MOVE)</strong></td>
+                                <td>VIX compresses below 15; equity skew flattens; carry strategies thrive.</td>
+                                <td>VIX spikes to 30–65; rates volatility (MOVE index) surges; dealer Gamma goes short.</td>
+                                <td>Forces mechanical deleveraging across vol-targeting funds.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Stock-Bond Correlation Flip ($\rho_{S, B}$)</h3>
+                <p>The foundation of the multi-asset hedge fund industry—and the classic 60/40 balanced portfolio—relies on the <strong>Stock-Bond Correlation</strong> being negative ($\rho_{S, B} < 0$). However, this correlation is <em>regime-dependent</em>:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Portfolio Variance Equation</div>
+                    $$\sigma_p^2 = w_s^2 \sigma_s^2 + w_b^2 \sigma_b^2 + 2 w_s w_b \text{Cov}(S, B) = w_s^2 \sigma_s^2 + w_b^2 \sigma_b^2 + 2 w_s w_b \sigma_s \sigma_b \rho_{S, B}$$
+                </div>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>The 2022 Disaster Explained:</strong>
+                    <ul>
+                        <li><strong>Demand / Growth Shocks (1998–2021):</strong> Low inflation allowed central banks to cut rates during equity downturns $\rightarrow \rho_{S, B} < 0 \rightarrow$ Treasuries hedged equities.</li>
+                        <li><strong>Supply / Inflation Shocks (1970s, 2022):</strong> Inflation spikes forced central banks to hike aggressively into slowing growth $\rightarrow \rho_{S, B} > 0 \rightarrow$ <strong>Bonds and stocks crashed simultaneously</strong>, destroying 60/40 portfolios!</li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Cross-Asset Leading Signals -->
+        <div class="tab-panel" id="tab-signals">
+            <div class="card">
+                <h2>🧭 The Cross-Asset Leading Indicator Suite</h2>
+                <p>Because fixed income, credit, commodities, and FX markets price different economic risks at different speeds, institutional macro desks cross-reference three elite market-generated ratios to anticipate rate moves:</p>
+
+                <h3>1. The Copper / Gold Ratio ($\text{Cu/Au}$)</h3>
+                <p>Dr. Copper possesses a "Ph.D. in economics" reflecting global manufacturing output and infrastructure construction, while Gold is the ultimate zero-yielding monetary hedge against financial crisis. The <strong>Copper/Gold Ratio</strong> has a legendary $R^2 \approx 0.70$ correlation with 10-Year US Treasury yields:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Copper / Gold Transmission</div>
+                    $$\text{Cu/Au} \uparrow \implies \text{Industrial Expansion & Nominal Growth} \implies y_{\text{10Y UST}} \uparrow$$
+                    $$\text{Cu/Au} \downarrow \implies \text{Global Growth Stagnation & Flight to Safety} \implies y_{\text{10Y UST}} \downarrow$$
+                </div>
+
+                <h3>2. High Yield Option-Adjusted Spread (OAS)</h3>
+                <p>Bondholders have fixed upside (par + coupon) and total downside (default). As a result, credit investors conduct far stricter forensic analysis of debt service coverage and cash flows than equity investors. <strong>HY spreads routinely blow out 2 to 6 months before equity markets roll over</strong>.</p>
+
+                <h3>3. The Dollar Smile Theory (Stephen Jen)</h3>
+                <p>The US Dollar exhibits a non-linear "smile" reaction across the global macro cycle:</p>
+                <ul>
+                    <li><strong>Left Side of Smile (Severe Global Crisis / Recession):</strong> Investors hoard USD cash and liquid Treasuries; capital flight from emerging markets. <strong>USD Surges.</strong></li>
+                    <li><strong>Bottom of Smile (Benign Global Growth / Goldilocks):</strong> Rest-of-world growth accelerates faster than the US; capital leaves the US to chase higher foreign yields. <strong>USD Weakens.</strong></li>
+                    <li><strong>Right Side of Smile (US Economic Outperformance):</strong> US GDP growth beats the world; Fed hikes policy rates faster than BoJ/ECB; foreign capital floods into US assets. <strong>USD Surges.</strong></li>
+                </ul>
+            </div>
+
+            <!-- Interactive Cross-Asset Signal Engine -->
+            <div class="card">
+                <h2>🔬 Interactive Cross-Asset Signal Engine & 10Y Fair Value Projector</h2>
+                <p>Calibrate real-time market ratios (Copper/Gold, HY Credit Spreads, and Dollar Index) to calculate the synthetic <strong>Cross-Asset Risk Score</strong> and projected 10Y Treasury yield divergence.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="sigCuAu">Copper / Gold Ratio (x1000): <span class="val-badge" id="valSigCuAu">1.85</span></label>
+                        <input type="range" id="sigCuAu" min="1.00" max="3.00" step="0.05" value="1.85">
+                    </div>
+                    <div class="control-group">
+                        <label for="sigHYSpread">US HY Spread (OAS bps): <span class="val-badge" id="valSigHY">360 bps</span></label>
+                        <input type="range" id="sigHYSpread" min="250" max="900" step="25" value="360">
+                    </div>
+                    <div class="control-group">
+                        <label for="sigDXY">US Dollar Index (DXY): <span class="val-badge" id="valSigDXY">103.5</span></label>
+                        <input type="range" id="sigDXY" min="90" max="115" step="0.5" value="103.5">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Cross-Asset Risk Score</div>
+                        <div class="kpi-value" id="kpiRiskScore">62 / 100</div>
+                        <div class="kpi-sub" id="kpiRiskDesc">Constructive Risk-On</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Implied 10Y Treasury Yield</div>
+                        <div class="kpi-value" id="kpiFair10Y">4.28%</div>
+                        <div class="kpi-sub">Cu/Au + Credit Projection</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Dollar Smile Location</div>
+                        <div class="kpi-value" id="kpiSmileLoc">Right Wing (US Outperformance)</div>
+                        <div class="kpi-sub">Capital attraction</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Macro Desk Tilt</div>
+                        <div class="kpi-value" id="kpiSignalTilt">Underweight Duration / Long Equities</div>
+                        <div class="kpi-sub">Yields facing upward drift</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Copper / Gold Ratio vs. 10Y US Treasury Yield Co-Movement</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Copper/Gold Ratio (Normalized)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> 10Y US Treasury Yield (%)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartCuAu"></canvas>
+                    <div class="chart-hud" id="hudCuAu"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetSignals">Reinit Baseline Signals</button>
+                    <button class="btn btn-secondary" id="btnPresetGlobalCrash">Simulate Global Risk-Off Shock (Cu/Au collapse + HY Blowout)</button>
+                    <button class="btn btn-secondary" id="btnPresetReflationBoom">Simulate Global Reflation Boom</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Markov Regime-Switching -->
+        <div class="tab-panel" id="tab-markov">
+            <div class="card">
+                <h2>🎲 Markov Regime-Switching Models in Quantitative Macro</h2>
+                <p>Standard linear models fail in macro finance because market dynamics change non-linearly across volatility regimes. James Hamilton pioneered the <strong>Markov-Switching Autoregressive Model</strong>, allowing parameters to jump between hidden states ($S_t$):</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">2-State Markov-Switching Equation</div>
+                    $$y_t = \mu_{S_t} + \phi (y_{t-1} - \mu_{S_t}) + \sigma_{S_t} \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, 1)$$
+                    $$S_t \in \{1: \text{Bull / Low Volatility}, \quad 2: \text{Crisis / High Volatility}\}$$
+                </div>
+
+                <p>The state transitions according to a first-order Markov chain with transition probability matrix $P$:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Transition Matrix & Expected Regime Duration</div>
+                    $$P = \begin{pmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{pmatrix} = \begin{pmatrix} p_{11} & 1 - p_{11} \\ 1 - p_{22} & p_{22} \end{pmatrix}$$
+                    $$\mathbb{E}[\text{Duration of Regime } j] = \frac{1}{1 - p_{jj}}$$
+                </div>
+
+                <p>If $p_{11} = 0.95$, the expected duration of an economic expansion is $\frac{1}{1 - 0.95} = 20 \text{ months}$. If $p_{22} = 0.85$, the expected duration of a crisis state is $\frac{1}{1 - 0.85} \approx 6.7 \text{ months}$.</p>
+            </div>
+
+            <!-- Interactive Markov Simulator -->
+            <div class="card">
+                <h2>📈 Interactive 2-State Markov Simulator & Filtered Probabilities</h2>
+                <p>Configure transition probabilities ($p_{11}$ and $p_{22}$) and observe simulated regime paths with live filtered crisis probabilities $P(S_t = 2)$.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="mrkP11">Expansion Persistence ($p_{11}$): <span class="val-badge" id="valMrkP11">0.92</span></label>
+                        <input type="range" id="mrkP11" min="0.70" max="0.98" step="0.02" value="0.92">
+                    </div>
+                    <div class="control-group">
+                        <label for="mrkP22">Crisis Persistence ($p_{22}$): <span class="val-badge" id="valMrkP22">0.80</span></label>
+                        <input type="range" id="mrkP22" min="0.50" max="0.95" step="0.05" value="0.80">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Expected Expansion Length</div>
+                        <div class="kpi-value" id="kpiExpLength">12.5 Months</div>
+                        <div class="kpi-sub">$1 / (1 - p_{11})$</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Expected Crisis Length</div>
+                        <div class="kpi-value" id="kpiCrisisLength">5.0 Months</div>
+                        <div class="kpi-sub">$1 / (1 - p_{22})$</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Unconditional Crisis Odds</div>
+                        <div class="kpi-value" id="kpiUncondCrisis">28.6%</div>
+                        <div class="kpi-sub">Steady-state distribution</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Quant Hedge Strategy</div>
+                        <div class="kpi-value" id="kpiQuantStrat">Dynamic Vol Overlay</div>
+                        <div class="kpi-sub">Shift to Treasuries at $P(S=2) > 0.4$</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">24-Month Simulated Macro Return Series with Filtered Crisis Regime Shading</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Asset Return Path</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:rgba(166,61,61,0.25);"></div> Crisis State Active ($S_t = 2$)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartMarkov"></canvas>
+                    <div class="chart-hud" id="hudMarkov"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetMarkov">Reinit Markov Parameters</button>
+                    <button class="btn btn-secondary" id="btnRerunMarkov">Re-Simulate New Path</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Risk Parity & Volatility Drag -->
+        <div class="tab-panel" id="tab-riskparity">
+            <div class="card">
+                <h2>⚖️ Risk Parity Mechanics & Systematic Deleveraging</h2>
+                <p>Popularized by Bridgewater's "All Weather" strategy, <strong>Risk Parity</strong> constructs portfolios by equalizing the marginal risk contribution of each asset class rather than allocating dollar capital:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Inverse-Volatility Weighting & Leverage</div>
+                    $$w_i \propto \frac{1}{\sigma_i} \quad \implies \quad \frac{w_{\text{Bonds}}}{w_{\text{Equities}}} = \frac{\sigma_{\text{Equities}}}{\sigma_{\text{Bonds}}}$$
+                </div>
+
+                <p>Because sovereign bonds have historically exhibited roughly one-third the annualized volatility of equities ($\sigma_{\text{bonds}} \approx 5\%$ vs. $\sigma_{\text{equities}} \approx 16\%$), Risk Parity algorithms must apply <strong>2.5x to 3.5x leverage</strong> on bond holdings to balance risk.</p>
+
+                <div class="alert alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div><strong>The Volatility Spike Doom Loop:</strong>
+                    When an inflation shock occurs, bond prices plunge and bond volatility spikes ($\sigma_{\text{bonds}} \uparrow$).
+                    Because the algorithms target a fixed annualized volatility (e.g. 10%), the surge in $\sigma_{\text{bonds}}$ forces systemic funds (Risk Parity, CTAs, Vol-Targeting mutual funds) to <strong>mechanically liquidate Treasury futures</strong> into an already illiquid market, exacerbating the selloff!</div>
+                </div>
+            </div>
+
+            <!-- Interactive Risk Parity Simulator -->
+            <div class="card">
+                <h2>⚡ Interactive Risk Parity Deleveraging & VaR Engine</h2>
+                <p>Adjust asset volatilities and the stock-bond correlation to observe how systematic risk-parity funds are forced to deleverage and liquidate duration.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="rpBondVol">Bond Volatility ($\sigma_B$): <span class="val-badge" id="valRPBondVol">5.5%</span></label>
+                        <input type="range" id="rpBondVol" min="3.0" max="15.0" step="0.5" value="5.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="rpEqVol">Equity Volatility ($\sigma_E$): <span class="val-badge" id="valRPEqVol">16.0%</span></label>
+                        <input type="range" id="rpEqVol" min="10.0" max="35.0" step="1.0" value="16.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="rpCorr">Stock-Bond Correlation ($\rho$): <span class="val-badge" id="valRPCorr">-0.30</span></label>
+                        <input type="range" id="rpCorr" min="-0.70" max="0.80" step="0.05" value="-0.30">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Bond Allocation Weight</div>
+                        <div class="kpi-value" id="kpiBondWeight">74.4%</div>
+                        <div class="kpi-sub">Inverse-Vol Parity</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Optimal Portfolio Leverage</div>
+                        <div class="kpi-value" id="kpiLeverage">2.25x</div>
+                        <div class="kpi-sub">Targeting 10% Annual Vol</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Diversification Benefit</div>
+                        <div class="kpi-value" id="kpiDiversify">High (+42% Sharpe)</div>
+                        <div class="kpi-sub" id="kpiDivDesc">Negative correlation hedge</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Systemic Liquidation Risk</div>
+                        <div class="kpi-value" id="kpiDelevRisk">Low / Stable</div>
+                        <div class="kpi-sub" id="kpiDelevDesc">Normal trading conditions</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetRP">Reinit Risk Parity Baseline</button>
+                    <button class="btn btn-secondary" id="btnPreset2022Crash">Simulate 2022 Shock ($\sigma_B = 12\%, \rho = +0.60$)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Macro Regimes & Cross-Asset Trading Interview Masterclass</h2>
+                <p>Institutional interviewers on macro rates pods, multi-asset hedge funds, and portfolio risk teams expect you to connect microeconomic pricing to non-linear macro regime transitions. Click each card to reveal the desk breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"Why does the Copper/Gold ratio have such a strong empirical correlation with 10Y US Treasury yields? Under what conditions does this relationship decouple?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The Copper/Gold ratio ($\text{Cu/Au}$) synthesizes real global growth expectations vs. safe-haven demand:</p>
+                    <ul>
+                        <li><strong>Copper:</strong> The primary industrial metal utilized in power grids, construction, EVs, and manufacturing. Demand surges when global GDP and industrial production expand.</li>
+                        <li><strong>Gold:</strong> A non-yielding, pure monetary store of value that rallies during real interest rate declines, banking crises, and monetary debasement fears.</li>
+                        <li><strong>The Ratio ($\text{Cu/Au}$):</strong> Rises during reflation and falls during recessions, mirroring nominal GDP growth expectations and therefore tracking the 10Y US Treasury yield with high fidelity.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The Decoupling Breakdown:</strong> The relationship breaks down during <em>supply-driven commodity dislocations</em> (e.g. Chilean copper mine strikes driving copper up without broader growth) or when <em>massive sovereign fiscal issuance</em> forces 10Y yields higher due to term premia despite sluggish copper demand.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"Walk me through Stephen Jen's 'Dollar Smile' theory and how a macro trader positions in G10 FX across the three sections of the smile."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The Dollar Smile models USD performance as a function of relative US growth:</p>
+                    <ol>
+                        <li><strong>Left Wing (Global Crisis / Flight to Safety):</strong> When a systemic financial crisis or acute global recession hits, investors panic and liquidate foreign assets. The US Dollar surges due to unmatched liquidity and cash hoarding. <em>Trade:</em> Long USD vs. EM and commodity crosses (Short AUD/USD, Short ZAR/USD).</li>
+                        <li><strong>Bottom of Smile (Rest-of-World Outperformance):</strong> US growth is mediocre, but China, Europe, and EM are accelerating. Global risk appetite is high. Capital leaves the US in search of higher emerging market returns. <em>Trade:</em> Short USD; Long high-yielding carry trades (Long BRL, Long MXN, Long AUD).</li>
+                        <li><strong>Right Wing (US Economic Boom):</strong> The US economy outperforms the rest of the world (strong tech productivity, aggressive Fed rate hikes). Foreign capital floods into Wall Street to buy US assets. <em>Trade:</em> Long USD vs. low-yielding funding currencies (Long USD/JPY, Long USD/CHF, Short EUR/USD).</li>
+                    </ol>
+                    <div class="qa-key-point">
+                        <strong>Desk Axiom:</strong> The Dollar only weakens in the middle of the smile. At both extremes (extreme strength or extreme weakness), the US Dollar rallies.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"Why did the traditional 60/40 portfolio experience its worst performance in over 50 years in 2022? Explain the correlation flip."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The mathematical bedrock of the 60/40 portfolio is a <strong>negative covariance</strong> between equities and bonds ($\text{Cov}(S, B) = \sigma_S \sigma_B \rho < 0$):</p>
+                    <ul>
+                        <li>For two decades (2000–2020), inflation was low and anchored. Whenever equities crashed due to a growth scare, the Federal Reserve cut rates, driving bond prices up. Bonds successfully cushioned equity drawdowns.</li>
+                        <li>In 2022, the macro shock was not a growth scare—it was a <strong>severe, unanchored supply-side inflation shock</strong>.</li>
+                        <li>The Fed was forced to raise interest rates by 425 bps into a decelerating economy. Higher discount rates crushed equity valuations (especially long-duration tech), while simultaneously triggering the worst bond market crash in modern history.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The Takeaway:</strong> The stock-bond correlation flipped from $-0.30$ to <strong>$+0.70$</strong>. Bonds ceased to be a hedge and became an amplifier of total portfolio risk.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"How do Volatility-Targeting funds and Risk Parity strategies create market 'air pockets' during sudden regime shifts?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Systematic funds manage risk by targeting a constant portfolio volatility (e.g. 10% annual vol):</p>
+                    <div class="formula-block">
+                        $$\text{Position Size} \propto \frac{\text{Target Volatility}}{\text{Realized Asset Volatility}}$$
+                    </div>
+                    <ul>
+                        <li>When markets are calm, realized volatility is low, prompting these funds to lever up their exposures.</li>
+                        <li>When a sudden regime shock strikes (such as an NFP or CPI blowout), realized volatility spikes exponentially.</li>
+                        <li>Risk-management mandates require these funds to immediately reduce gross exposure. They are <strong>forced programmatic sellers</strong> regardless of valuation.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Market Impact:</strong> Because billions in sell orders hit the order book simultaneously while primary dealers widen bid-ask spreads, the market experiences an "air pocket" or flash crash until systematic deleveraging runs its course.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"What is a Markov-switching model, and why do quant macro funds use it instead of traditional rolling linear regressions?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Linear models assume that the underlying data-generating process is stationary with constant mean and variance across time:</p>
+                    <ul>
+                        <li>In global markets, financial series jump abruptly between discrete states: a calm, low-volatility bull market has completely different return distributions, correlations, and Sharpe ratios than a liquidity crisis.</li>
+                        <li>A <strong>Markov-switching model</strong> assigns state-dependent parameters ($\mu_{S_t}, \sigma_{S_t}, \rho_{S_t}$) and computes the <em>filtered probability</em> $P(S_t = j)$ of being in a specific regime at each point in time.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Utility:</strong> Quant macro funds use Markov models to dynamically adjust portfolio leverage and hedging overlays before a crisis state becomes obvious to lagging traditional metrics.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Macro Regimes Cheat Sheet -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Macro Regimes Master Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Regime State</th>
+                                <th>Top Performing Asset</th>
+                                <th>Underperforming Asset</th>
+                                <th>Key Cross-Asset Signal</th>
+                                <th>Portfolio Stance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Reflation / Expansion</strong></td>
+                                <td>Equities (Value, Small Caps), Copper, EM</td>
+                                <td>Sovereign Bonds, Cash</td>
+                                <td>$\text{Cu/Au} \uparrow$, HY Spreads tight, Yield Curve steepens</td>
+                                <td>Underweight duration, Overweight risk.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Overheating / Late Cycle</strong></td>
+                                <td>Energy, Cash, Commodities</td>
+                                <td>Long Duration Treasuries, Growth Tech</td>
+                                <td>2s10s Curve inverts, Breakevens expand, Central banks hike</td>
+                                <td>Short front end, Overweight floating rate.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bust / Liquidity Crisis</strong></td>
+                                <td>US Dollar Cash, Long Treasuries, Gold</td>
+                                <td>High Yield Credit, Equities, Carry Trades</td>
+                                <td>HY Spreads blow out, VIX &gt; 35, Cross-Currency Basis widens</td>
+                                <td>Maximum long duration, Long vol overlays.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Goldilocks / Recovery</strong></td>
+                                <td>Quality Growth Equities, Tech, Corporate Credit</td>
+                                <td>Commodities, Cash</td>
+                                <td>VIX &lt; 14, Inflation cools, Central bank on hold</td>
+                                <td>Carry focus, Tight credit spreads.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 07: Macro Regimes · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 2: Cross-Asset Signals & Canvas ===== */
+        (function() {
+            const inCuAu = document.getElementById('sigCuAu');
+            const inHY = document.getElementById('sigHYSpread');
+            const inDXY = document.getElementById('sigDXY');
+
+            const valCuAu = document.getElementById('valSigCuAu');
+            const valHY = document.getElementById('valSigHY');
+            const valDXY = document.getElementById('valSigDXY');
+
+            const kpiScore = document.getElementById('kpiRiskScore');
+            const kpiDesc = document.getElementById('kpiRiskDesc');
+            const kpi10Y = document.getElementById('kpiFair10Y');
+            const kpiSmile = document.getElementById('kpiSmileLoc');
+            const kpiTilt = document.getElementById('kpiSignalTilt');
+
+            const canvas = document.getElementById('chartCuAu');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudCuAu');
+
+            let signalSeries = [];
+
+            function compute() {
+                const cuAu = parseFloat(inCuAu.value);
+                const hySpread = parseFloat(inHYSpread.value);
+                const dxy = parseFloat(inDXY.value);
+
+                valCuAu.textContent = cuAu.toFixed(2);
+                valHY.textContent = hySpread + ' bps';
+                valDXY.textContent = dxy.toFixed(1);
+
+                // Risk Score (0-100): High Cu/Au (+), Low HY spread (+), Moderate DXY (+)
+                const scoreCu = Math.max(0, Math.min(45, (cuAu - 1.0) * 22.5));
+                const scoreHY = Math.max(0, Math.min(40, (800 - hySpread) * 0.07));
+                const scoreDXY = Math.max(0, Math.min(15, 15 - Math.abs(dxy - 101) * 1.5));
+
+                const compositeScore = Math.round(scoreCu + scoreHY + scoreDXY);
+                kpiScore.textContent = compositeScore + ' / 100';
+
+                // Implied 10Y Yield projection: baseline 4.0% + (CuAu - 1.85)*1.2 - (HY - 360)/1000
+                const fair10Y = 4.00 + (cuAu - 1.85) * 1.25 - ((hySpread - 360) / 1000) * 1.5;
+                kpi10Y.textContent = fair10Y.toFixed(2) + '%';
+
+                if (dxy > 106) {
+                    kpiSmile.textContent = hySpread > 500 ? 'Left Wing (Flight to Safety / Cash)' : 'Right Wing (US Outperformance)';
+                } else if (dxy < 98) {
+                    kpiSmile.textContent = 'Bottom (Global Reflation / Risk-On)';
+                } else {
+                    kpiSmile.textContent = 'Center / Balanced Global Cycle';
+                }
+
+                if (compositeScore >= 65) {
+                    kpiDesc.textContent = 'Strong Risk-On Momentum';
+                    kpiTilt.textContent = 'Underweight Duration / Long Equities';
+                } else if (compositeScore >= 40) {
+                    kpiDesc.textContent = 'Neutral / Balanced Macro';
+                    kpiTilt.textContent = 'Carry Trades / Quality Credit';
+                } else {
+                    kpiDesc.textContent = 'Severe Risk-Off / Flight to Safety';
+                    kpiTilt.textContent = 'Maximum Long Duration / Buy Gold';
+                }
+
+                // Construct 12-Month Co-Movement Series
+                signalSeries = [];
+                for (let m = 0; m <= 12; m++) {
+                    const cyclePhase = Math.sin(m * 0.55);
+                    const ptCuAu = cuAu + cyclePhase * 0.35;
+                    const ptYield = fair10Y + cyclePhase * 0.45;
+                    signalSeries.push({
+                        month: 'M' + m,
+                        cuAu: ptCuAu,
+                        yieldVal: ptYield
+                    });
+                }
+
+                drawCuAuChart();
+            }
+
+            function drawCuAuChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minCu = 0.8, maxCu = 3.2;
+                const minY = 2.5, maxY = 5.8;
+
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let y = 3.0; y <= 5.5; y += 0.5) {
+                    const py = padT + plotH * ((maxY - y) / (maxY - minY));
+                    ctx.fillText(y.toFixed(1) + '%', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsCu = [];
+                const ptsY = [];
+
+                signalSeries.forEach((d, i) => {
+                    const px = padL + (i / (signalSeries.length - 1)) * plotW;
+                    const pyCu = padT + plotH * ((maxCu - d.cuAu) / (maxCu - minCu));
+                    const pyY = padT + plotH * ((maxY - d.yieldVal) / (maxY - minY));
+                    ptsCu.push({x: px, y: pyCu, d});
+                    ptsY.push({x: px, y: pyY, d});
+                    ctx.fillText(d.month, px, H - padB + 16);
+                });
+
+                // Plot Copper/Gold (Navy)
+                ctx.beginPath();
+                ptsCu.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Plot Yield (Red dashed)
+                ctx.beginPath();
+                ptsY.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(signalSeries.length - 1, Math.max(0, Math.round(ratio * (signalSeries.length - 1))));
+                const item = signalSeries[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (signalSeries.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Horizon:</span> <span class="hud-val">${item.month}</span></div>
+                    <div class="hud-row"><span class="hud-label">Cu/Au Ratio:</span> <span class="hud-val" style="color:#1a3a6b">${item.cuAu.toFixed(2)}</span></div>
+                    <div class="hud-row"><span class="hud-label">10Y UST Yield:</span> <span class="hud-val" style="color:#a63d3d">${item.yieldVal.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inCuAu, inHY, inDXY].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetSignals').addEventListener('click', () => {
+                inCuAu.value = "1.85"; inHY.value = "360"; inDXY.value = "103.5"; compute();
+            });
+
+            document.getElementById('btnPresetGlobalCrash').addEventListener('click', () => {
+                inCuAu.value = "1.10"; inHY.value = "750"; inDXY.value = "112.0"; compute();
+            });
+
+            document.getElementById('btnPresetReflationBoom').addEventListener('click', () => {
+                inCuAu.value = "2.65"; inHY.value = "275"; inDXY.value = "96.5"; compute();
+            });
+
+            window.addEventListener('resize', drawCuAuChart);
+            compute();
+        })();
+
+        /* ===== Tab 3: Markov Simulator & Canvas ===== */
+        (function() {
+            const inP11 = document.getElementById('mrkP11');
+            const inP22 = document.getElementById('mrkP22');
+
+            const valP11 = document.getElementById('valMrkP11');
+            const valP22 = document.getElementById('valMrkP22');
+
+            const kpiExp = document.getElementById('kpiExpLength');
+            const kpiCrisis = document.getElementById('kpiCrisisLength');
+            const kpiUncond = document.getElementById('kpiUncondCrisis');
+            const kpiQuant = document.getElementById('kpiQuantStrat');
+
+            const canvas = document.getElementById('chartMarkov');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudMarkov');
+
+            let markovPath = [];
+
+            function compute() {
+                const p11 = parseFloat(inP11.value);
+                const p22 = parseFloat(inP22.value);
+
+                valP11.textContent = p11.toFixed(2);
+                valP22.textContent = p22.toFixed(2);
+
+                const lenExp = 1 / (1 - p11);
+                const lenCrisis = 1 / (1 - p22);
+
+                kpiExp.textContent = lenExp.toFixed(1) + ' Months';
+                kpiCrisis.textContent = lenCrisis.toFixed(1) + ' Months';
+
+                // Unconditional crisis probability: pi_2 = (1 - p11) / ((1 - p11) + (1 - p22))
+                const pi2 = (1 - p11) / ((1 - p11) + (1 - p22));
+                kpiUncond.textContent = (pi2 * 100).toFixed(1) + '%';
+
+                generatePath(p11, p22);
+                drawMarkov();
+            }
+
+            function generatePath(p11, p22) {
+                markovPath = [];
+                let state = 1; // 1 = Expansion, 2 = Crisis
+                let price = 100;
+
+                for (let m = 0; m <= 24; m++) {
+                    if (m > 0) {
+                        const rand = Math.random();
+                        if (state === 1) {
+                            if (rand > p11) state = 2;
+                        } else {
+                            if (rand > p22) state = 1;
+                        }
+                    }
+
+                    // Returns: State 1 mean = +0.8%, vol = 1.2%. State 2 mean = -2.8%, vol = 5.0%
+                    const mean = state === 1 ? 0.008 : -0.028;
+                    const vol = state === 1 ? 0.012 : 0.050;
+                    const ret = mean + (Math.random() - 0.5) * vol * 2;
+                    price = price * (1 + ret);
+
+                    markovPath.push({
+                        month: 'M' + m,
+                        state,
+                        price,
+                        retBps: Math.round(ret * 10000)
+                    });
+                }
+            }
+
+            function drawMarkov() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const prices = markovPath.map(d => d.price);
+                const minP = Math.min(...prices) * 0.95;
+                const maxP = Math.max(...prices) * 1.05;
+
+                // Crisis regime background shading
+                markovPath.forEach((d, i) => {
+                    if (d.state === 2) {
+                        const stepW = plotW / (markovPath.length - 1);
+                        const x = padL + i * stepW - stepW * 0.5;
+                        ctx.fillStyle = 'rgba(166, 61, 61, 0.15)';
+                        ctx.fillRect(x, padT, stepW, plotH);
+                    }
+                });
+
+                // Axes
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let p = Math.floor(minP / 10) * 10; p <= maxP; p += 15) {
+                    const py = padT + plotH * ((maxP - p) / (maxP - minP));
+                    ctx.fillText(p.toFixed(0), padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const pts = [];
+
+                markovPath.forEach((d, i) => {
+                    const px = padL + (i / (markovPath.length - 1)) * plotW;
+                    const py = padT + plotH * ((maxP - d.price) / (maxP - minP));
+                    pts.push({x: px, y: py, d});
+                    if (i % 4 === 0) {
+                        ctx.fillText(d.month, px, H - padB + 16);
+                    }
+                });
+
+                ctx.beginPath();
+                pts.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                pts.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = p.d.state === 1 ? '#1a7a45' : '#a63d3d';
+                    ctx.fill();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(markovPath.length - 1, Math.max(0, Math.round(ratio * (markovPath.length - 1))));
+                const item = markovPath[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (markovPath.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Month:</span> <span class="hud-val">${item.month}</span></div>
+                    <div class="hud-row"><span class="hud-label">Active State:</span> <span class="hud-val" style="color:${item.state === 1 ? '#1a7a45' : '#a63d3d'}">${item.state === 1 ? 'Expansion (Low Vol)' : 'Crisis (High Vol)'}</span></div>
+                    <div class="hud-row"><span class="hud-label">Price Index:</span> <span class="hud-val">${item.price.toFixed(1)}</span></div>
+                    <div class="hud-row"><span class="hud-label">1M Return:</span> <span class="hud-val">${(item.retBps >= 0 ? '+' : '') + item.retBps} bps</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inP11, inP22].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetMarkov').addEventListener('click', () => {
+                inP11.value = "0.92"; inP22.value = "0.80"; compute();
+            });
+
+            document.getElementById('btnRerunMarkov').addEventListener('click', compute);
+
+            window.addEventListener('resize', drawMarkov);
+            compute();
+        })();
+
+        /* ===== Tab 4: Risk Parity Simulator ===== */
+        (function() {
+            const inBVol = document.getElementById('rpBondVol');
+            const inEVol = document.getElementById('rpEqVol');
+            const inCorr = document.getElementById('rpCorr');
+
+            const valBVol = document.getElementById('valRPBondVol');
+            const valEVol = document.getElementById('valRPEqVol');
+            const valCorr = document.getElementById('valRPCorr');
+
+            const kpiBWeight = document.getElementById('kpiBondWeight');
+            const kpiLev = document.getElementById('kpiLeverage');
+            const kpiDiv = document.getElementById('kpiDiversify');
+            const kpiDivDesc = document.getElementById('kpiDivDesc');
+            const kpiRisk = document.getElementById('kpiDelevRisk');
+            const kpiRiskDesc = document.getElementById('kpiDelevDesc');
+
+            function compute() {
+                const sigmaB = parseFloat(inBVol.value) / 100;
+                const sigmaE = parseFloat(inEVol.value) / 100;
+                const rho = parseFloat(inCorr.value);
+
+                valBVol.textContent = (sigmaB * 100).toFixed(1) + '%';
+                valEVol.textContent = (sigmaE * 100).toFixed(1) + '%';
+                valCorr.textContent = (rho >= 0 ? '+' : '') + rho.toFixed(2);
+
+                // Inverse-volatility un-leveraged weights:
+                // wB = (1/sigmaB) / (1/sigmaB + 1/sigmaE) = sigmaE / (sigmaB + sigmaE)
+                const wB_unlev = sigmaE / (sigmaB + sigmaE);
+                const wE_unlev = sigmaB / (sigmaB + sigmaE);
+
+                kpiBWeight.textContent = (wB_unlev * 100).toFixed(1) + '%';
+
+                // Unleveraged portfolio volatility:
+                const portVolUnlev = Math.sqrt(
+                    Math.pow(wB_unlev * sigmaB, 2) +
+                    Math.pow(wE_unlev * sigmaE, 2) +
+                    2 * wB_unlev * wE_unlev * sigmaB * sigmaE * rho
+                );
+
+                // Target volatility = 10% (0.10)
+                const targetVol = 0.10;
+                const leverage = targetVol / portVolUnlev;
+                kpiLev.textContent = leverage.toFixed(2) + 'x';
+
+                if (rho < -0.10) {
+                    kpiDiv.textContent = 'High Diversification';
+                    kpiDivDesc.textContent = 'Negative correlation hedge';
+                    kpiDiv.style.color = 'var(--green)';
+                } else if (rho <= 0.25) {
+                    kpiDiv.textContent = 'Moderate Hedge';
+                    kpiDivDesc.textContent = 'Partial risk reduction';
+                    kpiDiv.style.color = 'var(--accent)';
+                } else {
+                    kpiDiv.textContent = 'Correlation Breakdown!';
+                    kpiDivDesc.textContent = 'Assets crash together (2022 Shock)';
+                    kpiDiv.style.color = 'var(--red)';
+                }
+
+                if (leverage < 1.4 && rho > 0.3) {
+                    kpiRisk.textContent = 'Severe Deleveraging Shock';
+                    kpiRiskDesc.textContent = 'Massive forced Treasury liquidation';
+                    kpiRisk.style.color = 'var(--red)';
+                } else {
+                    kpiRisk.textContent = 'Normal / Managed';
+                    kpiRiskDesc.textContent = 'Orderly rebalancing flows';
+                    kpiRisk.style.color = 'var(--accent)';
+                }
+            }
+
+            [inBVol, inEVol, inCorr].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetRP').addEventListener('click', () => {
+                inBVol.value = "5.5"; inEVol.value = "16.0"; inCorr.value = "-0.30"; compute();
+            });
+
+            document.getElementById('btnPreset2022Crash').addEventListener('click', () => {
+                inBVol.value = "12.0"; inEVol.value = "24.0"; inCorr.value = "0.60"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

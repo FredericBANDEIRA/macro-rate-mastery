@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macro Framework — Macro & Rates Academy</title>
+    <meta name="description" content="GDP dynamics, output gap, inflation mechanics, Phillips curve, labor market indicators, and the 4-quadrant business cycle clock. Built for S&T and Global Macro PM.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe / Flow Lines Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display {
+            margin: 6px 0 !important;
+            text-transform: none !important;
+        }
+        .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== 4-Quadrant Grid Visualizer ===== */
+        .quadrant-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .quadrant-cell {
+            background: var(--surface-2);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .quadrant-cell.active-quad {
+            border-color: var(--accent);
+            background: var(--surface-3);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+
+        .quadrant-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .quadrant-tag {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .quadrant-cell ul {
+            padding-left: 16px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .quadrant-box { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Canvas -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 01</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>The Macro Framework</h1>
+            <p class="subtitle">GDP accounting, the output gap, inflation dynamics, labor market anatomy, and the 4-quadrant business cycle clock for global macro rates trading.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-gdp">1. GDP & Output Gap</button>
+            <button class="nav-tab" data-tab="tab-inflation">2. Inflation Dynamics</button>
+            <button class="nav-tab" data-tab="tab-labor">3. Labor & Wage Pressures</button>
+            <button class="nav-tab" data-tab="tab-cycle">4. The Macro Cycle Clock</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: GDP & Output Gap -->
+        <div class="tab-panel active" id="tab-gdp">
+            <div class="card">
+                <h2>🏛️ National Income Accounting & Potential Output</h2>
+                <p>In global macro rates strategy, all pricing pivots around whether an economy is running above or below its non-inflationary capacity limit. We begin with the fundamental expenditure identity:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Aggregate Expenditure Identity</div>
+                    $$Y = C + I + G + (X - M)$$
+                </div>
+
+                <p>Where $Y$ is Real GDP, $C$ is Household Consumption (~68% of US GDP), $I$ is Gross Private Domestic Investment (~17%), $G$ is Government Consumption & Investment (~17%), and $(X - M)$ is Net Exports (~-3%).</p>
+
+                <h3>Potential GDP ($Y^*$) & The Output Gap</h3>
+                <p><strong>Potential GDP</strong> is the maximum sustainable output an economy can produce without generating excess inflation, governed by labor supply growth, capital accumulation, and Total Factor Productivity (TFP). The <strong>Output Gap</strong> measures the cyclical deviation:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Output Gap Formula</div>
+                    $$\text{Output Gap } (\tilde{Y}_t) = \frac{Y_t - Y_t^*}{Y_t^*} \times 100\%$$
+                </div>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>Rates Desk Transmission:</strong> A <strong>positive output gap</strong> ($\tilde{Y} > 0$) implies factor shortages, wage pressures, and capacity constraints $\rightarrow$ central banks hike policy rates $\rightarrow$ front-end yields surge, flattening or inverting the curve. A <strong>negative output gap</strong> requires accommodative policy $\rightarrow$ rate cuts, curve steepening.</div>
+                </div>
+
+                <h3>Okun's Law: Linking GDP to Unemployment</h3>
+                <p>Arthur Okun identified the empirical rule of thumb connecting changes in economic growth to shifts in the unemployment rate ($u$):</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Okun's Law (Difference Form)</div>
+                    $$\Delta u_t \approx -\gamma \left( g_t - g^* \right) \quad \text{with } \gamma \approx 0.4 \text{ to } 0.5$$
+                </div>
+                <p>If potential trend growth $g^*$ is $2.0\%$, an economy growing at $4.0\%$ ($+2.0\%$ above trend) typically experiences an unemployment decline of approximately $0.8\%$ to $1.0\%$ over the year.</p>
+            </div>
+
+            <!-- Interactive Output Gap Simulator -->
+            <div class="card">
+                <h2>📈 Interactive Simulator: Output Gap & Okun's Law Trajectory</h2>
+                <p>Adjust economic growth and potential trend output to observe the output gap evolution, estimated unemployment rate change, and macro policy bias.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="simActualGrowth">Real GDP Growth ($g_t$): <span class="val-badge" id="valGrowth">3.0%</span></label>
+                        <input type="range" id="simActualGrowth" min="-3.0" max="6.0" step="0.1" value="3.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="simPotentialGrowth">Potential Trend ($g^*$): <span class="val-badge" id="valTrend">2.0%</span></label>
+                        <input type="range" id="simPotentialGrowth" min="1.0" max="3.5" step="0.1" value="2.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="simInitGap">Starting Output Gap ($\tilde{Y}_0$): <span class="val-badge" id="valInitGap">-0.5%</span></label>
+                        <input type="range" id="simInitGap" min="-4.0" max="4.0" step="0.25" value="-0.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="simBaseU">Current Unemployment ($u$): <span class="val-badge" id="valBaseU">4.1%</span></label>
+                        <input type="range" id="simBaseU" min="3.0" max="10.0" step="0.1" value="4.1">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Projected Output Gap</div>
+                        <div class="kpi-value" id="kpiGap">+0.50%</div>
+                        <div class="kpi-sub" id="kpiGapStatus">Capacity Pressure</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Okun's $\Delta u$ (1Y)</div>
+                        <div class="kpi-value" id="kpiDeltaU">-0.45%</div>
+                        <div class="kpi-sub" id="kpiEndU">Projected u: 3.65%</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Implied Policy Stance</div>
+                        <div class="kpi-value" id="kpiPolicy">Hawkish Bias</div>
+                        <div class="kpi-sub">Rates upward pressure</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Yield Curve Tendency</div>
+                        <div class="kpi-value" id="kpiCurve">Flattening / Bear Flat</div>
+                        <div class="kpi-sub">Front end priced higher</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">5-Year Output Gap & Unemployment Projection</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Output Gap (%)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Unemployment Rate (%)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartGdp"></canvas>
+                    <div class="chart-hud" id="hudGdp"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetGdp">Reinit Baseline Parameters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Inflation Dynamics -->
+        <div class="tab-panel" id="tab-inflation">
+            <div class="card">
+                <h2>🔥 Inflation Mechanics: CPI, PCE & The Phillips Curve</h2>
+                <p>Inflation is the paramount nominal anchor of fixed income markets. Bond yields reflect expected inflation plus a real rate component and an inflation risk premium ($\text{YTM} \approx r^* + \pi^e + \text{RP}_\pi$).</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Index</th>
+                                <th>Target Agency</th>
+                                <th>Weighting Methodology</th>
+                                <th>Housing / Shelter Weight</th>
+                                <th>Medical Care Weight</th>
+                                <th>Market Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Headline CPI</strong></td>
+                                <td>BLS (Consumer)</td>
+                                <td>Laspeyres (Fixed Basket, updated annually)</td>
+                                <td>~36% (High sensitivity)</td>
+                                <td>~8% (Out-of-pocket only)</td>
+                                <td>High retail/algo volatility, TIPS linker indexation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Core CPI</strong></td>
+                                <td>BLS (Ex Food & Energy)</td>
+                                <td>Laspeyres (Excludes volatile commodities)</td>
+                                <td>~43% (Dominant driver)</td>
+                                <td>~10%</td>
+                                <td>Immediate front-end rate repricing</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Core PCE</strong></td>
+                                <td>BEA (Fed Official Target: 2.0%)</td>
+                                <td>Fisher-Ideal Chain-weighted (captures substitution)</td>
+                                <td>~15% (Much lower)</td>
+                                <td>~20% (Includes employer/Medicare)</td>
+                                <td>Determines FOMC dot plots and policy reaction</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SuperCore (Core Svcs ex Housing)</strong></td>
+                                <td>Fed Monitored</td>
+                                <td>Excludes shelter & goods</td>
+                                <td>0%</td>
+                                <td>High</td>
+                                <td>Pure proxy for labor-induced domestic wage spiral</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Expectations-Augmented Phillips Curve</h3>
+                <p>The modern Phillips Curve dictates that inflation depends on inflation expectations, the labor market slack relative to NAIRU ($u - u^*$), and exogenous supply shocks ($\nu$):</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Expectations-Augmented Phillips Curve</div>
+                    $$\pi_t = \pi_t^e - \beta (u_t - u^*) + \nu_t$$
+                </div>
+                <p>Where $\pi_t^e$ is expected inflation (anchored by central bank credibility or market breakevens), $u^*$ is the Non-Accelerating Inflation Rate of Unemployment (NAIRU), $\beta$ is the slope parameter, and $\nu_t$ represents supply shocks (e.g. oil spikes, supply bottlenecks).</p>
+            </div>
+
+            <!-- Interactive Phillips Curve Simulator -->
+            <div class="card">
+                <h2>📊 Interactive Phillips Curve & Supply Shock Engine</h2>
+                <p>Modify inflation expectations ($\pi^e$), NAIRU ($u^*$), and exogenous supply shocks to see the short-run Phillips Curve (SRPC) shift relative to the vertical Long-Run Phillips Curve (LRPC).</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="simPiE">Expected Inflation ($\pi^e$): <span class="val-badge" id="valPiE">2.2%</span></label>
+                        <input type="range" id="simPiE" min="1.0" max="5.0" step="0.1" value="2.2">
+                    </div>
+                    <div class="control-group">
+                        <label for="simNairu">NAIRU ($u^*$): <span class="val-badge" id="valNairu">4.2%</span></label>
+                        <input type="range" id="simNairu" min="3.0" max="6.0" step="0.1" value="4.2">
+                    </div>
+                    <div class="control-group">
+                        <label for="simShock">Supply Shock ($\nu$): <span class="val-badge" id="valShock">0.0%</span></label>
+                        <input type="range" id="simShock" min="-2.0" max="4.0" step="0.2" value="0.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="simBeta">Curve Slope ($\beta$): <span class="val-badge" id="valBeta">0.5</span></label>
+                        <input type="range" id="simBeta" min="0.2" max="1.0" step="0.05" value="0.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="simCurrU">Current Unemployment ($u$): <span class="val-badge" id="valCurrU">3.8%</span></label>
+                        <input type="range" id="simCurrU" min="2.5" max="8.0" step="0.1" value="3.8">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Calculated Inflation ($\pi$)</div>
+                        <div class="kpi-value" id="kpiInf">2.40%</div>
+                        <div class="kpi-sub" id="kpiInfDelta">+0.40% above 2% Target</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Labor Slack ($u - u^*$)</div>
+                        <div class="kpi-value" id="kpiSlack">-0.40%</div>
+                        <div class="kpi-sub">Labor market tight</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Shock Contribution</div>
+                        <div class="kpi-value" id="kpiShockVal">0.00%</div>
+                        <div class="kpi-sub">Neutral supply environment</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Fed Reaction Implication</div>
+                        <div class="kpi-value" id="kpiFedAction">Restrictive Stance</div>
+                        <div class="kpi-sub">Maintain higher terminal rate</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Phillips Curve (SRPC vs LRPC) & Operating Point</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Short-Run Curve (SRPC)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#627590;"></div> Long-Run NAIRU (LRPC)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Current Economy ($u, \pi$)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartPhillips"></canvas>
+                    <div class="chart-hud" id="hudPhillips"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetInf">Reinit Baseline Parameters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Labor & Wage Pressures -->
+        <div class="tab-panel" id="tab-labor">
+            <div class="card">
+                <h2>👥 Labor Market Anatomy: The Transmission to Wage Growth</h2>
+                <p>Central banks pay meticulous attention to the labor market because services inflation cannot sustainably return to target if wage growth persistently exceeds labor productivity plus the inflation target:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Sustainable Wage Growth Condition</div>
+                    $$\text{Sustainable Wage Growth} \approx \text{Trend Productivity Growth} + \pi^* \approx 1.5\% + 2.0\% = 3.5\%$$
+                </div>
+
+                <h3>Key Labor Metrics Monitored by the Rates Desk</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Indicator</th>
+                                <th>Release / Frequency</th>
+                                <th>What it Measures</th>
+                                <th>Leading vs Lagging</th>
+                                <th>Fixed Income Sensitivity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Non-Farm Payrolls (NFP)</strong></td>
+                                <td>First Friday / Monthly</td>
+                                <td>Net job creation from the Establishment Survey (~120k firms)</td>
+                                <td>Coincident</td>
+                                <td>Extreme. $\pm 50\text{k}$ vs consensus moves US 2Y yields by 5–15 bps immediately.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unemployment Rate (U-3)</strong></td>
+                                <td>First Friday / Monthly</td>
+                                <td>Jobless actively seeking work / Labor Force (Household Survey)</td>
+                                <td>Lagging</td>
+                                <td>Crucial for Sahm Rule recession triggers and Fed reaction function.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>JOLTS Quits Rate</strong></td>
+                                <td>Monthly (~1 month lag)</td>
+                                <td>Voluntary job departures as % of total employment</td>
+                                <td>Leading (by 6-9 mo)</td>
+                                <td>Highest correlation with Atlanta Fed Wage Growth Tracker. Workers only quit when confident in higher offers.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Employment Cost Index (ECI)</strong></td>
+                                <td>Quarterly</td>
+                                <td>Total compensation cost (wages + benefits) controlling for occupation shifts</td>
+                                <td>Gold standard (Coincident)</td>
+                                <td>Clearest gauge of pure labor cost pressure without mix-shift bias.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Prime-Age LFPR (25–54)</strong></td>
+                                <td>Monthly</td>
+                                <td>Participation rate of core working-age cohort</td>
+                                <td>Structural / Cyclical</td>
+                                <td>Expands potential labor supply, dampening wage pressure.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-tip">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>Trading Heuristic: The Beveridge Curve & Wage Spiral</strong><br>
+                    The Beveridge curve maps Job Vacancy Rate ($V$) against Unemployment ($u$). When the curve is steep (high $V$, low $u$), cooling vacancies does not necessarily cause massive unemployment surges—allowing for the elusive "soft landing".</div>
+                </div>
+            </div>
+
+            <!-- Interactive Labor Market Matrix -->
+            <div class="card">
+                <h2>🧮 Labor Tightness Index & Wage Pressure Calculator</h2>
+                <p>Configure the labor dashboard metrics to compute the composite <strong>Labor Market Tightness Score</strong>, project annualized wage inflation, and gauge 2Y Treasury rate pressure.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="labU3">Unemployment Rate (U-3): <span class="val-badge" id="valLabU3">4.0%</span></label>
+                        <input type="range" id="labU3" min="3.0" max="7.0" step="0.1" value="4.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="labQuits">JOLTS Quits Rate: <span class="val-badge" id="valLabQuits">2.3%</span></label>
+                        <input type="range" id="labQuits" min="1.5" max="3.5" step="0.1" value="2.3">
+                    </div>
+                    <div class="control-group">
+                        <label for="labVU">Vacancies per Unemployed ($V/U$): <span class="val-badge" id="valLabVU">1.2</span></label>
+                        <input type="range" id="labVU" min="0.6" max="2.2" step="0.05" value="1.2">
+                    </div>
+                    <div class="control-group">
+                        <label for="labLFPR">Prime-Age LFPR (25-54): <span class="val-badge" id="valLabLFPR">83.5%</span></label>
+                        <input type="range" id="labLFPR" min="80.0" max="85.0" step="0.1" value="83.5">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Labor Tightness Score</div>
+                        <div class="kpi-value" id="kpiTightness">54 / 100</div>
+                        <div class="kpi-sub" id="kpiTightnessDesc">Balanced / Near Neutral</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Projected Wage Growth</div>
+                        <div class="kpi-value" id="kpiWage">3.65%</div>
+                        <div class="kpi-sub">Target compatible: ~3.5%</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">SuperCore Inflation Drag</div>
+                        <div class="kpi-value" id="kpiSupercore">+0.15%</div>
+                        <div class="kpi-sub">Mild upward pressure</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Rates Desk Implication</div>
+                        <div class="kpi-value" id="kpiRatesImp">Neutral / On Hold</div>
+                        <div class="kpi-sub">Range-bound front end</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">The Beveridge Curve: Vacancy Rate vs Unemployment Rate</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Theoretical Curve</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Current Economy Position</div>
+                        </div>
+                    </div>
+                    <canvas id="chartBeveridge"></canvas>
+                    <div class="chart-hud" id="hudBeveridge"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetLabor">Reinit Labor Parameters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: The Macro Cycle Clock -->
+        <div class="tab-panel" id="tab-cycle">
+            <div class="card">
+                <h2>🧭 The 4-Quadrant Macro Regime Framework</h2>
+                <p>Global macro portfolio managers and rates strategists map asset prices across the two principal dimensions of economic surprise: <strong>Growth (accelerating vs decelerating)</strong> and <strong>Inflation (rising vs falling)</strong>.</p>
+
+                <div class="quadrant-box">
+                    <div class="quadrant-cell" id="quad-1">
+                        <div class="quadrant-title">
+                            1. Reflation / Recovery
+                            <span class="quadrant-tag" style="background:#1a7a4520; color:var(--green);">Growth ↑ | Inflation ↑</span>
+                        </div>
+                        <p><strong>Environment:</strong> Output gap closing, earnings rebounding, monetary policy shifting from easy to neutral.</p>
+                        <ul>
+                            <li><strong>Rates Trade:</strong> Bear steepener, curve steepens then flattens, rising breakevens.</li>
+                            <li><strong>Equities:</strong> Cyclicals, Value, Small Caps, Financials outperform.</li>
+                            <li><strong>Commodities:</strong> Strong performance (Energy, Industrial Metals).</li>
+                        </ul>
+                    </div>
+
+                    <div class="quadrant-cell" id="quad-2">
+                        <div class="quadrant-title">
+                            2. Overheating / Late Cycle
+                            <span class="quadrant-tag" style="background:#b0732820; color:var(--orange);">Growth ↓ | Inflation ↑</span>
+                        </div>
+                        <p><strong>Environment:</strong> Capacity constraints bite, central bank aggressively restrictive, credit spreads widen.</p>
+                        <ul>
+                            <li><strong>Rates Trade:</strong> Bear flattener $\rightarrow$ Curve inversion (2s10s negative), short duration.</li>
+                            <li><strong>Equities:</strong> Energy, defensive sectors, cash becomes attractive.</li>
+                            <li><strong>Commodities:</strong> Late-cycle commodity spike, precious metals resilient.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quadrant-cell" id="quad-3">
+                        <div class="quadrant-title">
+                            3. Contraction / Deflation
+                            <span class="quadrant-tag" style="background:#a63d3d20; color:var(--red);">Growth ↓ | Inflation ↓</span>
+                        </div>
+                        <p><strong>Environment:</strong> Recession, layoffs, inventory destocking, central banks slash benchmark rates.</p>
+                        <ul>
+                            <li><strong>Rates Trade:</strong> Bull steepener! Long duration (Treasuries rally), front end cuts priced.</li>
+                            <li><strong>Equities:</strong> Broad declines, defensives (Utilities, Healthcare) hold up best.</li>
+                            <li><strong>Commodities:</strong> Collapse in cyclicals; High-grade sovereign debt reigns supreme.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quadrant-cell" id="quad-4">
+                        <div class="quadrant-title">
+                            4. Goldilocks / Early Expansion
+                            <span class="quadrant-tag" style="background:#2a639920; color:var(--blue);">Growth ↑ | Inflation ↓</span>
+                        </div>
+                        <p><strong>Environment:</strong> Productivity-driven expansion, benign pricing, monetary policy remains accommodative.</p>
+                        <ul>
+                            <li><strong>Rates Trade:</strong> Stable yields, range-bound rates, carry trades thrive.</li>
+                            <li><strong>Equities:</strong> Mega-cap Growth, Tech, discretionary rally aggressively.</li>
+                            <li><strong>Credit:</strong> High Yield spreads compress to cyclical tights.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Cycle Clock Simulator -->
+            <div class="card">
+                <h2>🔄 Interactive Macro Cycle Clock & Cross-Asset Allocator</h2>
+                <p>Move the Growth Momentum and Inflation Momentum coordinates to locate the economy on the 4-quadrant phase plane, triggering automated portfolio tilts and yield curve recommendations.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="clockGrowth">Growth Momentum ($\Delta \text{PMI} / \text{GDP}$): <span class="val-badge" id="valClockGrowth">+0.8</span></label>
+                        <input type="range" id="clockGrowth" min="-3.0" max="3.0" step="0.1" value="0.8">
+                    </div>
+                    <div class="control-group">
+                        <label for="clockInflation">Inflation Momentum ($\Delta \text{CPI}$): <span class="val-badge" id="valClockInf">+0.4</span></label>
+                        <input type="range" id="clockInflation" min="-3.0" max="3.0" step="0.1" value="0.4">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Active Macro Regime</div>
+                        <div class="kpi-value" id="kpiRegimeName">Reflation (Phase 1)</div>
+                        <div class="kpi-sub" id="kpiRegimeDesc">Accelerating Output & Prices</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Recommended Duration</div>
+                        <div class="kpi-value" id="kpiDuration">Underweight / Short</div>
+                        <div class="kpi-sub">Rates facing upward drift</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Yield Curve Strategy</div>
+                        <div class="kpi-value" id="kpiCurveTrade">Curve Steepener $\rightarrow$ Bear Flat</div>
+                        <div class="kpi-sub">Pay front/belly rates</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Top Cross-Asset Tilt</div>
+                        <div class="kpi-value" id="kpiAssetTilt">Equities + Commodities</div>
+                        <div class="kpi-sub">Short pure fixed coupon bonds</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Macro Phase Plane: Growth vs Inflation Trajectory</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Regime Coordinates</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Vector Direction</div>
+                        </div>
+                    </div>
+                    <canvas id="chartClock"></canvas>
+                    <div class="chart-hud" id="hudClock"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnPresetReflation">Preset: Reflation</button>
+                    <button class="btn btn-secondary" id="btnPresetOverheating">Preset: Stagflation / Late</button>
+                    <button class="btn btn-secondary" id="btnPresetRecession">Preset: Deflationary Bust</button>
+                    <button class="btn btn-secondary" id="btnPresetGoldilocks">Preset: Goldilocks</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Global Macro & Rates Trading Interview Masterclass</h2>
+                <p>These questions test your ability to synthesize GDP, labor, inflation data, and real-time market pricing into actionable trading intuition. Click any question to reveal the institutional desk-level breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"NFP prints +120k above expectations, but the Unemployment Rate ticks up from 3.9% to 4.1%. How does the 2Y and 10Y Treasury yield respond, and why?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> You must distinguish between the <em>Establishment Survey</em> (payrolls) and the <em>Household Survey</em> (unemployment rate & labor force):</p>
+                    <ul>
+                        <li>If the unemployment rate rose because of an increase in the <strong>Labor Force Participation Rate (LFPR)</strong>—i.e., hundreds of thousands of workers re-entered the labor force—the labor market is actually expanding its supply side, which is <em>non-inflationary growth</em>.</li>
+                        <li>However, if LFPR was flat and actual household employment dropped, it signals divergence and rising slack.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Market Reaction:</strong> Typically, the algorithmic knee-jerk moves yields higher on the headline NFP beat. Within 3 minutes, macro desks scrutinize the unemployment rate tick-up and Average Hourly Earnings (AHE). If wage growth cooled and unemployment crossed key thresholds (e.g. Sahm Rule alert), front-end 2Y yields will reverse gains and drop (bullish rates), while the 10Y yield may rally as growth expectations moderate.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"What is the Taylor Rule, and how do rates traders use it to evaluate whether the Fed is behind the curve?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> John Taylor's 1993 rule prescribes the nominal policy rate ($i$) based on the equilibrium real rate ($r^*$), target inflation ($\pi^* = 2\%$), the inflation gap ($\pi - \pi^*$), and the output gap ($Y - Y^*$):</p>
+                    <div class="formula-block">
+                        $$i_t = r^* + \pi_t + 0.5(\pi_t - \pi^*) + 0.5(Y_t - Y_t^*)$$
+                    </div>
+                    <p>If $r^* = 1.0\%$, inflation is $3.5\%$, and output gap is $+1.0\%$:<br>
+                    $i = 1.0 + 3.5 + 0.5(3.5 - 2.0) + 0.5(1.0) = 4.5 + 0.75 + 0.5 = 5.75\%$.</p>
+                    <div class="qa-key-point">
+                        <strong>Trading Implication:</strong> If the actual Fed Funds rate is at $4.75\%$ while the Taylor Rule dictates $5.75\%$, the Fed is $100\text{ bps}$ "behind the curve". Rates traders anticipate future hawkish surprises, pricing upward shifts in SOFR futures and front-end Treasury yields.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"Walk me through the mechanics of a 'Bear Flattener' vs a 'Bull Steepener' across the macro cycle."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The yield curve changes slope depending on whether rate moves are driven by policy hikes or cuts:</p>
+                    <ul>
+                        <li><strong>Bear Flattener (Late Cycle / Overheating):</strong> Yields rise across the board ("Bear"), but the <strong>short end (2Y) rises significantly faster</strong> than the long end (10Y/30Y). Why? The central bank is aggressively hiking rates to crush inflation. Long-term yields are constrained because investors expect the hikes to cause an eventual growth slowdown. Curve flattens or inverts (2s10s &lt; 0).</li>
+                        <li><strong>Bull Steepener (Early Recession / Bust):</strong> Yields fall across the board ("Bull"), but the <strong>short end plunges far faster</strong> than the long end. Why? The central bank is slashing rates to inject liquidity. The long end falls less because of term premia and expectations of eventual economic recovery.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Cheat Sheet:</strong> "Bears hike, Bulls cut." Steepeners occur when the front end falls more (bull) or long end rises more (bear). Flatteners occur when front end rises more (bear) or long end falls more (bull).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"Explain the Sahm Rule and why macro desks watch it closely."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Formulated by former Fed economist Claudia Sahm, the rule states that a recession has historically begun when the <strong>3-month moving average of the national unemployment rate ($U3$) rises by 0.50 percentage points or more relative to its minimum over the previous 12 months</strong>:</p>
+                    <div class="formula-block">
+                        $$\text{Sahm Indicator} = \text{SMA}_3(u_t) - \min_{t-12 \le s \le t}(u_s) \ge 0.50\%$$
+                    </div>
+                    <p>Unlike financial indicators (like yield curve inversions) which can lead recessions by 12–24 months with uncertain timing, the Sahm rule is a <em>real-time coincident confirmation</em> with zero historical false positives since 1970.</p>
+                    <div class="qa-key-point">
+                        <strong>Market Signal:</strong> When the Sahm Rule triggers, rates desks immediately price emergency rate cuts, swap spreads widen, and 2s10s curves steepen aggressively as credit risk premia surge.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"Why do commodity price shocks present a dilemma for central bank reaction functions?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> A negative supply shock (e.g. oil embargo) acts as an <em>external tax on consumers</em>. It simultaneously <strong>pushes inflation up</strong> while <strong>depressing real disposable income and GDP growth</strong> (Stagflationary shock).</p>
+                    <ul>
+                        <li>If the central bank hikes to suppress headline inflation, it exacerbates the economic contraction.</li>
+                        <li>If the central bank cuts to support growth, it risks de-anchoring inflation expectations ($\pi^e$), leading to second-round wage-price spirals.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Action:</strong> Central banks typically "look through" temporary commodity spikes provided <em>long-term inflation expectations remain anchored</em>. Traders watch 5y5y forward inflation swaps to see if credibility is slipping.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flashcard Summary Cheat Sheet -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Macro & Rates Strategy Fast-Reference Matrix</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Economic Release</th>
+                                <th>Frequency / Time (ET)</th>
+                                <th>Hawkish Surprise</th>
+                                <th>Dovish Surprise</th>
+                                <th>Curve Bias</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Non-Farm Payrolls & AHE</strong></td>
+                                <td>1st Fri, 8:30 AM</td>
+                                <td>Jobs &gt; Cons, Wages &gt; 0.3% MoM</td>
+                                <td>Jobs &lt; Cons, Wages &lt; 0.2% MoM</td>
+                                <td>Hawkish: Bear Flat | Dovish: Bull Steep</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Consumer Price Index (CPI)</strong></td>
+                                <td>Mid-month, 8:30 AM</td>
+                                <td>Core MoM &gt; 0.3%</td>
+                                <td>Core MoM &lt; 0.2%</td>
+                                <td>Hawkish: 2Y sells off | Dovish: 2Y rallies</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISM Manufacturing PMI</strong></td>
+                                <td>1st business day, 10:00 AM</td>
+                                <td>PMI &gt; 50 + New Orders surge</td>
+                                <td>PMI &lt; 48 + Employment drops</td>
+                                <td>Hawkish: Bear Steep/Flat | Dovish: Bull Steep</td>
+                            </tr>
+                            <tr>
+                                <td><strong>University of Michigan 5Y Inflation</strong></td>
+                                <td>Bi-weekly Fri, 10:00 AM</td>
+                                <td>Inflation expectations &gt; 3.2%</td>
+                                <td>Inflation expectations &lt; 2.8%</td>
+                                <td>Hawkish: Real rates rise, Breakevens jump</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Employment Cost Index (ECI)</strong></td>
+                                <td>Quarterly, 8:30 AM</td>
+                                <td>ECI &gt; 1.1% QoQ</td>
+                                <td>ECI &lt; 0.8% QoQ</td>
+                                <td>Direct proxy for sticky service inflation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 01: Macro Framework · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                // Globe sphere outline
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Parallels
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                // Meridians rotating
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    // Resize triggered charts in newly opened tab
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 1: GDP & Output Gap Simulator & Chart ===== */
+        (function() {
+            const inGrowth = document.getElementById('simActualGrowth');
+            const inTrend = document.getElementById('simPotentialGrowth');
+            const inInitGap = document.getElementById('simInitGap');
+            const inBaseU = document.getElementById('simBaseU');
+
+            const valGrowth = document.getElementById('valGrowth');
+            const valTrend = document.getElementById('valTrend');
+            const valInitGap = document.getElementById('valInitGap');
+            const valBaseU = document.getElementById('valBaseU');
+
+            const kpiGap = document.getElementById('kpiGap');
+            const kpiGapStatus = document.getElementById('kpiGapStatus');
+            const kpiDeltaU = document.getElementById('kpiDeltaU');
+            const kpiEndU = document.getElementById('kpiEndU');
+            const kpiPolicy = document.getElementById('kpiPolicy');
+            const kpiCurve = document.getElementById('kpiCurve');
+
+            const canvas = document.getElementById('chartGdp');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudGdp');
+
+            let chartData = [];
+
+            function compute() {
+                const g = parseFloat(inGrowth.value);
+                const gStar = parseFloat(inTrend.value);
+                const initGap = parseFloat(inInitGap.value);
+                const u0 = parseFloat(inBaseU.value);
+
+                valGrowth.textContent = g.toFixed(1) + '%';
+                valTrend.textContent = gStar.toFixed(1) + '%';
+                valInitGap.textContent = (initGap >= 0 ? '+' : '') + initGap.toFixed(2) + '%';
+                valBaseU.textContent = u0.toFixed(1) + '%';
+
+                // Okun's coefficient gamma = 0.45
+                const gamma = 0.45;
+                const deltaU_1Y = -gamma * (g - gStar);
+                const u_1Y = Math.max(2.0, u0 + deltaU_1Y);
+
+                // 1Y output gap change
+                const gap_1Y = initGap + (g - gStar);
+
+                kpiGap.textContent = (gap_1Y >= 0 ? '+' : '') + gap_1Y.toFixed(2) + '%';
+                if (gap_1Y > 0.75) {
+                    kpiGapStatus.textContent = 'Severe Overheating';
+                    kpiPolicy.textContent = 'Aggressive Hikes';
+                    kpiCurve.textContent = 'Inversion Risk / Bear Flat';
+                } else if (gap_1Y >= 0) {
+                    kpiGapStatus.textContent = 'Above Trend / Capacity Strain';
+                    kpiPolicy.textContent = 'Hawkish Bias';
+                    kpiCurve.textContent = 'Bear Flattener';
+                } else if (gap_1Y > -1.5) {
+                    kpiGapStatus.textContent = 'Mild Slack';
+                    kpiPolicy.textContent = 'Neutral / Patient';
+                    kpiCurve.textContent = 'Range-bound / Steady';
+                } else {
+                    kpiGapStatus.textContent = 'Large Economic Slack';
+                    kpiPolicy.textContent = 'Dovish Rate Cuts';
+                    kpiCurve.textContent = 'Bull Steepener';
+                }
+
+                kpiDeltaU.textContent = (deltaU_1Y >= 0 ? '+' : '') + deltaU_1Y.toFixed(2) + '%';
+                kpiEndU.textContent = 'Projected u: ' + u_1Y.toFixed(2) + '%';
+
+                // Build 5-Year Trajectory
+                chartData = [];
+                let curGap = initGap;
+                let curU = u0;
+                for (let yr = 0; yr <= 5; yr++) {
+                    chartData.push({
+                        year: 'Y' + yr,
+                        yrNum: yr,
+                        gap: curGap,
+                        u: curU
+                    });
+                    // Convergence dynamics
+                    curGap = curGap + (g - gStar) * 0.85;
+                    curU = Math.max(2.5, Math.min(11.0, curU - gamma * (g - gStar) * 0.85));
+                }
+
+                drawChart();
+            }
+
+            function drawChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                // Min/Max for Gap (-6 to +6) and U (2 to 10)
+                const minGap = -5, maxGap = 5;
+                const minU = 2, maxU = 10;
+
+                // Zero line for Gap
+                const zeroY = padT + plotH * (maxGap / (maxGap - minGap));
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Axes & Grid
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let g = minGap; g <= maxGap; g += 2.5) {
+                    const y = padT + plotH * ((maxGap - g) / (maxGap - minGap));
+                    ctx.fillText((g >= 0 ? '+' : '') + g.toFixed(1) + '%', padL - 8, y + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsGap = [];
+                const ptsU = [];
+
+                chartData.forEach((d, i) => {
+                    const x = padL + (i / (chartData.length - 1)) * plotW;
+                    const yGap = padT + plotH * ((maxGap - d.gap) / (maxGap - minGap));
+                    const yU = padT + plotH * ((maxU - d.u) / (maxU - minU));
+                    ptsGap.push({x, y: yGap, val: d.gap});
+                    ptsU.push({x, y: yU, val: d.u});
+                    ctx.fillText(d.year, x, H - padB + 18);
+                });
+
+                // Draw Gap Line (Navy)
+                ctx.beginPath();
+                ptsGap.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsGap.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#1a3a6b';
+                    ctx.fill();
+                });
+
+                // Draw Unemployment Line (Red)
+                ctx.beginPath();
+                ptsU.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsU.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#a63d3d';
+                    ctx.fill();
+                });
+            }
+
+            // Hover Tracking & HUD
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(chartData.length - 1, Math.max(0, Math.round(ratio * (chartData.length - 1))));
+                const item = chartData[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (chartData.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '50px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Horizon:</span> <span class="hud-val">${item.year}</span></div>
+                    <div class="hud-row"><span class="hud-label">Output Gap:</span> <span class="hud-val" style="color:#1a3a6b">${(item.gap >= 0 ? '+' : '') + item.gap.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Unemployment:</span> <span class="hud-val" style="color:#a63d3d">${item.u.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inGrowth, inTrend, inInitGap, inBaseU].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetGdp').addEventListener('click', () => {
+                inGrowth.value = "3.0";
+                inTrend.value = "2.0";
+                inInitGap.value = "-0.5";
+                inBaseU.value = "4.1";
+                compute();
+            });
+
+            window.addEventListener('resize', drawChart);
+            compute();
+        })();
+
+        /* ===== Tab 2: Phillips Curve Simulator & Canvas ===== */
+        (function() {
+            const inPiE = document.getElementById('simPiE');
+            const inNairu = document.getElementById('simNairu');
+            const inShock = document.getElementById('simShock');
+            const inBeta = document.getElementById('simBeta');
+            const inCurrU = document.getElementById('simCurrU');
+
+            const valPiE = document.getElementById('valPiE');
+            const valNairu = document.getElementById('valNairu');
+            const valShock = document.getElementById('valShock');
+            const valBeta = document.getElementById('valBeta');
+            const valCurrU = document.getElementById('valCurrU');
+
+            const kpiInf = document.getElementById('kpiInf');
+            const kpiInfDelta = document.getElementById('kpiInfDelta');
+            const kpiSlack = document.getElementById('kpiSlack');
+            const kpiShockVal = document.getElementById('kpiShockVal');
+            const kpiFedAction = document.getElementById('kpiFedAction');
+
+            const canvas = document.getElementById('chartPhillips');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudPhillips');
+
+            function compute() {
+                const piE = parseFloat(inPiE.value);
+                const nairu = parseFloat(inNairu.value);
+                const shock = parseFloat(inShock.value);
+                const beta = parseFloat(inBeta.value);
+                const currU = parseFloat(inCurrU.value);
+
+                valPiE.textContent = piE.toFixed(1) + '%';
+                valNairu.textContent = nairu.toFixed(1) + '%';
+                valShock.textContent = (shock >= 0 ? '+' : '') + shock.toFixed(1) + '%';
+                valBeta.textContent = beta.toFixed(2);
+                valCurrU.textContent = currU.toFixed(1) + '%';
+
+                // pi = piE - beta*(u - nairu) + shock
+                const slack = currU - nairu;
+                const pi = piE - beta * slack + shock;
+
+                kpiInf.textContent = pi.toFixed(2) + '%';
+                const diffTarget = pi - 2.0;
+                kpiInfDelta.textContent = (diffTarget >= 0 ? '+' : '') + diffTarget.toFixed(2) + '% vs 2.0% Target';
+
+                kpiSlack.textContent = (slack >= 0 ? '+' : '') + slack.toFixed(2) + '%';
+                kpiShockVal.textContent = (shock >= 0 ? '+' : '') + shock.toFixed(2) + '%';
+
+                if (pi > 3.0) {
+                    kpiFedAction.textContent = 'Aggressive Tightening';
+                } else if (pi > 2.2) {
+                    kpiFedAction.textContent = 'Restrictive Stance';
+                } else if (pi < 1.5) {
+                    kpiFedAction.textContent = 'Accommodative Cuts';
+                } else {
+                    kpiFedAction.textContent = 'Neutral / Target Achieved';
+                }
+
+                drawChart(piE, nairu, shock, beta, currU, pi);
+            }
+
+            function drawChart(piE, nairu, shock, beta, currU, currentPi) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 30, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minU = 2.0, maxU = 9.0;
+                const minPi = 0.0, maxPi = 7.0;
+
+                // Axes
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                // Axis Labels
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let p = minPi; p <= maxPi; p += 1.5) {
+                    const y = padT + plotH * ((maxPi - p) / (maxPi - minPi));
+                    ctx.fillText(p.toFixed(1) + '%', padL - 8, y + 3);
+                }
+
+                ctx.textAlign = 'center';
+                for (let u = minU; u <= maxU; u += 1.0) {
+                    const x = padL + plotW * ((u - minU) / (maxU - minU));
+                    ctx.fillText(u.toFixed(0) + '%', x, H - padB + 16);
+                }
+
+                // Vertical LRPC at NAIRU
+                const nairuX = padL + plotW * ((nairu - minU) / (maxU - minU));
+                ctx.beginPath();
+                ctx.moveTo(nairuX, padT);
+                ctx.lineTo(nairuX, padT + plotH);
+                ctx.strokeStyle = '#627590';
+                ctx.lineWidth = 1.8;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillText('LRPC (NAIRU)', nairuX, padT - 8);
+
+                // SRPC Curve
+                ctx.beginPath();
+                for (let u = minU; u <= maxU; u += 0.1) {
+                    const piVal = piE - beta * (u - nairu) + shock;
+                    const x = padL + plotW * ((u - minU) / (maxU - minU));
+                    const y = padT + plotH * ((maxPi - piVal) / (maxPi - minPi));
+                    if (u === minU) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Operating Point (Current U, Pi)
+                const ptX = padL + plotW * ((currU - minU) / (maxU - minU));
+                const ptY = padT + plotH * ((maxPi - currentPi) / (maxPi - minPi));
+
+                ctx.beginPath();
+                ctx.arc(ptX, ptY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#a63d3d';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 30;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const minU = 2.0, maxU = 9.0;
+                const uHover = minU + ((mouseX - padL) / plotW) * (maxU - minU);
+                const piE = parseFloat(inPiE.value);
+                const nairu = parseFloat(inNairu.value);
+                const shock = parseFloat(inShock.value);
+                const beta = parseFloat(inBeta.value);
+                const piHover = piE - beta * (uHover - nairu) + shock;
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Unemployment:</span> <span class="hud-val">${uHover.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Implied Inflation:</span> <span class="hud-val" style="color:#1a3a6b">${piHover.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inPiE, inNairu, inShock, inBeta, inCurrU].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetInf').addEventListener('click', () => {
+                inPiE.value = "2.2";
+                inNairu.value = "4.2";
+                inShock.value = "0.0";
+                inBeta.value = "0.5";
+                inCurrU.value = "3.8";
+                compute();
+            });
+
+            window.addEventListener('resize', compute);
+            compute();
+        })();
+
+        /* ===== Tab 3: Labor Market & Beveridge Curve ===== */
+        (function() {
+            const inU3 = document.getElementById('labU3');
+            const inQuits = document.getElementById('labQuits');
+            const inVU = document.getElementById('labVU');
+            const inLFPR = document.getElementById('labLFPR');
+
+            const valU3 = document.getElementById('valLabU3');
+            const valQuits = document.getElementById('valLabQuits');
+            const valVU = document.getElementById('valLabVU');
+            const valLFPR = document.getElementById('valLabLFPR');
+
+            const kpiTightness = document.getElementById('kpiTightness');
+            const kpiTightnessDesc = document.getElementById('kpiTightnessDesc');
+            const kpiWage = document.getElementById('kpiWage');
+            const kpiSupercore = document.getElementById('kpiSupercore');
+            const kpiRatesImp = document.getElementById('kpiRatesImp');
+
+            const canvas = document.getElementById('chartBeveridge');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudBeveridge');
+
+            function compute() {
+                const u = parseFloat(inU3.value);
+                const q = parseFloat(inQuits.value);
+                const vu = parseFloat(inVU.value);
+                const lfpr = parseFloat(inLFPR.value);
+
+                valU3.textContent = u.toFixed(1) + '%';
+                valQuits.textContent = q.toFixed(1) + '%';
+                valVU.textContent = vu.toFixed(2);
+                valLFPR.textContent = lfpr.toFixed(1) + '%';
+
+                // Composite score (0 to 100)
+                // Normalize: U3 lower is tighter; Quits higher is tighter; VU higher is tighter; LFPR lower is tighter
+                const scoreU = Math.max(0, Math.min(30, (5.5 - u) * 15));
+                const scoreQ = Math.max(0, Math.min(30, (q - 1.8) * 20));
+                const scoreVU = Math.max(0, Math.min(30, (vu - 0.7) * 25));
+                const scoreLFPR = Math.max(0, Math.min(10, (84.0 - lfpr) * 5 + 5));
+
+                const composite = Math.round(scoreU + scoreQ + scoreVU + scoreLFPR);
+                kpiTightness.textContent = composite + ' / 100';
+
+                // Wage projection heuristic
+                const wage = 2.0 + (q * 0.5) + (vu * 0.7) - ((u - 4.0) * 0.35);
+                kpiWage.textContent = wage.toFixed(2) + '%';
+
+                const supercoreImpact = (wage - 3.5) * 0.45;
+                kpiSupercore.textContent = (supercoreImpact >= 0 ? '+' : '') + supercoreImpact.toFixed(2) + '%';
+
+                if (composite > 70) {
+                    kpiTightnessDesc.textContent = 'Severe Shortage / Overheated';
+                    kpiRatesImp.textContent = 'Hike / Front-end selloff';
+                } else if (composite >= 45) {
+                    kpiTightnessDesc.textContent = 'Balanced / Near Neutral';
+                    kpiRatesImp.textContent = 'Neutral / Range-bound';
+                } else {
+                    kpiTightnessDesc.textContent = 'Loose Labor Slack';
+                    kpiRatesImp.textContent = 'Rate Cuts / Bull Steepening';
+                }
+
+                drawBeveridge(u, vu);
+            }
+
+            function drawBeveridge(uVal, vuVal) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 30, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minU = 2.5, maxU = 8.5;
+                const minV = 1.0, maxV = 8.5;
+
+                // Axes
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let v = 2; v <= 8; v += 2) {
+                    const y = padT + plotH * ((maxV - v) / (maxV - minV));
+                    ctx.fillText(v.toFixed(0) + '%', padL - 8, y + 3);
+                }
+
+                ctx.textAlign = 'center';
+                for (let u = 3; u <= 8; u += 1) {
+                    const x = padL + plotW * ((u - minU) / (maxU - minU));
+                    ctx.fillText(u.toFixed(0) + '%', x, H - padB + 16);
+                }
+
+                // Theoretical Hyperbolic Beveridge Curve: V = C / u
+                ctx.beginPath();
+                for (let u = minU; u <= maxU; u += 0.1) {
+                    const v = 16.0 / u;
+                    const x = padL + plotW * ((u - minU) / (maxU - minU));
+                    const y = padT + plotH * ((maxV - v) / (maxV - minV));
+                    if (u === minU) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Plot operating point
+                const currentV = uVal * vuVal;
+                const ptX = padL + plotW * ((uVal - minU) / (maxU - minU));
+                const ptY = padT + plotH * ((maxV - currentV) / (maxV - minV));
+
+                ctx.beginPath();
+                ctx.arc(ptX, ptY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#a63d3d';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 30;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const minU = 2.5, maxU = 8.5;
+                const uHover = minU + ((mouseX - padL) / plotW) * (maxU - minU);
+                const vHover = 16.0 / uHover;
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Unemployment ($u$):</span> <span class="hud-val">${uHover.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Job Vacancies ($V$):</span> <span class="hud-val" style="color:#1a3a6b">${vHover.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inU3, inQuits, inVU, inLFPR].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetLabor').addEventListener('click', () => {
+                inU3.value = "4.0";
+                inQuits.value = "2.3";
+                inVU.value = "1.2";
+                inLFPR.value = "83.5";
+                compute();
+            });
+
+            window.addEventListener('resize', compute);
+            compute();
+        })();
+
+        /* ===== Tab 4: Macro Cycle Clock ===== */
+        (function() {
+            const inGrowth = document.getElementById('clockGrowth');
+            const inInf = document.getElementById('clockInflation');
+
+            const valGrowth = document.getElementById('valClockGrowth');
+            const valInf = document.getElementById('valClockInf');
+
+            const kpiRegime = document.getElementById('kpiRegimeName');
+            const kpiRegimeDesc = document.getElementById('kpiRegimeDesc');
+            const kpiDuration = document.getElementById('kpiDuration');
+            const kpiCurveTrade = document.getElementById('kpiCurveTrade');
+            const kpiAssetTilt = document.getElementById('kpiAssetTilt');
+
+            const canvas = document.getElementById('chartClock');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudClock');
+
+            const q1 = document.getElementById('quad-1');
+            const q2 = document.getElementById('quad-2');
+            const q3 = document.getElementById('quad-3');
+            const q4 = document.getElementById('quad-4');
+
+            function compute() {
+                const g = parseFloat(inGrowth.value);
+                const pi = parseFloat(inInf.value);
+
+                valGrowth.textContent = (g >= 0 ? '+' : '') + g.toFixed(1);
+                valInf.textContent = (pi >= 0 ? '+' : '') + pi.toFixed(1);
+
+                [q1, q2, q3, q4].forEach(el => el.classList.remove('active-quad'));
+
+                if (g >= 0 && pi >= 0) {
+                    // Quad 1: Reflation
+                    q1.classList.add('active-quad');
+                    kpiRegime.textContent = 'Reflation (Phase 1)';
+                    kpiRegimeDesc.textContent = 'Accelerating Growth & Prices';
+                    kpiDuration.textContent = 'Underweight / Short';
+                    kpiCurveTrade.textContent = 'Bear Steepener $\\rightarrow$ Bear Flat';
+                    kpiAssetTilt.textContent = 'Cyclical Equities + Commodities';
+                } else if (g < 0 && pi >= 0) {
+                    // Quad 2: Overheating / Stagflation
+                    q2.classList.add('active-quad');
+                    kpiRegime.textContent = 'Stagflation / Late (Phase 2)';
+                    kpiRegimeDesc.textContent = 'Decelerating Growth, High Inflation';
+                    kpiDuration.textContent = 'Short Front End';
+                    kpiCurveTrade.textContent = 'Inversion / Bear Flattener';
+                    kpiAssetTilt.textContent = 'Cash + Energy + TIPS';
+                } else if (g < 0 && pi < 0) {
+                    // Quad 3: Contraction / Deflation
+                    q3.classList.add('active-quad');
+                    kpiRegime.textContent = 'Contraction / Bust (Phase 3)';
+                    kpiRegimeDesc.textContent = 'Falling Output & Disinflation';
+                    kpiDuration.textContent = 'Maximum Long Duration';
+                    kpiCurveTrade.textContent = 'Bull Steepener (Steepeners on)';
+                    kpiAssetTilt.textContent = 'Sovereign Bonds + Defensives';
+                } else {
+                    // Quad 4: Goldilocks
+                    q4.classList.add('active-quad');
+                    kpiRegime.textContent = 'Goldilocks (Phase 4)';
+                    kpiRegimeDesc.textContent = 'Rising Growth & Falling Inflation';
+                    kpiDuration.textContent = 'Neutral / Carry Focus';
+                    kpiCurveTrade.textContent = 'Curve Stable / Mild Steep';
+                    kpiAssetTilt.textContent = 'Quality Tech + Growth Equities';
+                }
+
+                drawClock(g, pi);
+            }
+
+            function drawClock(g, pi) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const cx = W / 2;
+                const cy = H / 2;
+
+                // Quadrant Dividers
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(40, cy);
+                ctx.lineTo(W - 40, cy);
+                ctx.moveTo(cx, 30);
+                ctx.lineTo(cx, H - 30);
+                ctx.stroke();
+
+                // Quadrant Labels
+                ctx.font = '11px Inter';
+                ctx.fillStyle = '#627590';
+                ctx.textAlign = 'right';
+                ctx.fillText('Growth Momentum (+)', W - 45, cy - 8);
+                ctx.textAlign = 'left';
+                ctx.fillText('Growth Momentum (-)', 45, cy - 8);
+
+                ctx.textAlign = 'center';
+                ctx.fillText('Inflation (+)', cx, 24);
+                ctx.fillText('Inflation (-)', cx, H - 14);
+
+                // Operating Point
+                const scaleX = (W - 120) / 6.0;
+                const scaleY = (H - 90) / 6.0;
+
+                const ptX = cx + g * scaleX;
+                const ptY = cy - pi * scaleY; // Invert for canvas Y
+
+                // Pulsing outer halo
+                ctx.beginPath();
+                ctx.arc(ptX, ptY, 14, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(26, 58, 107, 0.15)';
+                ctx.fill();
+
+                // Core dot
+                ctx.beginPath();
+                ctx.arc(ptX, ptY, 7, 0, Math.PI * 2);
+                ctx.fillStyle = '#1a3a6b';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Vector trail towards clockwise cyclical progression
+                ctx.beginPath();
+                ctx.moveTo(ptX, ptY);
+                // Clockwise tangent
+                const angle = Math.atan2(ptY - cy, ptX - cx) + Math.PI / 2;
+                const vecLen = 28;
+                ctx.lineTo(ptX + Math.cos(angle) * vecLen, ptY + Math.sin(angle) * vecLen);
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+
+                const scaleX = (rect.width - 120) / 6.0;
+                const scaleY = (rect.height - 90) / 6.0;
+
+                const gCoord = (mouseX - cx) / scaleX;
+                const piCoord = (cy - mouseY) / scaleY;
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = (mouseY - 20) + 'px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Growth:</span> <span class="hud-val">${(gCoord >= 0 ? '+' : '') + gCoord.toFixed(2)}</span></div>
+                    <div class="hud-row"><span class="hud-label">Inflation:</span> <span class="hud-val">${(piCoord >= 0 ? '+' : '') + piCoord.toFixed(2)}</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inGrowth, inInf].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnPresetReflation').addEventListener('click', () => {
+                inGrowth.value = "1.5"; inInf.value = "1.2"; compute();
+            });
+            document.getElementById('btnPresetOverheating').addEventListener('click', () => {
+                inGrowth.value = "-1.0"; inInf.value = "1.8"; compute();
+            });
+            document.getElementById('btnPresetRecession').addEventListener('click', () => {
+                inGrowth.value = "-1.8"; inInf.value = "-1.5"; compute();
+            });
+            document.getElementById('btnPresetGoldilocks').addEventListener('click', () => {
+                inGrowth.value = "1.6"; inInf.value = "-1.0"; compute();
+            });
+
+            window.addEventListener('resize', compute);
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

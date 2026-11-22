@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yield Curve Trades — Macro & Rates Academy</title>
+    <meta name="description" content="Steepeners, flatteners, butterflies, barbell vs. bullet, DV01 neutrality, carry & roll-down, and PCA curve dynamics for institutional rates trading.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 03</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Yield Curve Trades</h1>
+            <p class="subtitle">Steepeners, flatteners, butterfly curvature trades, barbell vs. bullet strategies, and DV01 duration-neutral execution across the sovereign term structure.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-anatomy">1. Curve Anatomy & The 4 Shifts</button>
+            <button class="nav-tab" data-tab="tab-steepeners">2. Steepeners & Flatteners</button>
+            <button class="nav-tab" data-tab="tab-butterflies">3. Butterfly Trades & Curvature</button>
+            <button class="nav-tab" data-tab="tab-barbell">4. Barbell vs. Bullet</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: Curve Anatomy & The 4 Shifts -->
+        <div class="tab-panel active" id="tab-anatomy">
+            <div class="card">
+                <h2>📈 Principal Component Decomposition of the Yield Curve</h2>
+                <p>Empirical studies across global fixed income markets show that ~99% of all yield curve movements can be decomposed into three orthogonal statistical factors via <strong>Principal Component Analysis (PCA)</strong>:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PCA Factor</th>
+                                <th>Variance Explained</th>
+                                <th>Description</th>
+                                <th>Desk Trade Expression</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PC1: Level (Parallel Shift)</strong></td>
+                                <td>~75% – 85%</td>
+                                <td>All yields along the curve shift upward or downward by roughly equal amounts. Driven by broad inflation shocks and global interest rate cycles.</td>
+                                <td>Outright Duration (Long / Short bond futures or 10Y benchmarks).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PC2: Slope (Steepening / Flattening)</strong></td>
+                                <td>~12% – 18%</td>
+                                <td>The front end moves in the opposite direction or with much greater magnitude than the long end. Driven by central bank policy stance relative to long-run potential growth.</td>
+                                <td>Duration-neutral curve trades: <strong>2s10s, 5s30s, 2s30s</strong> curve spreads.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PC3: Curvature (Twist / Butterfly)</strong></td>
+                                <td>~3% – 5%</td>
+                                <td>The belly (3Y–7Y) of the curve moves relative to the outer wings (2Y and 10Y/30Y). Driven by uncertainty over terminal rates and timing of policy turning points.</td>
+                                <td><strong>Butterflies:</strong> 2s5s10s, 3s7s10s, 5s10s30s.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The Four Canonical Yield Curve Shifts</h3>
+                <p>Every macro rates trade is classified into one of four regimes depending on whether yields are rising (Bear) or falling (Bull), and whether the spread is expanding (Steepener) or contracting (Flattener):</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Regime</th>
+                                <th>Yield Move Direction</th>
+                                <th>Spread Behavior ($10\text{Y} - 2\text{Y}$)</th>
+                                <th>Underlying Macro Catalyst</th>
+                                <th>Optimal Trade Expression</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Bull Steepener</strong></td>
+                                <td>Yields FALL ($\Delta y < 0$)</td>
+                                <td>Spread widens ($\Delta y_{2\text{Y}} \ll \Delta y_{10\text{Y}} < 0$)</td>
+                                <td>Recession onset, emergency central bank cuts, banking distress (flight to front-end cash).</td>
+                                <td><strong>Long 2Y / Short 10Y</strong> (DV01-neutral). Front end surges in price as rate cuts are aggressively priced.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bear Steepener</strong></td>
+                                <td>Yields RISE ($\Delta y > 0$)</td>
+                                <td>Spread widens ($\Delta y_{10\text{Y}} \gg \Delta y_{2\text{Y}} > 0$)</td>
+                                <td>Fiscal expansion / debt supply deluge, rising term premia, re-accelerating long-run inflation.</td>
+                                <td><strong>Long 2Y / Short 10Y or 30Y</strong>. Long end cheapens under sovereign bond auction indigestion.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bull Flattener</strong></td>
+                                <td>Yields FALL ($\Delta y < 0$)</td>
+                                <td>Spread narrows ($\Delta y_{10\text{Y}} \ll \Delta y_{2\text{Y}} < 0$)</td>
+                                <td>Aggressive disinflation, global growth slowdown, flight to safety into long-duration paper.</td>
+                                <td><strong>Short 2Y / Long 10Y or 30Y</strong>. Long bonds rally aggressively as terminal growth expectations crater.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bear Flattener</strong></td>
+                                <td>Yields RISE ($\Delta y > 0$)</td>
+                                <td>Spread narrows ($\Delta y_{2\text{Y}} \gg \Delta y_{10\text{Y}} > 0$)</td>
+                                <td>Central bank aggressive rate hike cycle to combat inflation. Curve frequently inverts ($2\text{s}10\text{s} < 0$).</td>
+                                <td><strong>Short 2Y / Long 10Y</strong>. Front end sells off violently as rate hikes are pulled forward.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>The Golden Rule of Curve Trading:</strong> "Bulls cut rates, Bears hike rates. Steepeners occur when the front end falls more (Bull) or long end rises more (Bear). Flatteners occur when the front end rises more (Bear) or long end falls more (Bull)."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Steepeners & Flatteners -->
+        <div class="tab-panel" id="tab-steepeners">
+            <div class="card">
+                <h2>⚖️ Duration-Neutral Curve Construction & DV01 Weighting</h2>
+                <p>A fatal beginner error is trading equal notional amounts on both legs (e.g. Long $10M 2Y vs. Short $10M 10Y). A 10Y Treasury note has roughly 4 times the interest rate sensitivity (DV01) of a 2Y note. An equal-notional trade is simply an outright directional duration bet.</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">DV01 Definition & The Hedge Ratio</div>
+                    $$\text{DV01} = \left| \frac{\Delta P}{\Delta y (1 \text{ bp})} \right| \approx P \times \text{ModDuration} \times 0.0001$$
+                    $$\text{Hedge Ratio} = \frac{\text{DV01}_{2\text{Y}}}{\text{DV01}_{10\text{Y}}} \quad \implies \quad \text{Notional}_{2\text{Y}} = \text{Notional}_{10\text{Y}} \times \frac{\text{DV01}_{10\text{Y}}}{\text{DV01}_{2\text{Y}}}$$
+                </div>
+
+                <h3>Carry & Roll-Down: The Cost of Holding Curve Trades</h3>
+                <p>When you hold a curve position, your P&L is not just the shift in the curve. You must account for:</p>
+                <ul>
+                    <li><strong>Carry:</strong> The net coupon income received on the long leg minus the repo borrowing cost paid to fund the short leg.</li>
+                    <li><strong>Roll-Down:</strong> The price gain resulting from bonds shortening in maturity along an upward-sloping or inverted yield curve over time.</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div><strong>The Negative Carry Trap:</strong> Entering a steepener when the curve is deeply inverted entails substantial negative carry. The front end yields 5.25% while the 10Y yields 4.25%, meaning your long 2Y leg yields more, but shorting 10Y forces you to pay repo while borrowing at the inverted short-term rate. If the curve fails to steepen quickly, carry and roll-down bleed your P&L.</div>
+                </div>
+            </div>
+
+            <!-- Interactive 2s10s Simulator -->
+            <div class="card">
+                <h2>🧮 Interactive 2s10s Curve Trade Builder & P&L Simulator</h2>
+                <p>Configure a duration-neutral 2s10s steepener or flattener, apply yield shifts to each leg, and calculate the exact required notionals, DV01 neutrality, and net dollar P&L.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="crvTradeType">Strategy Direction: <span class="val-badge" id="valTradeType">Steepener</span></label>
+                        <select id="crvTradeType">
+                            <option value="steepener">Steepener (Long 2Y / Short 10Y)</option>
+                            <option value="flattener">Flattener (Short 2Y / Long 10Y)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="crvTargetDV01">Target Leg DV01 ($): <span class="val-badge" id="valTargetDV01">$50,000</span></label>
+                        <input type="range" id="crvTargetDV01" min="10000" max="200000" step="5000" value="50000">
+                    </div>
+                    <div class="control-group">
+                        <label for="crvShift2Y">2Y Yield Move: <span class="val-badge" id="valShift2Y">-30 bps</span></label>
+                        <input type="range" id="crvShift2Y" min="-100" max="100" step="5" value="-30">
+                    </div>
+                    <div class="control-group">
+                        <label for="crvShift10Y">10Y Yield Move: <span class="val-badge" id="valShift10Y">-10 bps</span></label>
+                        <input type="range" id="crvShift10Y" min="-100" max="100" step="5" value="-10">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">2Y Leg Notional</div>
+                        <div class="kpi-value" id="kpiNotional2Y">$270.3M</div>
+                        <div class="kpi-sub">DV01 = $1.85 / $10k face</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">10Y Leg Notional</div>
+                        <div class="kpi-value" id="kpiNotional10Y">$62.5M</div>
+                        <div class="kpi-sub">DV01 = $8.00 / $10k face</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Net 2s10s Spread Change</div>
+                        <div class="kpi-value" id="kpiSpreadChange">+20 bps</div>
+                        <div class="kpi-sub" id="kpiSpreadDesc">Steepening Move</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Total Trade P&L</div>
+                        <div class="kpi-value" id="kpiTotalPnL">+$1,000,000</div>
+                        <div class="kpi-sub" id="kpiPnLStatus">Profitable Trade</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Yield Curve Profile: Baseline vs. Shifted Curve</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#627590;"></div> Baseline Curve</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Shifted Curve</div>
+                        </div>
+                    </div>
+                    <canvas id="chartCurve"></canvas>
+                    <div class="chart-hud" id="hudCurve"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetCurve">Reinit Baseline Parameters</button>
+                    <button class="btn btn-secondary" id="btnPresetBullSteep">Bull Steepener Preset</button>
+                    <button class="btn btn-secondary" id="btnPresetBearFlat">Bear Flattener Preset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Butterfly Trades & Curvature -->
+        <div class="tab-panel" id="tab-butterflies">
+            <div class="card">
+                <h2>🦋 Butterfly Trades: Trading Curvature (Belly vs. Wings)</h2>
+                <p>A butterfly trade isolates the <strong>curvature (PC3)</strong> of the yield curve while hedging out both <strong>level (PC1)</strong> and <strong>slope (PC2)</strong>. It consists of a position in the "belly" (intermediate maturity) hedged against opposite positions in the two "wings" (shorter and longer maturities).</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Canonical 2s5s10s Butterfly Spread</div>
+                    $$\text{Fly Spread} = -y_{2\text{Y}} + 2 y_{5\text{Y}} - y_{10\text{Y}} = (y_{5\text{Y}} - y_{2\text{Y}}) - (y_{10\text{Y}} - y_{5\text{Y}})$$
+                </div>
+
+                <h3>Structure of a Butterfly Position</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Butterfly Strategy</th>
+                                <th>Leg Structure</th>
+                                <th>When to Execute (View)</th>
+                                <th>Profit Driver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Short the Belly / Long Wings (Buy the Fly)</strong></td>
+                                <td>Long 2Y + Long 10Y (Wings) / Short 5Y (Body)</td>
+                                <td>Belly is <strong>rich</strong> (yield too low, price too high relative to wings). Expecting curve to become more humped.</td>
+                                <td>5Y yield rises relative to 2Y and 10Y; Fly spread widens.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Long the Belly / Short Wings (Sell the Fly)</strong></td>
+                                <td>Short 2Y + Short 10Y (Wings) / Long 5Y (Body)</td>
+                                <td>Belly is <strong>cheap</strong> (yield too high relative to wings). Expecting belly yields to compress.</td>
+                                <td>5Y yield falls relative to 2Y and 10Y; Fly spread narrows.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>50/50 Fly vs. Regression-Weighted Fly</h3>
+                <p>The standard 50/50 butterfly gives 50% DV01 weight to each wing. However, because changes in slope correlate with changes in curvature, a pure 50/50 fly is not truly slope-neutral. Rates desks calculate the <strong>regression beta ($\beta$)</strong> between the 2s5s curve and the 5s10s curve:</p>
+
+                <div class="formula-block">
+                    $$\Delta (y_{5\text{Y}} - y_{2\text{Y}}) = \alpha + \beta \Delta (y_{10\text{Y}} - y_{5\text{Y}}) + \epsilon_t \quad \implies \quad w_{2\text{Y}} = \frac{\beta}{1 + \beta}, \quad w_{10\text{Y}} = \frac{1}{1 + \beta}$$
+                </div>
+            </div>
+
+            <!-- Interactive Butterfly Simulator -->
+            <div class="card">
+                <h2>🔬 2s5s10s Butterfly Analyzer & Belly Rich/Cheap Calculator</h2>
+                <p>Adjust the 2Y, 5Y, and 10Y baseline yields and belly displacement to calculate the net butterfly spread, evaluate belly richness, and simulate trade P&L.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="flyY2">2Y Yield: <span class="val-badge" id="valFlyY2">4.20%</span></label>
+                        <input type="range" id="flyY2" min="1.00" max="7.00" step="0.05" value="4.20">
+                    </div>
+                    <div class="control-group">
+                        <label for="flyY5">5Y Yield: <span class="val-badge" id="valFlyY5">4.00%</span></label>
+                        <input type="range" id="flyY5" min="1.00" max="7.00" step="0.05" value="4.00">
+                    </div>
+                    <div class="control-group">
+                        <label for="flyY10">10Y Yield: <span class="val-badge" id="valFlyY10">4.30%</span></label>
+                        <input type="range" id="flyY10" min="1.00" max="7.00" step="0.05" value="4.30">
+                    </div>
+                    <div class="control-group">
+                        <label for="flyBellyShift">5Y Belly Shock: <span class="val-badge" id="valBellyShift">+10 bps</span></label>
+                        <input type="range" id="flyBellyShift" min="-40" max="40" step="2" value="10">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Current Fly Spread</div>
+                        <div class="kpi-value" id="kpiFlySpread">-50.0 bps</div>
+                        <div class="kpi-sub">$2y_{5\text{Y}} - (y_{2\text{Y}} + y_{10\text{Y}})$</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Shocked Fly Spread</div>
+                        <div class="kpi-value" id="kpiShockedFly">-30.0 bps</div>
+                        <div class="kpi-sub">+20 bps Curvature Move</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Belly Valuation</div>
+                        <div class="kpi-value" id="kpiBellyVal">Belly is Cheap</div>
+                        <div class="kpi-sub">Trades below spline fair-value</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Recommended Action</div>
+                        <div class="kpi-value" id="kpiFlyAction">Long Wings / Short Belly</div>
+                        <div class="kpi-sub">Fade belly cheapening</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Butterfly Curvature Profile Across the 2Y–5Y–10Y Term Structure</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#627590;"></div> Baseline Curve</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Curvature Shifted</div>
+                        </div>
+                    </div>
+                    <canvas id="chartButterfly"></canvas>
+                    <div class="chart-hud" id="hudButterfly"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetFly">Reinit Butterfly Baseline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Barbell vs. Bullet -->
+        <div class="tab-panel" id="tab-barbell">
+            <div class="card">
+                <h2>🏋️ Barbell vs. Bullet: The Convexity Trade-Off</h2>
+                <p>A classic structural decision in portfolio management and rates trading is whether to match duration using a <strong>Bullet</strong> (a single intermediate bond, e.g. 10Y) or a <strong>Barbell</strong> (a combination of short and long bonds, e.g. 2Y and 30Y).</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Convexity Advantage of the Barbell</div>
+                    $$D_{\text{barbell}} = w_1 D_1 + w_2 D_2 = D_{\text{bullet}}$$
+                    $$C_{\text{barbell}} = w_1 C_1 + w_2 C_2 > C_{\text{bullet}} \quad \text{since } C \propto D^2$$
+                </div>
+
+                <p>Because convexity increases approximately with the <em>square of duration</em>, the 30Y bond provides disproportionate convexity. A duration-matched 2Y/30Y barbell has strictly greater positive convexity than a 10Y bullet.</p>
+
+                <h3>Convexity is Not Free: The Price-Yield Payoff</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Market Environment</th>
+                                <th>Barbell Performance</th>
+                                <th>Bullet Performance</th>
+                                <th>Winning Strategy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Large Volatility / Big Rate Moves ($\pm 100\text{ bps}$)</strong></td>
+                                <td>Gains more on rallies, loses less on selloffs due to positive convexity ($\frac{1}{2} C (\Delta y)^2$).</td>
+                                <td>Lower convexity dampens price upside on large rallies and amplifies downside on large selloffs.</td>
+                                <td><strong>Barbell Wins</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Calm / Range-Bound Rates Market ($\Delta y \approx 0$)</strong></td>
+                                <td>Bleeds carry and roll-down. Negative roll-down along a concave curve eats into returns.</td>
+                                <td>Captures maximum steep roll-down in the 7Y–10Y belly of the curve without paying for excess convexity.</td>
+                                <td><strong>Bullet Wins</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Barbell vs Bullet Payoff Engine -->
+            <div class="card">
+                <h2>⚡ Interactive Convexity & Payoff Simulator</h2>
+                <p>Observe the non-linear price change comparison between a 10Y Bullet and a duration-matched 2Y/30Y Barbell across parallel yield shocks from $-150\text{ bps}$ to $+150\text{ bps}$.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="bbDuration">Target Duration (Years): <span class="val-badge" id="valBBDuration">7.5 Years</span></label>
+                        <input type="range" id="bbDuration" min="5.0" max="10.0" step="0.5" value="7.5">
+                    </div>
+                    <div class="control-group">
+                        <label for="bbVol">Annual Rate Volatility ($\sigma$): <span class="val-badge" id="valBBVol">80 bps</span></label>
+                        <input type="range" id="bbVol" min="20" max="150" step="10" value="80">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Bullet Convexity</div>
+                        <div class="kpi-value" id="kpiBulletConv">0.72</div>
+                        <div class="kpi-sub">10Y Benchmark Standard</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Barbell Convexity</div>
+                        <div class="kpi-value" id="kpiBarbellConv">1.48</div>
+                        <div class="kpi-sub">+105% Convexity Premium</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Net Convexity Alpha (+100 bps)</div>
+                        <div class="kpi-value" id="kpiConvAlpha">+0.38%</div>
+                        <div class="kpi-sub">Barbell Outperformance</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Annualized Carry Cost</div>
+                        <div class="kpi-value" id="kpiCarryCost">-28 bps</div>
+                        <div class="kpi-sub">Roll-down drag to hold fly</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Price Return Payoff Profile (%): Barbell vs. Bullet across Yield Shocks</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> 2Y/30Y Barbell (High Convexity)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> 10Y Bullet (Baseline)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartBarbell"></canvas>
+                    <div class="chart-hud" id="hudBarbell"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetBarbell">Reinit Convexity Baseline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Yield Curve Trading Interview Masterclass</h2>
+                <p>These scenarios reflect real-world questions asked on investment bank rates trading desks, hedge fund macro pods, and asset management portfolio teams. Click each question to reveal the desk-level breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"You want to set up a $100k DV01 2s10s steepener. The 2Y note has a DV01 of $1.85 per $10k face, and the 10Y note has a DV01 of $8.00 per $10k face. Calculate the exact notional amounts on each leg."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> For a steepener, you go <strong>Long 2Y</strong> (profit when 2Y yield drops) and <strong>Short 10Y</strong> (profit when 10Y yield rises or falls by less):</p>
+                    <ul>
+                        <li><strong>10Y Leg Notional:</strong><br>
+                        $$\text{Notional}_{10\text{Y}} = \frac{\text{Target DV01}}{\text{DV01}_{10\text{Y}} / \text{Face}} = \frac{\$100,000}{\$8.00 / \$10,000} = \frac{\$100,000}{0.0008} = \$125,000,000 \quad (\$125\text{M})$$</li>
+                        <li><strong>2Y Leg Notional:</strong><br>
+                        $$\text{Notional}_{2\text{Y}} = \frac{\text{Target DV01}}{\text{DV01}_{2\text{Y}} / \text{Face}} = \frac{\$100,000}{\$1.85 / \$10,000} = \frac{\$100,000}{0.000185} \approx \$540,540,540 \quad (\$540.5\text{M})$$</li>
+                        <li><strong>Hedge Ratio:</strong><br>
+                        $$\frac{\text{Notional}_{2\text{Y}}}{\text{Notional}_{10\text{Y}}} = \frac{\$540.5\text{M}}{\$125\text{M}} \approx 4.32$$</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Takeaway:</strong> You must buy $540.5M of 2Y notes for every $125M of 10Y notes sold short. If the 2s10s spread widens by 10 bps, your gross P&L is: $\text{Target DV01} \times \Delta \text{Spread} = \$100,000 \times 10 = +\$1,000,000$.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"Explain why an inverted yield curve makes holding a steepener an expensive 'negative carry' trade, and how roll-down impacts the position."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> In an inverted yield curve (e.g. 2Y at 5.00%, 10Y at 4.00%):</p>
+                    <ul>
+                        <li><strong>Carry Component:</strong> To short $125M of 10Y notes, you must borrow them in repo and invest the proceeds. In an inverted curve, financing rates (repo/SOFR) are at the high front-end rate (5.25%), meaning you pay more to borrow the long bond than the coupon it yields.</li>
+                        <li><strong>Roll-Down Component:</strong> As time passes, bonds roll down the curve toward shorter maturities. On an inverted curve, rolling down means the yield <em>rises</em> as maturity shortens. A rising yield causes capital losses on your long 2Y leg!</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Trader Insight:</strong> A steepener on an inverted curve bleeds cash every single day it stays flat. Traders refer to this as the "steepener bleed". You must have high conviction on the timing of the Fed cutting cycle to justify the negative carry.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"What is the difference between a 50/50 butterfly and a regression-weighted butterfly? Why would a rates desk prefer the regression fly?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> In a 2s5s10s butterfly, a 50/50 fly allocates 50% of the body's DV01 to the 2Y wing and 50% to the 10Y wing:</p>
+                    <ul>
+                        <li><strong>The Flaw of 50/50:</strong> In real markets, the 2s5s slope moves with roughly 1.3x to 1.6x the volatility of the 5s10s slope. When the overall curve steepens or flattens, a 50/50 butterfly experiences directional slope leakage (P&L changes even though curvature hasn't moved).</li>
+                        <li><strong>The Regression Fly:</strong> A regression-weighted fly regresses historical changes in 2s5s against 5s10s to estimate beta ($\beta$):
+                        $$\Delta(y_{5\text{Y}} - y_{2\text{Y}}) = \alpha + \beta \Delta(y_{10\text{Y}} - y_{5\text{Y}})$$
+                        The wing weights are set according to beta ($w_{2\text{Y}} = \frac{\beta}{1+\beta}, w_{10\text{Y}} = \frac{1}{1+\beta}$).</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Takeaway:</strong> A regression butterfly is genuinely <em>slope-neutral</em>. It allows the desk to isolate pure curvature (belly rich/cheap) without taking accidental risk on whether the 2s10s curve is steepening or flattening.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"How does the US Treasury's Quarterly Refunding Announcement (QRA) impact the 5s30s and 10s30s curve spreads?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The Treasury's QRA dictates the exact auction sizes for 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, and 30Y debt over the coming quarter:</p>
+                    <ul>
+                        <li>If the Treasury increases long-duration issuance (10Y, 30Y) beyond primary dealer expectations, the massive supply creates duration indigestion. Long-end yields must rise to entice marginal buyers (pensions, foreign accounts).</li>
+                        <li>This causes a <strong>Bear Steepener in 5s30s and 10s30s</strong> as term premia expand on the long end.</li>
+                        <li>Conversely, if the Treasury tilts issuance toward short-dated T-bills (as occurred in late 2023 under Janet Yellen), long-duration supply pressure evaporates, leading to a <strong>Bull Flattener in 10s30s</strong>.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Rule of Thumb:</strong> Heavy coupon supply announcements steepen 5s30s, while bill-heavy financing flatten 5s30s and 10s30s.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"Under what market regime does a Barbell outperform an equal-duration Bullet, and why is convexity referred to as an 'option-like' feature?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Convexity measures the second derivative of bond price with respect to yield ($\frac{d^2 P}{dy^2}$).</p>
+                    <ul>
+                        <li>Because positive convexity means the price-yield curve is strictly convex to the origin, the price rises more when yields fall by 100 bps than it drops when yields rise by 100 bps:
+                        $$\frac{\Delta P}{P} \approx -D \Delta y + \frac{1}{2} C (\Delta y)^2$$
+                        Notice that the convexity term ($\frac{1}{2} C (\Delta y)^2$) is <strong>always positive</strong> regardless of whether $\Delta y > 0$ or $\Delta y < 0$!</li>
+                        <li>This acts like an embedded <strong>long straddle option</strong>: whenever rates move violently in either direction, the Barbell's superior convexity generates positive alpha over the Bullet.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The Cost:</strong> In a tranquil, range-bound market, the option expires worthless—the Barbell loses money to the Bullet through lower yield and inferior roll-down.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Yield Curve Strategy Matrix -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Yield Curve Trading Fast-Reference Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Curve Strategy</th>
+                                <th>DV01 Positioning</th>
+                                <th>Macro Driver</th>
+                                <th>Best Performance Regime</th>
+                                <th>Key Risk Factor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Bull Steepener</strong></td>
+                                <td>Long 2Y / Short 10Y (DV01=0)</td>
+                                <td>Recession / Fed Easing Cycle</td>
+                                <td>Phase 3 (Contraction / Bust)</td>
+                                <td>Fed delays cuts; negative carry bleed.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bear Steepener</strong></td>
+                                <td>Long 2Y / Short 10Y/30Y (DV01=0)</td>
+                                <td>Fiscal deficit / Supply deluge / Reflation</td>
+                                <td>Phase 1 (Reflation)</td>
+                                <td>Flight to safety compresses long end.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bull Flattener</strong></td>
+                                <td>Short 2Y / Long 10Y (DV01=0)</td>
+                                <td>Disinflation / Late Cycle Slowdown</td>
+                                <td>Phase 4 (Goldilocks to late)</td>
+                                <td>Inflation re-accelerates; long end sells off.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bear Flattener</strong></td>
+                                <td>Short 2Y / Long 10Y (DV01=0)</td>
+                                <td>Aggressive Fed Tightening Cycle</td>
+                                <td>Phase 2 (Overheating)</td>
+                                <td>Early Fed pivot to cuts.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2s5s10s Butterfly (Long Wings)</strong></td>
+                                <td>Long 2Y+10Y / Short 5Y (DV01=0)</td>
+                                <td>5Y Belly is Rich (Yield too low)</td>
+                                <td>Terminal rate expectations rise</td>
+                                <td>Belly continues cheapening.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2Y/30Y Barbell</strong></td>
+                                <td>Match duration of 10Y Bullet</td>
+                                <td>High yield volatility regime ($\sigma \uparrow$)</td>
+                                <td>Macro turning points / Large shocks</td>
+                                <td>Low vol range-bound markets (Carry drag).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 03: Yield Curve Trades · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 2: 2s10s Curve Trade Builder & Canvas ===== */
+        (function() {
+            const inType = document.getElementById('crvTradeType');
+            const inDV01 = document.getElementById('crvTargetDV01');
+            const inShift2Y = document.getElementById('crvShift2Y');
+            const inShift10Y = document.getElementById('crvShift10Y');
+
+            const valType = document.getElementById('valTradeType');
+            const valDV01 = document.getElementById('valTargetDV01');
+            const valShift2Y = document.getElementById('valShift2Y');
+            const valShift10Y = document.getElementById('valShift10Y');
+
+            const kpiNotional2Y = document.getElementById('kpiNotional2Y');
+            const kpiNotional10Y = document.getElementById('kpiNotional10Y');
+            const kpiSpreadChange = document.getElementById('kpiSpreadChange');
+            const kpiSpreadDesc = document.getElementById('kpiSpreadDesc');
+            const kpiTotalPnL = document.getElementById('kpiTotalPnL');
+            const kpiPnLStatus = document.getElementById('kpiPnLStatus');
+
+            const canvas = document.getElementById('chartCurve');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudCurve');
+
+            // Baseline yields: 2Y=4.50%, 5Y=4.20%, 10Y=4.30%, 30Y=4.55%
+            const maturities = [
+                { name: '2Y', mat: 2, baseYield: 4.50, dv01Per10k: 1.85 },
+                { name: '5Y', mat: 5, baseYield: 4.20, dv01Per10k: 4.45 },
+                { name: '10Y', mat: 10, baseYield: 4.30, dv01Per10k: 8.00 },
+                { name: '30Y', mat: 30, baseYield: 4.55, dv01Per10k: 18.50 }
+            ];
+
+            let curveData = [];
+
+            function compute() {
+                const type = inType.value;
+                const targetDV01 = parseFloat(inDV01.value);
+                const shift2Y_bps = parseFloat(inShift2Y.value);
+                const shift10Y_bps = parseFloat(inShift10Y.value);
+
+                valType.textContent = type === 'steepener' ? 'Steepener' : 'Flattener';
+                valDV01.textContent = '$' + targetDV01.toLocaleString();
+                valShift2Y.textContent = (shift2Y_bps >= 0 ? '+' : '') + shift2Y_bps + ' bps';
+                valShift10Y.textContent = (shift10Y_bps >= 0 ? '+' : '') + shift10Y_bps + ' bps';
+
+                // Notionals for DV01 neutrality
+                const dv01_2Y_rate = 1.85 / 10000; // $ per $ face
+                const dv01_10Y_rate = 8.00 / 10000;
+
+                const notional2Y = targetDV01 / dv01_2Y_rate;
+                const notional10Y = targetDV01 / dv01_10Y_rate;
+
+                kpiNotional2Y.textContent = '$' + (notional2Y / 1e6).toFixed(1) + 'M';
+                kpiNotional10Y.textContent = '$' + (notional10Y / 1e6).toFixed(1) + 'M';
+
+                // Spread change: (10Y - 2Y)
+                const spreadChange_bps = shift10Y_bps - shift2Y_bps;
+                kpiSpreadChange.textContent = (spreadChange_bps >= 0 ? '+' : '') + spreadChange_bps + ' bps';
+                kpiSpreadDesc.textContent = spreadChange_bps > 0 ? 'Steepening Shift' : (spreadChange_bps < 0 ? 'Flattening Shift' : 'Parallel Shift');
+
+                // P&L calculation:
+                // Steepener: Long 2Y (+DV01), Short 10Y (-DV01)
+                // PnL_2Y = Long * (-shift2Y) * DV01
+                let pnl;
+                if (type === 'steepener') {
+                    const pnl2Y = -shift2Y_bps * targetDV01;
+                    const pnl10Y = shift10Y_bps * targetDV01;
+                    pnl = pnl2Y + pnl10Y;
+                } else {
+                    // Flattener: Short 2Y, Long 10Y
+                    const pnl2Y = shift2Y_bps * targetDV01;
+                    const pnl10Y = -shift10Y_bps * targetDV01;
+                    pnl = pnl2Y + pnl10Y;
+                }
+
+                kpiTotalPnL.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(Math.round(pnl)).toLocaleString();
+                kpiPnLStatus.textContent = pnl >= 0 ? 'Profitable Trade' : 'Drawdown / Loss';
+                kpiTotalPnL.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+
+                // Construct shifted curve points
+                curveData = maturities.map(m => {
+                    let shift = 0;
+                    if (m.name === '2Y') shift = shift2Y_bps / 100;
+                    else if (m.name === '10Y') shift = shift10Y_bps / 100;
+                    else if (m.name === '5Y') shift = (shift2Y_bps * 0.6 + shift10Y_bps * 0.4) / 100;
+                    else if (m.name === '30Y') shift = (shift10Y_bps * 0.85) / 100;
+
+                    return {
+                        name: m.name,
+                        mat: m.mat,
+                        base: m.baseYield,
+                        shifted: m.baseYield + shift
+                    };
+                });
+
+                drawCurve();
+            }
+
+            function drawCurve() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minY = 3.0, maxY = 6.0;
+
+                // Axes
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let y = minY; y <= maxY; y += 0.5) {
+                    const py = padT + plotH * ((maxY - y) / (maxY - minY));
+                    ctx.fillText(y.toFixed(2) + '%', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsBase = [];
+                const ptsShift = [];
+
+                curveData.forEach((d, i) => {
+                    const px = padL + (i / (curveData.length - 1)) * plotW;
+                    const pyBase = padT + plotH * ((maxY - d.base) / (maxY - minY));
+                    const pyShift = padT + plotH * ((maxY - d.shifted) / (maxY - minY));
+                    ptsBase.push({x: px, y: pyBase, d});
+                    ptsShift.push({x: px, y: pyShift, d});
+                    ctx.fillText(d.name, px, H - padB + 16);
+                });
+
+                // Baseline curve (Grey dashed)
+                ctx.beginPath();
+                ptsBase.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#627590';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ptsBase.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#627590';
+                    ctx.fill();
+                });
+
+                // Shifted curve (Navy solid)
+                ctx.beginPath();
+                ptsShift.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsShift.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#1a3a6b';
+                    ctx.fill();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(curveData.length - 1, Math.max(0, Math.round(ratio * (curveData.length - 1))));
+                const item = curveData[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (curveData.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Tenor:</span> <span class="hud-val">${item.name}</span></div>
+                    <div class="hud-row"><span class="hud-label">Baseline Yield:</span> <span class="hud-val" style="color:#627590">${item.base.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Shifted Yield:</span> <span class="hud-val" style="color:#1a3a6b">${item.shifted.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Net Shift:</span> <span class="hud-val">${Math.round((item.shifted - item.base) * 100)} bps</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inType, inDV01, inShift2Y, inShift10Y].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetCurve').addEventListener('click', () => {
+                inType.value = "steepener"; inDV01.value = "50000"; inShift2Y.value = "-30"; inShift10Y.value = "-10"; compute();
+            });
+
+            document.getElementById('btnPresetBullSteep').addEventListener('click', () => {
+                inType.value = "steepener"; inShift2Y.value = "-60"; inShift10Y.value = "-15"; compute();
+            });
+
+            document.getElementById('btnPresetBearFlat').addEventListener('click', () => {
+                inType.value = "flattener"; inShift2Y.value = "45"; inShift10Y.value = "10"; compute();
+            });
+
+            window.addEventListener('resize', drawCurve);
+            compute();
+        })();
+
+        /* ===== Tab 3: Butterfly Simulator & Canvas ===== */
+        (function() {
+            const inY2 = document.getElementById('flyY2');
+            const inY5 = document.getElementById('flyY5');
+            const inY10 = document.getElementById('flyY10');
+            const inBelly = document.getElementById('flyBellyShift');
+
+            const valY2 = document.getElementById('valFlyY2');
+            const valY5 = document.getElementById('valFlyY5');
+            const valY10 = document.getElementById('valFlyY10');
+            const valBelly = document.getElementById('valBellyShift');
+
+            const kpiFlySpread = document.getElementById('kpiFlySpread');
+            const kpiShockedFly = document.getElementById('kpiShockedFly');
+            const kpiBellyVal = document.getElementById('kpiBellyVal');
+            const kpiFlyAction = document.getElementById('kpiFlyAction');
+
+            const canvas = document.getElementById('chartButterfly');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudButterfly');
+
+            let flyPoints = [];
+
+            function compute() {
+                const y2 = parseFloat(inY2.value);
+                const y5 = parseFloat(inY5.value);
+                const y10 = parseFloat(inY10.value);
+                const bellyShift = parseFloat(inBelly.value) / 100;
+
+                valY2.textContent = y2.toFixed(2) + '%';
+                valY5.textContent = y5.toFixed(2) + '%';
+                valY10.textContent = y10.toFixed(2) + '%';
+                valBelly.textContent = (bellyShift >= 0 ? '+' : '') + Math.round(bellyShift * 100) + ' bps';
+
+                // Standard 2s5s10s Fly Spread: 2*y5 - (y2 + y10)
+                const baseFlyBps = Math.round((2 * y5 - (y2 + y10)) * 100);
+                const shockedY5 = y5 + bellyShift;
+                const shockedFlyBps = Math.round((2 * shockedY5 - (y2 + y10)) * 100);
+
+                kpiFlySpread.textContent = (baseFlyBps >= 0 ? '+' : '') + baseFlyBps.toFixed(1) + ' bps';
+                kpiShockedFly.textContent = (shockedFlyBps >= 0 ? '+' : '') + shockedFlyBps.toFixed(1) + ' bps';
+
+                // Fair value linear interpolation: y5_fair = 0.5*(y2 + y10)
+                const y5_fair = 0.5 * (y2 + y10);
+                const richness = y5 - y5_fair;
+
+                if (richness < -0.10) {
+                    kpiBellyVal.textContent = 'Belly is Rich (Low Yield)';
+                    kpiFlyAction.textContent = 'Short Belly / Long Wings';
+                } else if (richness > 0.10) {
+                    kpiBellyVal.textContent = 'Belly is Cheap (High Yield)';
+                    kpiFlyAction.textContent = 'Long Belly / Short Wings';
+                } else {
+                    kpiBellyVal.textContent = 'Fairly Valued Belly';
+                    kpiFlyAction.textContent = 'Neutral / Range-Bound';
+                }
+
+                flyPoints = [
+                    { name: '2Y (Wing)', xVal: 2, base: y2, shocked: y2 },
+                    { name: '5Y (Belly)', xVal: 5, base: y5, shocked: shockedY5 },
+                    { name: '10Y (Wing)', xVal: 10, base: y10, shocked: y10 }
+                ];
+
+                drawButterfly();
+            }
+
+            function drawButterfly() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minY = 2.5, maxY = 6.0;
+
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let y = 3.0; y <= 6.0; y += 1.0) {
+                    const py = padT + plotH * ((maxY - y) / (maxY - minY));
+                    ctx.fillText(y.toFixed(1) + '%', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                const ptsBase = [];
+                const ptsShock = [];
+
+                flyPoints.forEach((d, i) => {
+                    const px = padL + (i / (flyPoints.length - 1)) * plotW;
+                    const pyBase = padT + plotH * ((maxY - d.base) / (maxY - minY));
+                    const pyShock = padT + plotH * ((maxY - d.shocked) / (maxY - minY));
+                    ptsBase.push({x: px, y: pyBase, d});
+                    ptsShock.push({x: px, y: pyShock, d});
+                    ctx.fillText(d.name, px, H - padB + 16);
+                });
+
+                // Baseline Fly (Grey dashed)
+                ctx.beginPath();
+                ptsBase.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#627590';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ptsBase.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#627590';
+                    ctx.fill();
+                });
+
+                // Shocked Fly (Navy solid)
+                ctx.beginPath();
+                ptsShock.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsShock.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#1a3a6b';
+                    ctx.fill();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(flyPoints.length - 1, Math.max(0, Math.round(ratio * (flyPoints.length - 1))));
+                const item = flyPoints[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (flyPoints.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Leg:</span> <span class="hud-val">${item.name}</span></div>
+                    <div class="hud-row"><span class="hud-label">Baseline:</span> <span class="hud-val" style="color:#627590">${item.base.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Shocked:</span> <span class="hud-val" style="color:#1a3a6b">${item.shocked.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inY2, inY5, inY10, inBelly].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetFly').addEventListener('click', () => {
+                inY2.value = "4.20"; inY5.value = "4.00"; inY10.value = "4.30"; inBelly.value = "10"; compute();
+            });
+
+            window.addEventListener('resize', drawButterfly);
+            compute();
+        })();
+
+        /* ===== Tab 4: Barbell vs Bullet Payoff Canvas ===== */
+        (function() {
+            const inDur = document.getElementById('bbDuration');
+            const inVol = document.getElementById('bbVol');
+
+            const valDur = document.getElementById('valBBDuration');
+            const valVol = document.getElementById('valBBVol');
+
+            const kpiBulletConv = document.getElementById('kpiBulletConv');
+            const kpiBarbellConv = document.getElementById('kpiBarbellConv');
+            const kpiConvAlpha = document.getElementById('kpiConvAlpha');
+            const kpiCarryCost = document.getElementById('kpiCarryCost');
+
+            const canvas = document.getElementById('chartBarbell');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudBarbell');
+
+            let payoffData = [];
+
+            function compute() {
+                const D = parseFloat(inDur.value);
+                const volBps = parseFloat(inVol.value);
+
+                valDur.textContent = D.toFixed(1) + ' Years';
+                valVol.textContent = volBps + ' bps';
+
+                // Bullet: Duration = D, Convexity C_bullet ~ 0.012 * D^2
+                const C_bullet = 0.012 * D * D;
+                // Barbell (2Y + 30Y duration-matched): D1=1.85, D2=17.5.
+                // Convexity of Barbell is substantially higher: ~2.1x
+                const C_barbell = C_bullet * 2.05;
+
+                kpiBulletConv.textContent = C_bullet.toFixed(2);
+                kpiBarbellConv.textContent = C_barbell.toFixed(2);
+
+                // Alpha at +100 bps: 0.5 * (C_barbell - C_bullet) * (0.01)^2
+                const alpha100 = 0.5 * (C_barbell - C_bullet) * Math.pow(0.01, 2) * 100 * 100;
+                kpiConvAlpha.textContent = '+' + alpha100.toFixed(2) + '%';
+
+                const carryDragBps = Math.round(18 + (volBps / 10));
+                kpiCarryCost.textContent = '-' + carryDragBps + ' bps';
+
+                // Build Payoff Curves across yield moves from -150 bps to +150 bps
+                payoffData = [];
+                for (let dyBps = -150; dyBps <= 150; dyBps += 10) {
+                    const dy = dyBps / 10000;
+                    // % Price Return = -D * dy + 0.5 * C * dy^2
+                    const retBullet = (-D * dy + 0.5 * C_bullet * Math.pow(dy, 2)) * 100;
+                    const retBarbell = (-D * dy + 0.5 * C_barbell * Math.pow(dy, 2)) * 100;
+                    payoffData.push({
+                        dyBps,
+                        bullet: retBullet,
+                        barbell: retBarbell
+                    });
+                }
+
+                drawPayoff();
+            }
+
+            function drawPayoff() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minRet = -12.0, maxRet = 14.0;
+
+                // Zero horizontal line
+                const zeroY = padT + plotH * (maxRet / (maxRet - minRet));
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Zero vertical line (dy = 0)
+                const zeroX = padL + plotW * 0.5;
+                ctx.beginPath();
+                ctx.moveTo(zeroX, padT);
+                ctx.lineTo(zeroX, padT + plotH);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let r = -10; r <= 14; r += 4) {
+                    const py = padT + plotH * ((maxRet - r) / (maxRet - minRet));
+                    ctx.fillText((r >= 0 ? '+' : '') + r + '%', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                for (let dy = -150; dy <= 150; dy += 50) {
+                    const px = padL + plotW * ((dy + 150) / 300);
+                    ctx.fillText((dy >= 0 ? '+' : '') + dy, px, H - padB + 16);
+                }
+
+                // Plot Bullet (Red)
+                ctx.beginPath();
+                payoffData.forEach((p, i) => {
+                    const px = padL + plotW * ((p.dyBps + 150) / 300);
+                    const py = padT + plotH * ((maxRet - p.bullet) / (maxRet - minRet));
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Plot Barbell (Navy)
+                ctx.beginPath();
+                payoffData.forEach((p, i) => {
+                    const px = padL + plotW * ((p.dyBps + 150) / 300);
+                    const py = padT + plotH * ((maxRet - p.barbell) / (maxRet - minRet));
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(payoffData.length - 1, Math.max(0, Math.round(ratio * (payoffData.length - 1))));
+                const item = payoffData[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Yield Move:</span> <span class="hud-val">${(item.dyBps >= 0 ? '+' : '') + item.dyBps} bps</span></div>
+                    <div class="hud-row"><span class="hud-label">Barbell Payoff:</span> <span class="hud-val" style="color:#1a3a6b">${(item.barbell >= 0 ? '+' : '') + item.barbell.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Bullet Payoff:</span> <span class="hud-val" style="color:#a63d3d">${(item.bullet >= 0 ? '+' : '') + item.bullet.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Convexity Alpha:</span> <span class="hud-val">${(item.barbell - item.bullet >= 0 ? '+' : '') + (item.barbell - item.bullet).toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inDur, inVol].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetBarbell').addEventListener('click', () => {
+                inDur.value = "7.5"; inVol.value = "80"; compute();
+            });
+
+            window.addEventListener('resize', drawPayoff);
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

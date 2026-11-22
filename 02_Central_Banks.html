@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Banks — Macro & Rates Academy</title>
+    <meta name="description" content="Federal Reserve, ECB, BoJ, BoE mandates, policy corridors, balance sheet plumbing, Taylor rule reaction functions, dot plots, and market expectations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Corridor Visualization Graphic ===== */
+        .corridor-container {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+
+        .corridor-bar {
+            height: 48px;
+            position: relative;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .corridor-marker {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 3px;
+            background: var(--accent);
+            transition: left 0.2s;
+        }
+
+        .corridor-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 02</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Central Bank Mechanics</h1>
+            <p class="subtitle">Mandates, policy rate corridors, liquidity plumbing, Taylor rule reaction functions, FOMC dot plots, and market expectations pricing.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-architecture">1. Mandates & Architecture</button>
+            <button class="nav-tab" data-tab="tab-corridor">2. Corridor & Balance Sheet</button>
+            <button class="nav-tab" data-tab="tab-taylor">3. The Taylor Rule Lab</button>
+            <button class="nav-tab" data-tab="tab-dots">4. Dot Plots vs Market OIS</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: Mandates & Architecture -->
+        <div class="tab-panel active" id="tab-architecture">
+            <div class="card">
+                <h2>🏛️ The Big Four: Mandates & Governance</h2>
+                <p>In global rates strategy, policy divergence among the four major central banks creates the primary cross-currency basis trades, forward swap differentials, and relative-value steepener opportunities.</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Central Bank</th>
+                                <th>Statutory Mandate</th>
+                                <th>Policy Committee</th>
+                                <th>Operational Target Rate</th>
+                                <th>Key Balance Sheet Assets</th>
+                                <th>Rates Desk Takeaway</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Federal Reserve (Fed)</strong></td>
+                                <td><strong>Dual:</strong> Maximum Employment & Price Stability (2.0% PCE)</td>
+                                <td>FOMC (12 voters: 7 Board + NY Fed + 4 rotating Bank Presidents)</td>
+                                <td>Federal Funds Target Range (e.g. 5.25%–5.50%) targeting <strong>EFFR</strong></td>
+                                <td>US Treasuries, Agency MBS, Discount Window loans</td>
+                                <td>Reacts aggressively to labor market deteriorations (Sahm rule) as well as inflation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>European Central Bank (ECB)</strong></td>
+                                <td><strong>Hierarchical:</strong> Price stability primary (2.0% symmetric HICP over medium term)</td>
+                                <td>Governing Council (6 Executive Board + 20 National Central Bank Governors)</td>
+                                <td><strong>Deposit Facility Rate (DFR)</strong> (Main refinancing MRO & Marginal lending are upper bounds)</td>
+                                <td>Govt bonds (APP, PEPP), T-LTRO banking liquidity</td>
+                                <td>Slower to pivot for growth; fragmented bond markets require anti-fragmentation tools (TPI).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of Japan (BoJ)</strong></td>
+                                <td>Price Stability (2.0% Core CPI) & Financial System Stability</td>
+                                <td>Policy Board (Governor + 2 Deputy Governors + 6 Members)</td>
+                                <td>Uncollateralized Overnight Call Rate (<strong>TONA</strong>)</td>
+                                <td>JGBs (~50% of outstanding sovereign debt), ETFs, J-REITs</td>
+                                <td>Exited negative interest rates (NIRP) & Yield Curve Control (YCC); anchor for global carry trades.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of England (BoE)</strong></td>
+                                <td>Price Stability (2.0% CPI, set by Chancellor of the Exchequer)</td>
+                                <td>MPC (9 members: Governor, 3 Deputies, Chief Economist, 4 External)</td>
+                                <td><strong>Bank Rate</strong> (interest paid on commercial bank reserve balances)</td>
+                                <td>Gilts & Corporate Bonds via Asset Purchase Facility (APF)</td>
+                                <td>Individual votes published immediately with breakdown (e.g. 6-3 split); high gilt volatility.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Dual vs. Hierarchical Mandates</h3>
+                <p>The difference between the Fed's <em>dual mandate</em> and the ECB's <em>hierarchical mandate</em> is paramount for macro trading:</p>
+                <ul>
+                    <li><strong>Fed:</strong> If unemployment surges even while inflation is slightly above target ($2.6\%$), the Fed has the legal mandate to pause or cut rates to support jobs.</li>
+                    <li><strong>ECB:</strong> The Treaty on the Functioning of the European Union legally mandates price stability above all else. Support for general economic policies is secondary and cannot compromise price stability.</li>
+                </ul>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>Desk Axiom:</strong> The Fed cuts earlier and more aggressively in cyclical downturns than the ECB, leading to structural 2s10s yield curve steepening in USD rates relative to EUR rates.</div>
+                </div>
+            </div>
+
+            <!-- Central Bank Balance Sheet Mechanics -->
+            <div class="card">
+                <h2>📦 The Central Bank Balance Sheet Equation</h2>
+                <p>Every central bank operation alters reserve balances in the banking system according to the accounting identity of the monetary authority:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Simplified Central Bank Balance Sheet Identity</div>
+                    $$\text{Assets} = \text{Currency in Circulation} + \text{Bank Reserves} + \text{ON RRP} + \text{Treasury General Account (TGA)} + \text{Other Liabilities}$$
+                </div>
+
+                <p>Rearranging for <strong>Commercial Bank Reserves</strong>—the ultimate fuel of financial market liquidity and repo stability:</p>
+
+                <div class="formula-block">
+                    $$\Delta \text{Reserves} = \Delta \text{Assets (SOMA/QE)} - \Delta \text{Currency} - \Delta \text{ON RRP} - \Delta \text{TGA}$$
+                </div>
+
+                <div class="alert alert-tip">
+                    <div class="alert-icon">📊</div>
+                    <div><strong>The TGA Drain Trade:</strong> When the US Treasury spends down cash from its account at the Fed (TGA declines), funds flow into private bank deposits $\rightarrow$ <strong>Bank reserves expand</strong> $\rightarrow$ Money market liquidity surges, compressing SOFR-EFFR spreads and supporting risk assets.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Corridor & Balance Sheet -->
+        <div class="tab-panel" id="tab-corridor">
+            <div class="card">
+                <h2>🏛️ The Floor System vs. The Corridor System</h2>
+                <p>Prior to the 2008 GFC, central banks operated in an <em>environment of scarce reserves</em> using a narrow corridor system. Today, with trillions of excess reserves created by QE, modern central banks employ an <strong>abundant reserves floor system</strong>.</p>
+
+                <h3>Fed Administered Rates Hierarchy</h3>
+                <p>The Fed does not directly fix the market Effective Federal Funds Rate (EFFR). Instead, it steers overnight rates within a 25 bps target range using three administered rates:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Administered Facility</th>
+                                <th>Rate Level</th>
+                                <th>Role in Framework</th>
+                                <th>Eligible Counterparties</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Primary Credit (Discount Window)</strong></td>
+                                <td>Top of Target Range (+10 bps over IORB)</td>
+                                <td>Emergency ceiling (backstop liquidity for solvent banks)</td>
+                                <td>Depository Institutions only</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Interest on Reserve Balances (IORB)</strong></td>
+                                <td>Inside Target Range (~mid/upper tier)</td>
+                                <td>Primary magnet rate paid on bank reserve balances</td>
+                                <td>Depository Institutions only</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Overnight Reverse Repo (ON RRP)</strong></td>
+                                <td>Bottom of Target Range</td>
+                                <td>Hard floor: absorbs cash from non-banks that lack IORB access</td>
+                                <td>Money Market Funds (MMFs), GSEs, Primary Dealers</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div><strong>Why EFFR trades below IORB (The GSE Arbitrage):</strong> Government Sponsored Enterprises (Fannie Mae, Freddie Mac, FHLBs) hold accounts at the Fed but are <em>legally prohibited from earning IORB</em>. They lend unremunerated cash in the Fed Funds market to commercial banks at EFFR, who park it at IORB to capture a risk-free 5–8 bps spread.</div>
+                </div>
+            </div>
+
+            <!-- Interactive Floor & Plumbing Simulator -->
+            <div class="card">
+                <h2>🧮 Interactive Policy Corridor & Liquidity Plumbing Simulator</h2>
+                <p>Adjust Fed administered rates and balance sheet components to observe how overnight market rates (EFFR & SOFR) align inside the target corridor.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="corTargetUpper">Target Range Upper: <span class="val-badge" id="valTargetUpper">5.50%</span></label>
+                        <input type="range" id="corTargetUpper" min="1.00" max="7.00" step="0.25" value="5.50">
+                    </div>
+                    <div class="control-group">
+                        <label for="corTGA">Treasury General Account ($B): <span class="val-badge" id="valTGA">$750B</span></label>
+                        <input type="range" id="corTGA" min="100" max="1200" step="50" value="750">
+                    </div>
+                    <div class="control-group">
+                        <label for="corRRP">ON RRP Usage ($B): <span class="val-badge" id="valRRP">$400B</span></label>
+                        <input type="range" id="corRRP" min="0" max="2500" step="50" value="400">
+                    </div>
+                    <div class="control-group">
+                        <label for="corSOMA">Total Fed Assets (SOMA $B): <span class="val-badge" id="valSOMA">$7,200B</span></label>
+                        <input type="range" id="corSOMA" min="4000" max="9000" step="100" value="7200">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">IORB Rate</div>
+                        <div class="kpi-value" id="kpiIORB">5.40%</div>
+                        <div class="kpi-sub">Target Upper - 10 bps</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">ON RRP Floor Rate</div>
+                        <div class="kpi-value" id="kpiRRP">5.30%</div>
+                        <div class="kpi-sub">Target Lower Bound</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Estimated EFFR</div>
+                        <div class="kpi-value" id="kpiEFFR">5.33%</div>
+                        <div class="kpi-sub">Arb spread ~7 bps below IORB</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Bank Reserves (Est.)</div>
+                        <div class="kpi-value" id="kpiReserves">$3,650B</div>
+                        <div class="kpi-sub" id="kpiReserveStatus">Abundant Reserves Regime</div>
+                    </div>
+                </div>
+
+                <!-- Corridor Visualizer Graphic -->
+                <div class="corridor-container">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-family:var(--font-mono); color:var(--text-muted);">
+                        <span>Lower Bound (<span id="dispLower">5.25%</span>)</span>
+                        <span style="font-weight:700; color:var(--text);">25 bps Policy Target Corridor</span>
+                        <span>Upper Bound (<span id="dispUpper">5.50%</span>)</span>
+                    </div>
+
+                    <div class="corridor-bar">
+                        <!-- ON RRP marker -->
+                        <div class="corridor-marker" id="markRRP" style="left: 20%; background: #2a6399;" data-label="ON RRP"></div>
+                        <!-- EFFR marker -->
+                        <div class="corridor-marker" id="markEFFR" style="left: 32%; background: #1a7a45;" data-label="EFFR"></div>
+                        <!-- IORB marker -->
+                        <div class="corridor-marker" id="markIORB" style="left: 60%; background: #1a3a6b;" data-label="IORB"></div>
+                        <!-- Discount Window marker -->
+                        <div class="corridor-marker" id="markDisc" style="left: 95%; background: #a63d3d;" data-label="Discount Window"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
+                        <span>🔒 Floor Anchor: Non-banks (MMFs)</span>
+                        <span>🎯 Market Print: EFFR / SOFR</span>
+                        <span>🧲 Magnet Rate: Commercial Banks</span>
+                        <span>🚨 Ceiling: Emergency Window</span>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetPlumbing">Reinit Standard Balance Sheet</button>
+                    <button class="btn btn-secondary" id="btnPresetScarce">Simulate Reserve Scarcity (QT Stress)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: The Taylor Rule Lab -->
+        <div class="tab-panel" id="tab-taylor">
+            <div class="card">
+                <h2>🎯 Reaction Functions & The Taylor Rule Laboratory</h2>
+                <p>To forecast where front-end yields (US 2Y, Euribor, Euribor/SOFR OIS) will trade over a 6 to 24 month horizon, rates strategists model the central bank's systematic reaction function.</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Classic Taylor Rule (1993)</div>
+                    $$i_t = r^* + \pi_t + \alpha_\pi (\pi_t - \pi^*) + \alpha_y \tilde{Y}_t$$
+                </div>
+
+                <p>Where $r^*$ is the equilibrium real neutral interest rate, $\pi_t$ is current inflation, $\pi^*$ is target inflation ($2.0\%$), $\tilde{Y}_t$ is the output gap, and standard coefficients are $\alpha_\pi = 0.5$, $\alpha_y = 0.5$.</p>
+
+                <h3>Inertial / Interest-Rate Smoothing Specification</h3>
+                <p>In reality, central banks do not adjust policy rates instantly to formulaic changes due to uncertainty and financial stability risks. They follow an <strong>inertial reaction function</strong> with smoothing parameter $\rho \in [0.7, 0.9]$:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Inertial Taylor Rule</div>
+                    $$i_t = \rho i_{t-1} + (1 - \rho) \left[ r^* + \pi_t + \alpha_\pi (\pi_t - \pi^*) + \alpha_y \tilde{Y}_t \right]$$
+                </div>
+            </div>
+
+            <!-- Interactive Taylor Rule Simulator -->
+            <div class="card">
+                <h2>🔬 Taylor Rule Engine & Projected Policy Trajectory</h2>
+                <p>Calibrate macroeconomic inputs to compute the prescribed terminal rate, current policy gap, and 8-quarter simulated policy path.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="tayRstar">Neutral Real Rate ($r^*$): <span class="val-badge" id="valRstar">1.0%</span></label>
+                        <input type="range" id="tayRstar" min="0.0" max="3.0" step="0.25" value="1.0">
+                    </div>
+                    <div class="control-group">
+                        <label for="tayPi">Current Core Inflation ($\pi$): <span class="val-badge" id="valPi">3.2%</span></label>
+                        <input type="range" id="tayPi" min="1.0" max="7.0" step="0.1" value="3.2">
+                    </div>
+                    <div class="control-group">
+                        <label for="tayOutputGap">Output Gap ($\tilde{Y}$): <span class="val-badge" id="valTaylorGap">+0.8%</span></label>
+                        <input type="range" id="tayOutputGap" min="-4.0" max="4.0" step="0.2" value="0.8">
+                    </div>
+                    <div class="control-group">
+                        <label for="tayCurrentRate">Current Policy Rate ($i_0$): <span class="val-badge" id="valCurrentRate">5.25%</span></label>
+                        <input type="range" id="tayCurrentRate" min="1.0" max="7.0" step="0.25" value="5.25">
+                    </div>
+                    <div class="control-group">
+                        <label for="tayInertia">Policy Inertia ($\rho$): <span class="val-badge" id="valInertia">0.75</span></label>
+                        <input type="range" id="tayInertia" min="0.2" max="0.9" step="0.05" value="0.75">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Unsmoothed Prescribed Rate</div>
+                        <div class="kpi-value" id="kpiTargetRate">5.20%</div>
+                        <div class="kpi-sub">Classic 1993 Formula</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Next-Meeting Policy Pull</div>
+                        <div class="kpi-value" id="kpiNextRate">5.24%</div>
+                        <div class="kpi-sub" id="kpiNextDelta">-1 bps adjustment</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Policy Stance Gap</div>
+                        <div class="kpi-value" id="kpiStanceGap">-0.05%</div>
+                        <div class="kpi-sub" id="kpiStanceDesc">Near Equilibrium</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Front-End 2Y Bias</div>
+                        <div class="kpi-value" id="kpiFrontEnd">Range-Bound</div>
+                        <div class="kpi-sub">Fair value priced</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">8-Quarter Policy Trajectory: Actual Rate vs Prescribed Target</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Inertial Path ($i_t$)</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Taylor Prescribed ($i^*$)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartTaylor"></canvas>
+                    <div class="chart-hud" id="hudTaylor"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetTaylor">Reinit Taylor Baseline</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Dot Plots vs Market OIS -->
+        <div class="tab-panel" id="tab-dots">
+            <div class="card">
+                <h2>📊 SEP Dot Plots vs. Market Pricing Divergence</h2>
+                <p>Every quarter (March, June, September, December), the FOMC publishes its <strong>Summary of Economic Projections (SEP)</strong> containing the famous <strong>Dot Plot</strong>. Each dot represents one FOMC participant's judgment of the appropriate midpoint of the federal funds rate at the end of each calendar year and in the longer run ($r^* + \pi^*$).</p>
+
+                <h3>Why Market Pricing Routinely Fights the Fed</h3>
+                <p>Traders never take the Dot Plot at face value. A persistent gap exists between the median dot and the forward SOFR / OIS curve due to three structural factors:</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Driver of Divergence</th>
+                                <th>Mechanism</th>
+                                <th>Historical Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Recession Asymmetry</strong></td>
+                                <td>Dots assume the modal (baseline) non-recession scenario. Market prices represent the <em>probability-weighted mean</em> of all paths, including hard landings where rates drop 300 bps.</td>
+                                <td>Market forwards trade <strong>below</strong> median dots during late-cycle expansions.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Term Premium</strong></td>
+                                <td>Investors demand extra compensation for duration and inflation risk over multi-year horizons.</td>
+                                <td>Long-end forward rates sit above expected short rate averages when term premia are positive.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hawkish Credibility Bluff</strong></td>
+                                <td>Central bankers deliberately keep dot projections high to prevent premature financial conditions easing from undoing their monetary tightening.</td>
+                                <td>Markets discount terminal rate dots by 25–75 bps once growth begins decelerating.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Dot Plot Simulator -->
+            <div class="card">
+                <h2>📈 Interactive Dot Plot & SOFR Forwards Visualizer</h2>
+                <p>Adjust median policymaker projections and market recession probability to observe how the Dot Plot dispersion shifts relative to the market-implied OIS pricing curve.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="dotY1">Year 1 Median Dot: <span class="val-badge" id="valDotY1">4.50%</span></label>
+                        <input type="range" id="dotY1" min="2.00" max="6.00" step="0.25" value="4.50">
+                    </div>
+                    <div class="control-group">
+                        <label for="dotY2">Year 2 Median Dot: <span class="val-badge" id="valDotY2">3.75%</span></label>
+                        <input type="range" id="dotY2" min="1.50" max="5.50" step="0.25" value="3.75">
+                    </div>
+                    <div class="control-group">
+                        <label for="dotLong">Longer-Run Dot ($r^*+2\%$): <span class="val-badge" id="valDotLong">2.75%</span></label>
+                        <input type="range" id="dotLong" min="2.00" max="4.00" step="0.125" value="2.75">
+                    </div>
+                    <div class="control-group">
+                        <label for="dotRecessionProb">Market Recession Prob (%): <span class="val-badge" id="valRecProb">35%</span></label>
+                        <input type="range" id="dotRecessionProb" min="5" max="80" step="5" value="35">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Fed 1Y Projected Cuts</div>
+                        <div class="kpi-value" id="kpiFedCuts">-75 bps</div>
+                        <div class="kpi-sub">From 5.25% Baseline</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Market 1Y Cuts Priced</div>
+                        <div class="kpi-value" id="kpiMarketCuts">-125 bps</div>
+                        <div class="kpi-sub">SOFR OIS Discount</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">The "Divergence Gap"</div>
+                        <div class="kpi-value" id="kpiDivergence">50 bps</div>
+                        <div class="kpi-sub">Market prices more easing</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Strategic Rates Play</div>
+                        <div class="kpi-value" id="kpiDotTrade">Pay SOFR / Flattener</div>
+                        <div class="kpi-sub">Fade excessive cuts priced</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">FOMC Dot Plot Dispersion vs Market-Implied Forwards</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Median SEP Dot</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#627590;"></div> Individual Member Dots</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Market OIS Forward Curve</div>
+                        </div>
+                    </div>
+                    <canvas id="chartDotPlot"></canvas>
+                    <div class="chart-hud" id="hudDotPlot"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetDots">Reinit Baseline Dots</button>
+                    <button class="btn btn-secondary" id="btnPresetHawkishFed">Preset: Hawkish Pushback</button>
+                    <button class="btn btn-secondary" id="btnPresetMarketCapitulation">Preset: Market Capitulation</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Central Bank Policy & Rates S&T Interview Masterclass</h2>
+                <p>Institutional interviewers on macro rates desks and buy-side funds evaluate your concrete understanding of how central bank operational frameworks, balance sheet plumbing, and forward expectations translate into market positions. Click to expand each breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"How does the Fed set interest rates when there are over $3 trillion in excess bank reserves? Walk me through the floor system mechanics."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> In an abundant-reserves environment, open market operations cannot control the supply of reserves on the steep vertical section of reserve demand. Instead, the Fed operates an <strong>administered floor system</strong> with two main pillars:</p>
+                    <ul>
+                        <li><strong>Interest on Reserve Balances (IORB):</strong> The rate commercial banks receive on deposits at the Fed. Banks will not lend in the interbank market below IORB because they can earn IORB risk-free at the central bank.</li>
+                        <li><strong>Overnight Reverse Repo Facility (ON RRP):</strong> Non-bank financial institutions like Money Market Funds (MMFs) and GSEs hold massive cash balances but are legally ineligible for IORB. To prevent them from lending in private repo at sub-target rates, the Fed offers ON RRP as an alternate risk-free facility, creating an absolute floor for money market yields.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Bottom Line:</strong> IORB acts as the magnet rate for commercial banks, while ON RRP establishes a hard floor for non-banks. The Effective Federal Funds Rate (EFFR) trades reliably between the two.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"The Fed Dot Plot signals 75 bps of rate cuts over the next year, but the SOFR futures curve prices 150 bps of cuts. Why does this gap exist and how would you evaluate trading it?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The fundamental reason for this divergence is the difference between <strong>modal forecast vs. probability-weighted mean</strong>:</p>
+                    <ul>
+                        <li>FOMC participants submit their single <em>most likely baseline (modal) path</em>, which assumes the soft-landing continues without a recession.</li>
+                        <li>Traded market prices represent the <em>risk-neutral expected value across all possible distributions</em>. If the market assigns a 70% probability to a soft landing (75 bps cuts) and a 30% probability to a recession (325 bps emergency cuts), the expected value priced by the market is $0.70(75) + 0.30(325) = 150\text{ bps}$.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Trade Expression:</strong> If you believe economic growth and labor momentum are robust and the recession probability is overstated by the market, you <em>pay fixed</em> on 1Y SOFR OIS (or short SOFR futures contracts) to capture the repricing higher as market cuts get faded.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"What is Quantitative Tightening (QT), where does the liquidity come from first, and what signals that the Fed must halt balance sheet runoff?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Under QT, the Fed allows a capped amount of maturing Treasuries and Agency MBS to roll off its balance sheet each month without reinvesting principal:</p>
+                    <ul>
+                        <li><strong>Phase 1 (Sterilized Runoff):</strong> As the Treasury issues replacement debt to the private market, Money Market Funds absorb the paper by withdrawing cash from the Fed's ON RRP facility. Bank reserves remain largely unchanged.</li>
+                        <li><strong>Phase 2 (Reserves Depletion):</strong> Once ON RRP is depleted near zero, newly issued Treasuries must be funded directly by commercial banks and primary dealers, causing <em>bank reserves to drain dollar-for-dollar</em>.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>The Halt Signal (LCLoR):</strong> The Fed monitors the <em>Lowest Comfortable Level of Reserves</em> (~10–11% of GDP). When reserves transition from "abundant" to "ample", overnight repo rates (SOFR) begin printing consistently above IORB, Treasury settlement fails spike, and the EFFR-IORB spread turns positive (as occurred in the September 2019 repo crisis). This forces the Fed to taper and halt QT.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"Explain the mechanics of a 'Hawkish Pause' versus a 'Dovish Hike'."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> In modern central bank communication, the <em>action</em> is often secondary to the <em>guidance</em>:</p>
+                    <ul>
+                        <li><strong>Hawkish Pause:</strong> The central bank leaves the policy rate unchanged at the current meeting, but signals in the statement and dot plot that rates will remain higher for longer, or that additional hikes are probable if inflation data warrants. <em>Market reaction:</em> Front-end yields rise, rate cuts are priced out of forward curves, and the 2s10s yield curve flattens.</li>
+                        <li><strong>Dovish Hike:</strong> The central bank delivers a widely expected 25 bps hike, but simultaneously signals that policy is now sufficiently restrictive, removing forward tightening bias, or pointing to growth headwinds. <em>Market reaction:</em> The policy action is "sold on the news"—Treasury yields rally (yields fall), financial conditions ease, and equities rally.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Rule of Thumb:</strong> Front-end rate moves on FOMC days are driven ~80% by the statement revisions, forward dots, and press conference tone, and only ~20% by the immediate decision if priced in.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"How did the Bank of Japan's Yield Curve Control (YCC) work, and how did hedge funds trade its eventual exit?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Under YCC (introduced Sept 2016), the BoJ pinned the short-term rate at $-0.10\%$ and pledged to buy unlimited amounts of 10-year JGBs at a fixed yield cap (originally $\pm 0.10\%$, later widened to $\pm 0.50\%$ and $1.00\%$):</p>
+                    <ul>
+                        <li><strong>Market Distortion:</strong> As global sovereign yields surged in 2022–2023, 10Y JGB yields hit the BoJ cap, while 8Y and 12Y JGB yields traded higher, creating an artificial "kink" in the sovereign curve.</li>
+                        <li><strong>The Trade Expression:</strong> Macro hedge funds executed the <em>JGB basis / swap spread trade</em>: Japanese Yen Interest Rate Swaps (IRS) were unrestricted by the BoJ, so 10Y JPY swap rates traded at $0.80\%$ while 10Y cash JGBs were pinned at $0.25\%$. Funds paid fixed on 10Y JPY swaps or shorted 10Y JGB futures, forcing the BoJ to own over 50% of the entire government bond market before ultimately dismantling YCC in early 2024.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Desk Implication:</strong> Exiting YCC unlocked the repatriation of Japanese domestic savings from foreign bonds (US Treasuries, Bunds) back into domestic assets, tightening global yield term premia.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Central Bank Matrix -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Central Bank Fast-Reference Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Entity</th>
+                                <th>Target Rate</th>
+                                <th>Normal Meeting Cycle</th>
+                                <th>Key Communication Medium</th>
+                                <th>Key Market Benchmark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>US Federal Reserve</strong></td>
+                                <td>Fed Funds (EFFR) via IORB & ON RRP</td>
+                                <td>8 meetings / yr (~6 weeks)</td>
+                                <td>Statement + SEP Dot Plot (Quarterly) + Press Conf + Minutes (+3w)</td>
+                                <td>SOFR Futures, US 2Y Treasury</td>
+                            </tr>
+                            <tr>
+                                <td><strong>European Central Bank</strong></td>
+                                <td>Deposit Facility Rate (DFR)</td>
+                                <td>8 meetings / yr</td>
+                                <td>Monetary Policy Statement + Macro Projections (Quarterly)</td>
+                                <td>Euribor / €STR OIS, German 2Y Schatz</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of England</strong></td>
+                                <td>Official Bank Rate</td>
+                                <td>8 meetings / yr</td>
+                                <td>Monetary Policy Report (MPR) + Vote Count Split</td>
+                                <td>SONIA Futures, 2Y UK Gilt</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bank of Japan</strong></td>
+                                <td>Overnight Call Rate (TONA)</td>
+                                <td>8 meetings / yr</td>
+                                <td>Outlook for Economic Activity & Prices (Quarterly)</td>
+                                <td>TONA OIS, 10Y JGB Futures</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 02: Central Banks · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 2: Corridor & Plumbing Simulator ===== */
+        (function() {
+            const inUpper = document.getElementById('corTargetUpper');
+            const inTGA = document.getElementById('corTGA');
+            const inRRP = document.getElementById('corRRP');
+            const inSOMA = document.getElementById('corSOMA');
+
+            const valUpper = document.getElementById('valTargetUpper');
+            const valTGA = document.getElementById('valTGA');
+            const valRRP = document.getElementById('valRRP');
+            const valSOMA = document.getElementById('valSOMA');
+
+            const kpiIORB = document.getElementById('kpiIORB');
+            const kpiRRP = document.getElementById('kpiRRP');
+            const kpiEFFR = document.getElementById('kpiEFFR');
+            const kpiReserves = document.getElementById('kpiReserves');
+            const kpiReserveStatus = document.getElementById('kpiReserveStatus');
+
+            const dispLower = document.getElementById('dispLower');
+            const dispUpper = document.getElementById('dispUpper');
+
+            const markRRP = document.getElementById('markRRP');
+            const markEFFR = document.getElementById('markEFFR');
+            const markIORB = document.getElementById('markIORB');
+            const markDisc = document.getElementById('markDisc');
+
+            function compute() {
+                const upper = parseFloat(inUpper.value);
+                const tga = parseFloat(inTGA.value);
+                const rrp = parseFloat(inRRP.value);
+                const soma = parseFloat(inSOMA.value);
+
+                valUpper.textContent = upper.toFixed(2) + '%';
+                valTGA.textContent = '$' + tga.toFixed(0) + 'B';
+                valRRP.textContent = '$' + rrp.toFixed(0) + 'B';
+                valSOMA.textContent = '$' + soma.toFixed(0) + 'B';
+
+                const lower = upper - 0.25;
+                const iorb = upper - 0.10;
+                const rrpRate = lower;
+                const discRate = upper + 0.10;
+
+                dispLower.textContent = lower.toFixed(2) + '%';
+                dispUpper.textContent = upper.toFixed(2) + '%';
+
+                kpiIORB.textContent = iorb.toFixed(2) + '%';
+                kpiRRP.textContent = rrpRate.toFixed(2) + '%';
+
+                // Currency in circulation ~ $2,350B, Other liabilities ~ $150B
+                const currency = 2350;
+                const other = 150;
+                const reserves = Math.max(800, soma - currency - tga - rrp - other);
+
+                kpiReserves.textContent = '$' + reserves.toFixed(0) + 'B';
+
+                // EFFR arbitrage logic based on reserve abundance
+                let effr;
+                if (reserves > 3000) {
+                    effr = iorb - 0.07;
+                    kpiReserveStatus.textContent = 'Abundant Reserves Regime';
+                } else if (reserves > 2200) {
+                    effr = iorb - 0.04;
+                    kpiReserveStatus.textContent = 'Ample Reserves (Comfortable)';
+                } else {
+                    effr = iorb + 0.05; // Upward pressure as reserves become scarce
+                    kpiReserveStatus.textContent = 'Reserve Scarcity Risk / Stress';
+                }
+
+                kpiEFFR.textContent = effr.toFixed(2) + '%';
+
+                // Visual Corridor placement (from lower - 0.05 to upper + 0.15 => span of 0.45)
+                const rangeSpan = 0.45;
+                const minScale = lower - 0.05;
+
+                const posRRP = Math.max(5, Math.min(95, ((rrpRate - minScale) / rangeSpan) * 100));
+                const posEFFR = Math.max(5, Math.min(95, ((effr - minScale) / rangeSpan) * 100));
+                const posIORB = Math.max(5, Math.min(95, ((iorb - minScale) / rangeSpan) * 100));
+                const posDisc = Math.max(5, Math.min(95, ((discRate - minScale) / rangeSpan) * 100));
+
+                markRRP.style.left = posRRP + '%';
+                markEFFR.style.left = posEFFR + '%';
+                markIORB.style.left = posIORB + '%';
+                markDisc.style.left = posDisc + '%';
+            }
+
+            [inUpper, inTGA, inRRP, inSOMA].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetPlumbing').addEventListener('click', () => {
+                inUpper.value = "5.50"; inTGA.value = "750"; inRRP.value = "400"; inSOMA.value = "7200"; compute();
+            });
+
+            document.getElementById('btnPresetScarce').addEventListener('click', () => {
+                inUpper.value = "5.50"; inTGA.value = "900"; inRRP.value = "50"; inSOMA.value = "5100"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 3: Taylor Rule Lab & Canvas Chart ===== */
+        (function() {
+            const inRstar = document.getElementById('tayRstar');
+            const inPi = document.getElementById('tayPi');
+            const inGap = document.getElementById('tayOutputGap');
+            const inRate = document.getElementById('tayCurrentRate');
+            const inInertia = document.getElementById('tayInertia');
+
+            const valRstar = document.getElementById('valRstar');
+            const valPi = document.getElementById('valPi');
+            const valGap = document.getElementById('valTaylorGap');
+            const valRate = document.getElementById('valCurrentRate');
+            const valInertia = document.getElementById('valInertia');
+
+            const kpiTarget = document.getElementById('kpiTargetRate');
+            const kpiNext = document.getElementById('kpiNextRate');
+            const kpiNextDelta = document.getElementById('kpiNextDelta');
+            const kpiStanceGap = document.getElementById('kpiStanceGap');
+            const kpiStanceDesc = document.getElementById('kpiStanceDesc');
+            const kpiFrontEnd = document.getElementById('kpiFrontEnd');
+
+            const canvas = document.getElementById('chartTaylor');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudTaylor');
+
+            let trajectory = [];
+
+            function compute() {
+                const rstar = parseFloat(inRstar.value);
+                const pi = parseFloat(inPi.value);
+                const gap = parseFloat(inGap.value);
+                const i0 = parseFloat(inRate.value);
+                const rho = parseFloat(inInertia.value);
+
+                valRstar.textContent = rstar.toFixed(2) + '%';
+                valPi.textContent = pi.toFixed(1) + '%';
+                valGap.textContent = (gap >= 0 ? '+' : '') + gap.toFixed(1) + '%';
+                valRate.textContent = i0.toFixed(2) + '%';
+                valInertia.textContent = rho.toFixed(2);
+
+                // Taylor Prescribed Rate: i* = r* + pi + 0.5(pi - 2.0) + 0.5(gap)
+                const targetRate = rstar + pi + 0.5 * (pi - 2.0) + 0.5 * gap;
+                kpiTarget.textContent = targetRate.toFixed(2) + '%';
+
+                // Next-meeting rate under inertia: i_1 = rho * i0 + (1 - rho) * targetRate
+                const nextRate = rho * i0 + (1 - rho) * targetRate;
+                kpiNext.textContent = nextRate.toFixed(2) + '%';
+                const nextDeltaBps = Math.round((nextRate - i0) * 100);
+                kpiNextDelta.textContent = (nextDeltaBps >= 0 ? '+' : '') + nextDeltaBps + ' bps adjustment';
+
+                const stanceGap = i0 - targetRate;
+                kpiStanceGap.textContent = (stanceGap >= 0 ? '+' : '') + stanceGap.toFixed(2) + '%';
+
+                if (stanceGap > 0.75) {
+                    kpiStanceDesc.textContent = 'Significantly Restrictive';
+                    kpiFrontEnd.textContent = 'Bullish 2Y / Cuts Ahead';
+                } else if (stanceGap < -0.75) {
+                    kpiStanceDesc.textContent = 'Behind the Curve / Accommodative';
+                    kpiFrontEnd.textContent = 'Bearish 2Y / Hikes Needed';
+                } else {
+                    kpiStanceDesc.textContent = 'Near Neutral Stance';
+                    kpiFrontEnd.textContent = 'Range-Bound Front End';
+                }
+
+                // 8-Quarter Simulation
+                trajectory = [];
+                let simRate = i0;
+                for (let q = 0; q <= 8; q++) {
+                    trajectory.push({
+                        q: 'Q' + q,
+                        actual: simRate,
+                        target: targetRate
+                    });
+                    simRate = rho * simRate + (1 - rho) * targetRate;
+                }
+
+                drawChart();
+            }
+
+            function drawChart() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 30, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minRate = 1.0, maxRate = 7.0;
+
+                // Grid & Axes
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let r = minRate; r <= maxRate; r += 1.0) {
+                    const y = padT + plotH * ((maxRate - r) / (maxRate - minRate));
+                    ctx.fillText(r.toFixed(1) + '%', padL - 8, y + 3);
+                }
+
+                const ptsActual = [];
+                const ptsTarget = [];
+
+                ctx.textAlign = 'center';
+                trajectory.forEach((d, i) => {
+                    const x = padL + (i / (trajectory.length - 1)) * plotW;
+                    const yActual = padT + plotH * ((maxRate - d.actual) / (maxRate - minRate));
+                    const yTarget = padT + plotH * ((maxRate - d.target) / (maxRate - minRate));
+                    ptsActual.push({x, y: yActual, val: d.actual});
+                    ptsTarget.push({x, y: yTarget, val: d.target});
+                    ctx.fillText(d.q, x, H - padB + 16);
+                });
+
+                // Target Line (Red dashed)
+                ctx.beginPath();
+                ptsTarget.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Actual Path (Navy solid)
+                ctx.beginPath();
+                ptsActual.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                ptsActual.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#1a3a6b';
+                    ctx.fill();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 30;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(trajectory.length - 1, Math.max(0, Math.round(ratio * (trajectory.length - 1))));
+                const item = trajectory[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (trajectory.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Horizon:</span> <span class="hud-val">${item.q}</span></div>
+                    <div class="hud-row"><span class="hud-label">Projected Rate:</span> <span class="hud-val" style="color:#1a3a6b">${item.actual.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Taylor Prescribed:</span> <span class="hud-val" style="color:#a63d3d">${item.target.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inRstar, inPi, inGap, inRate, inInertia].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetTaylor').addEventListener('click', () => {
+                inRstar.value = "1.0"; inPi.value = "3.2"; inGap.value = "0.8"; inRate.value = "5.25"; inInertia.value = "0.75"; compute();
+            });
+
+            window.addEventListener('resize', drawChart);
+            compute();
+        })();
+
+        /* ===== Tab 4: Dot Plot vs Market OIS Canvas ===== */
+        (function() {
+            const inY1 = document.getElementById('dotY1');
+            const inY2 = document.getElementById('dotY2');
+            const inLong = document.getElementById('dotLong');
+            const inRecProb = document.getElementById('dotRecessionProb');
+
+            const valY1 = document.getElementById('valDotY1');
+            const valY2 = document.getElementById('valDotY2');
+            const valLong = document.getElementById('valDotLong');
+            const valRecProb = document.getElementById('valRecProb');
+
+            const kpiFedCuts = document.getElementById('kpiFedCuts');
+            const kpiMarketCuts = document.getElementById('kpiMarketCuts');
+            const kpiDivergence = document.getElementById('kpiDivergence');
+            const kpiDotTrade = document.getElementById('kpiDotTrade');
+
+            const canvas = document.getElementById('chartDotPlot');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudDotPlot');
+
+            let dotColumns = [];
+
+            function compute() {
+                const y1 = parseFloat(inY1.value);
+                const y2 = parseFloat(inY2.value);
+                const longR = parseFloat(inLong.value);
+                const recProb = parseFloat(inRecProb.value) / 100;
+
+                valY1.textContent = y1.toFixed(2) + '%';
+                valY2.textContent = y2.toFixed(2) + '%';
+                valLong.textContent = longR.toFixed(3) + '%';
+                valRecProb.textContent = Math.round(recProb * 100) + '%';
+
+                const baselineRate = 5.25;
+                const fedCutsBps = Math.round((y1 - baselineRate) * 100);
+                kpiFedCuts.textContent = (fedCutsBps >= 0 ? '+' : '') + fedCutsBps + ' bps';
+
+                // Market pricing incorporates recession scenario (rates dropped to 2.25%)
+                const marketY1 = (1 - recProb) * y1 + recProb * 2.25;
+                const marketY2 = (1 - recProb) * y2 + recProb * 2.25;
+                const marketLong = (1 - recProb) * longR + recProb * 2.25;
+
+                const mktCutsBps = Math.round((marketY1 - baselineRate) * 100);
+                kpiMarketCuts.textContent = (mktCutsBps >= 0 ? '+' : '') + mktCutsBps + ' bps';
+
+                const divergenceBps = Math.abs(fedCutsBps - mktCutsBps);
+                kpiDivergence.textContent = divergenceBps + ' bps';
+
+                if (divergenceBps > 45) {
+                    kpiDotTrade.textContent = 'Pay SOFR / Flattener';
+                } else if (divergenceBps < 15) {
+                    kpiDotTrade.textContent = 'Aligned / Carry Trades';
+                } else {
+                    kpiDotTrade.textContent = 'Moderate Divergence';
+                }
+
+                // Generate pseudo-dots for 19 FOMC participants around the medians
+                dotColumns = [
+                    { label: 'Current', median: baselineRate, dots: Array(19).fill(baselineRate), mkt: baselineRate },
+                    { label: 'Year 1', median: y1, dots: generateScatter(y1, 0.25), mkt: marketY1 },
+                    { label: 'Year 2', median: y2, dots: generateScatter(y2, 0.50), mkt: marketY2 },
+                    { label: 'Longer Run', median: longR, dots: generateScatter(longR, 0.25), mkt: marketLong }
+                ];
+
+                drawDotPlot();
+            }
+
+            function generateScatter(median, spread) {
+                const arr = [];
+                for (let i = 0; i < 19; i++) {
+                    const offset = ((i - 9) / 9) * spread;
+                    // Round to nearest 0.125
+                    const rounded = Math.round((median + offset) * 8) / 8;
+                    arr.push(rounded);
+                }
+                return arr.sort((a,b) => a - b);
+            }
+
+            function drawDotPlot() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 30, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minRate = 1.5, maxRate = 6.0;
+
+                // Axes & Grid
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padL, padT);
+                ctx.lineTo(padL, padT + plotH);
+                ctx.lineTo(padL + plotW, padT + plotH);
+                ctx.stroke();
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let r = 2.0; r <= 6.0; r += 1.0) {
+                    const y = padT + plotH * ((maxRate - r) / (maxRate - minRate));
+                    ctx.fillText(r.toFixed(1) + '%', padL - 8, y + 3);
+                }
+
+                const mktPoints = [];
+
+                dotColumns.forEach((col, cIdx) => {
+                    const colX = padL + (cIdx / (dotColumns.length - 1)) * plotW;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(col.label, colX, H - padB + 16);
+
+                    // Group dots by rate to stack them horizontally
+                    const counts = {};
+                    col.dots.forEach(val => {
+                        counts[val] = (counts[val] || 0) + 1;
+                    });
+
+                    const placed = {};
+                    col.dots.forEach(val => {
+                        const count = counts[val];
+                        placed[val] = (placed[val] || 0) + 1;
+                        const offsetIdx = placed[val] - 1;
+                        const xOffset = (offsetIdx - (count - 1) / 2) * 7;
+                        const y = padT + plotH * ((maxRate - val) / (maxRate - minRate));
+
+                        ctx.beginPath();
+                        ctx.arc(colX + xOffset, y, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = '#627590';
+                        ctx.fill();
+                    });
+
+                    // Draw Median Marker (Navy horizontal bar)
+                    const yMed = padT + plotH * ((maxRate - col.median) / (maxRate - minRate));
+                    ctx.strokeStyle = '#1a3a6b';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(colX - 16, yMed);
+                    ctx.lineTo(colX + 16, yMed);
+                    ctx.stroke();
+
+                    // Market point
+                    const yMkt = padT + plotH * ((maxRate - col.mkt) / (maxRate - minRate));
+                    mktPoints.push({x: colX, y: yMkt, val: col.mkt});
+                });
+
+                // Draw Market OIS Curve (Red line)
+                ctx.beginPath();
+                mktPoints.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x, p.y);
+                    else ctx.lineTo(p.x, p.y);
+                });
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                mktPoints.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#a63d3d';
+                    ctx.fill();
+                });
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 30;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(dotColumns.length - 1, Math.max(0, Math.round(ratio * (dotColumns.length - 1))));
+                const item = dotColumns[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (padL + (idx / (dotColumns.length - 1)) * plotW + 10) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">Horizon:</span> <span class="hud-val">${item.label}</span></div>
+                    <div class="hud-row"><span class="hud-label">Median Dot:</span> <span class="hud-val" style="color:#1a3a6b">${item.median.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Market OIS:</span> <span class="hud-val" style="color:#a63d3d">${item.mkt.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Gap:</span> <span class="hud-val">${Math.round(Math.abs(item.median - item.mkt) * 100)} bps</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inY1, inY2, inLong, inRecProb].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetDots').addEventListener('click', () => {
+                inY1.value = "4.50"; inY2.value = "3.75"; inLong.value = "2.75"; inRecProb.value = "35"; compute();
+            });
+
+            document.getElementById('btnPresetHawkishFed').addEventListener('click', () => {
+                inY1.value = "4.75"; inY2.value = "4.25"; inLong.value = "3.00"; inRecProb.value = "15"; compute();
+            });
+
+            document.getElementById('btnPresetMarketCapitulation').addEventListener('click', () => {
+                inY1.value = "4.25"; inY2.value = "3.25"; inLong.value = "2.50"; inRecProb.value = "60"; compute();
+            });
+
+            window.addEventListener('resize', drawDotPlot);
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

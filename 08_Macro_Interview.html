@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Cheatsheet — Macro & Rates Academy</title>
+    <meta name="description" content="The definitive macro & rates interview cheatsheet: 'Where are rates going?' view construction, master formulas, desk mental math heuristics, and searchable institutional sales & trading interview questions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Pitch Output Box ===== */
+        .pitch-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 18px 0;
+        }
+
+        .pitch-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .pitch-text {
+            font-size: 0.92rem;
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ===== Search & Filter Bar ===== */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 240px;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 08</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Macro & Rates Interview Cheatsheet</h1>
+            <p class="subtitle">The definitive desk reference: 'Where are rates going?' pitch framework, master formula compendium, desk mental math heuristics, and searchable institutional Q&A.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-pitch">1. "Where Are Rates Going?" Framework</button>
+            <button class="nav-tab" data-tab="tab-formulas">2. Master Formulas & Mental Math</button>
+            <button class="nav-tab" data-tab="tab-qa-macro">3. Core Macro & Central Banking Q&A</button>
+            <button class="nav-tab" data-tab="tab-qa-curve">4. Curve Trades & Inflation Q&A</button>
+            <button class="nav-tab" data-tab="tab-qa-cross">5. Cross-Asset & Brainteasers</button>
+        </nav>
+
+        <!-- TAB 1: Pitch Framework -->
+        <div class="tab-panel active" id="tab-pitch">
+            <div class="card">
+                <h2>🎯 The 4-Pillar "Where Are Rates Going?" Pitch Framework</h2>
+                <p>The single most ubiquitous question in global macro and rates sales & trading interviews is: <em>"Where do you see interest rates going over the next 6 to 12 months, and how would you trade it?"</em></p>
+                <p>Junior candidates give vague macro opinions. Elite desk candidates structure their thesis across <strong>Four Institutional Pillars</strong>:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pillar</th>
+                                <th>What You Evaluate</th>
+                                <th>Key Metrics & Catalysts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Macro Fundamentals (Cycle & Slack)</strong></td>
+                                <td>Output gap, labor slack, growth momentum, and inflation composition.</td>
+                                <td>Core PCE vs. 2% target, SuperCore Services ex-housing, ECI wage growth, Sahm Rule threshold.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Central Bank Reaction Function</strong></td>
+                                <td>Policy stance relative to neutral ($r^*$), Taylor rule prescription, and guidance credibility.</td>
+                                <td>Dot plot median vs. OIS market forwards, IORB/ON RRP plumbing, hawkish vs. dovish pause signals.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Supply & Demand Plumbing</strong></td>
+                                <td>Sovereign fiscal issuance, auction indigestion, and foreign absorption capacity.</td>
+                                <td>Treasury QRA coupon vs. bill sizing, QT runoff caps, TIC foreign official flows, FX hedging costs for foreign buyers.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>4. Trade Expression & Risk Asymmetry</strong></td>
+                                <td>Choosing the exact duration-neutral or curve structure with positive carry or convex payoffs.</td>
+                                <td>2s10s Steepener/Flattener, 2s5s10s Butterfly, TIPS Breakeven, SOFR options straddle, stop-loss and invalidation thesis.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Pitch Generator -->
+            <div class="card">
+                <h2>⚡ Interactive Macro Market View & Pitch Generator</h2>
+                <p>Select your macro assumptions across the four pillars to generate a crisp, desk-ready 60-second interview market pitch with exact trade expressions.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="ptchGrowth">Growth Momentum: <span class="val-badge" id="valPtchGrowth">Decelerating / Sub-Trend</span></label>
+                        <select id="ptchGrowth">
+                            <option value="slowing">Decelerating / Sub-Trend (Growth Scare)</option>
+                            <option value="reflation">Accelerating / Strong (Reflation Boom)</option>
+                            <option value="trend">Trend Growth / Resilient Expansion</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ptchInflation">Inflation Trend: <span class="val-badge" id="valPtchInflation">Cooling toward Target</span></label>
+                        <select id="ptchInflation">
+                            <option value="cooling">Cooling toward 2.0% Target (Disinflation)</option>
+                            <option value="sticky">Sticky Services / Second Wave Shock</option>
+                            <option value="anchored">Anchored at Target (~2.2%)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ptchSupply">Fiscal Supply / Treasury QRA: <span class="val-badge" id="valPtchSupply">Heavy Coupon Supply</span></label>
+                        <select id="ptchSupply">
+                            <option value="heavy">Heavy Long-End Coupon Supply ($1.8T+ Deficit)</option>
+                            <option value="tilted">Bill-Tilted Issuance / Low Duration Supply</option>
+                            <option value="balanced">Neutral Issuance Schedule</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ptchFed">Market vs. Fed Expectation: <span class="val-badge" id="valPtchFed">Market Prices Too Many Cuts</span></label>
+                        <select id="ptchFed">
+                            <option value="fademkt">Market Prices Too Many Cuts (Fade Easing)</option>
+                            <option value="fadefed">Fed Behind the Curve (Emergency Cuts Ahead)</option>
+                            <option value="fair">Accurately Priced / Range-Bound</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Primary Trade Recommendation</div>
+                        <div class="kpi-value" id="kpiTradeRec">Bull Steepener (2s10s)</div>
+                        <div class="kpi-sub" id="kpiTradeDetails">Long 2Y / Short 10Y (DV01=0)</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Duration Stance</div>
+                        <div class="kpi-value" id="kpiDurationStance">Overweight / Long</div>
+                        <div class="kpi-sub">Front-End Yield Decline</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Yield Curve Shape Bias</div>
+                        <div class="kpi-value" id="kpiCurveBias">Steepening (2s10s &gt; 0)</div>
+                        <div class="kpi-sub">Front end drops faster</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Top Secondary Asset Tilt</div>
+                        <div class="kpi-value" id="kpiSecondaryAsset">Long Gold / Quality Tech</div>
+                        <div class="kpi-sub">Real yields compressed</div>
+                    </div>
+                </div>
+
+                <div class="pitch-box">
+                    <div class="pitch-title">🎙️ Synthesized 60-Second Desk Interview Pitch:</div>
+                    <div class="pitch-text" id="pitchOutput">
+                        "Over the next 6 to 12 months, my core macro view is centered on a decelerating growth backdrop paired with continued disinflation toward target. With labor market slack emerging as evidenced by hiring rates cooling and the Sahm rule signaling vulnerability, the Fed is structurally transitioning from inflation defense to growth protection. Given heavy Treasury coupon supply on the long end, I anticipate the curve to steepen aggressively. I express this view through a <strong>duration-neutral 2s10s Bull Steepener</strong> (Long 2Y vs. Short 10Y), funded by fading front-end yields while protecting against long-end supply concessions. The key invalidation risk would be a re-acceleration in SuperCore services inflation that forces the Fed into a hawkish pause."
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnPresetPitch1">Preset: Soft Landing / Bull Steepener</button>
+                    <button class="btn btn-secondary" id="btnPresetPitch2">Preset: Resilient Reflation / Bear Flattener</button>
+                    <button class="btn btn-secondary" id="btnPresetPitch3">Preset: Fiscal Supply Shock / Bear Steepener</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Master Formulas & Mental Math -->
+        <div class="tab-panel" id="tab-formulas">
+            <div class="card">
+                <h2>📐 Master Macro & Rates Formula Compendium</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concept / Model</th>
+                                <th>Mathematical Formula</th>
+                                <th>Trading Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Okun's Law</strong></td>
+                                <td>$$\Delta u \approx -0.45(g - g^*)$$</td>
+                                <td>A 1% growth rate above potential ($g^* \approx 2\%$) reduces unemployment by ~45 bps over one year.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phillips Curve</strong></td>
+                                <td>$$\pi_t = \pi_t^e - \beta(u_t - u^*) + \nu_t$$</td>
+                                <td>Inflation depends on anchored expectations, labor slack relative to NAIRU ($u^*$), and supply shocks ($\nu$).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Taylor Rule (1993)</strong></td>
+                                <td>$$i_t = r^* + \pi_t + 0.5(\pi_t - 2\%) + 0.5\tilde{Y}_t$$</td>
+                                <td>Prescribes the nominal policy rate based on real neutral rate ($r^*$), inflation gap, and output gap.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Fisher Identity</strong></td>
+                                <td>$$y_{\text{nom}} = r_{\text{real}} + \text{BEI} = r_{\text{real}} + \pi^e + \text{IRP}$$</td>
+                                <td>Decomposes nominal Treasury yields into TIPS real yields, expected inflation, and inflation risk premium.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>5y5y Forward Inflation</strong></td>
+                                <td>$$F_{5,5} \approx 2 \times \text{BEI}_{10\text{Y}} - \text{BEI}_{5\text{Y}}$$</td>
+                                <td>Isolates expected inflation between Year 6 and Year 10; pure gauge of central bank credibility.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DV01 Hedge Ratio</strong></td>
+                                <td>$$\text{Notional}_1 = \text{Notional}_2 \times \frac{\text{DV01}_2}{\text{DV01}_1}$$</td>
+                                <td>Sizing curve legs so total dollar price sensitivity to parallel shifts equals zero ($\text{DV01}_{\text{net}} = 0$).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2s5s10s Butterfly Spread</strong></td>
+                                <td>$$\text{Fly} = -y_{2\text{Y}} + 2y_{5\text{Y}} - y_{10\text{Y}}$$</td>
+                                <td>Measures curvature. Buying the fly (Long wings / Short belly) profits when the 5Y belly cheapens.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FX Hedged Yield</strong></td>
+                                <td>$$y_{\text{hedged}} \approx y_{\text{foreign}} - (r_{\text{USD}} - r_{\text{domestic}}) + \text{CCBS}$$</td>
+                                <td>Determines net return for foreign buyers (Japanese/European pensions) hedging dollar risk back home.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Twin Deficits Identity</strong></td>
+                                <td>$$\text{CA} = (S_{\text{private}} - I) + (T - G)$$</td>
+                                <td>A persistent fiscal deficit ($(T - G) < 0$) forces a Current Account deficit, requiring foreign bond inflows.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Risk Parity Weighting</strong></td>
+                                <td>$$w_i \propto \frac{1}{\sigma_i} \implies \frac{w_B}{w_E} = \frac{\sigma_E}{\sigma_B}$$</td>
+                                <td>Equalizing risk contribution across assets; requires leverage on low-volatility sovereign debt.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>⚡ Desk Mental Math Heuristics</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario / Shock</th>
+                                <th>Heuristic Rule of Thumb</th>
+                                <th>Desk Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>$\pm 50\text{k}$ NFP Surprise</strong></td>
+                                <td><strong>$\pm 6$ to $12\text{ bps}$ on 2Y Yield</strong></td>
+                                <td>Immediate algorithmic repricing of next FOMC meeting rate probabilities.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$\pm 0.1\%$ Core CPI MoM Surprise</strong></td>
+                                <td><strong>$\pm 10$ to $18\text{ bps}$ on 2Y Yield</strong></td>
+                                <td>Inflation beats hit front-end terminal rates much harder than headline growth surprises.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$100\text{ bps}$ Fed Funds Hike</strong></td>
+                                <td><strong>$+70\text{ bps}$ (2Y), $+35\text{ bps}$ (10Y), $+15\text{ bps}$ (30Y)</strong></td>
+                                <td>Curve transmission decays across duration; causes a classic <strong>Bear Flattener</strong>.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2Y vs. 10Y DV01 Ratio</strong></td>
+                                <td><strong>$1:4$ Notional Ratio</strong></td>
+                                <td>A 10Y note has roughly $4\times$ the DV01 of a 2Y note ($8.00 vs $1.85 per $10k face).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>$10\text{ bps}$ 2s10s Spread Move on $50k DV01</strong></td>
+                                <td><strong>$\pm \$500,000\text{ P&L}$</strong></td>
+                                <td>$\text{P&L} = \text{Target DV01} \times \Delta \text{Spread (bps)} = \$50,000 \times 10 = \$500,000$.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Core Macro & Central Banking Q&A -->
+        <div class="tab-panel" id="tab-qa-macro">
+            <div class="card">
+                <h2>🏛️ Core Macro Framework & Central Banking Q&A</h2>
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchMacro" placeholder="Search questions by keyword (e.g. Taylor, IORB, Sahm, Phillips, QT)...">
+                    <button class="btn btn-secondary" id="btnToggleMacro">Expand / Collapse All</button>
+                </div>
+            </div>
+
+            <div id="macroQAList">
+                <!-- Q1 -->
+                <div class="qa-card" data-kw="nfp jobs unemployment establishment household labor">
+                    <div class="qa-header">
+                        <div class="qa-num">Q01</div>
+                        <div class="qa-title">"NFP prints +100k above consensus, but the Unemployment Rate rises from 3.8% to 4.0%. How do rates react?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> You must distinguish between the <em>Establishment Survey</em> (payrolls) and the <em>Household Survey</em> (unemployment rate):</p>
+                        <ul>
+                            <li>If unemployment rose because of an increase in the <strong>Labor Force Participation Rate (LFPR)</strong>, the labor supply expanded, representing non-inflationary growth.</li>
+                            <li>If participation was flat and actual household employment dropped, it signals underlying labor softening.</li>
+                        </ul>
+                        <div class="qa-key-point">Initial algos buy USD and sell Treasuries on the headline beat. Within minutes, macro desks fade the move as the rising unemployment rate crosses key thresholds, driving 2Y yields lower.</div>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="qa-card" data-kw="taylor rule reaction function formula rstar fed funds">
+                    <div class="qa-header">
+                        <div class="qa-num">Q02</div>
+                        <div class="qa-title">"Calculate the Taylor Rule rate if neutral real rate r* = 1.0%, inflation = 3.5%, and output gap = +1.0%."</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> Using the classic Taylor (1993) rule:</p>
+                        <div class="formula-block">$$i = r^* + \pi + 0.5(\pi - 2\%) + 0.5\tilde{Y} = 1.0 + 3.5 + 0.5(3.5 - 2.0) + 0.5(1.0) = 4.5 + 0.75 + 0.5 = 5.75\%$$</div>
+                        <div class="qa-key-point">If the actual policy rate is 4.75%, the Fed is 100 bps behind the curve, signaling future hawkish repricing in front-end SOFR futures.</div>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="qa-card" data-kw="iorb on rrp floor corridor excess reserves administered rates">
+                    <div class="qa-header">
+                        <div class="qa-num">Q03</div>
+                        <div class="qa-title">"Why does the Fed operate a floor system instead of a corridor system in an abundant reserves environment?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> With trillions in excess reserves created by QE, reserve supply intersects the demand curve on its completely flat, horizontal segment. Open market sales cannot alter overnight rates. The Fed must use administered rates:</p>
+                        <ul>
+                            <li><strong>IORB (Interest on Reserve Balances):</strong> The magnet rate paid to commercial banks.</li>
+                            <li><strong>ON RRP:</strong> The hard floor offered to non-banks (Money Market Funds) who lack IORB access.</li>
+                        </ul>
+                        <div class="qa-key-point">EFFR trades comfortably between ON RRP (floor) and IORB (magnet), governed by GSE arbitrage.</div>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="qa-card" data-kw="qt quantitative tightening lclor reserves scarcity repo crisis">
+                    <div class="qa-header">
+                        <div class="qa-num">Q04</div>
+                        <div class="qa-title">"What is Quantitative Tightening (QT), and what signals that the Fed must halt balance sheet runoff?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> Under QT, the Fed allows a capped amount of maturing Treasuries and MBS to roll off without reinvestment. Initially, MMFs absorb issuance by pulling cash from the ON RRP facility (bank reserves unaffected). Once ON RRP reaches zero, bank reserves drain dollar-for-dollar.</p>
+                        <div class="qa-key-point">The halt signal is the <strong>Lowest Comfortable Level of Reserves (LCLoR ~10-11% of GDP)</strong>. When SOFR prints consistently above IORB and repo spreads spike (as in Sept 2019), the Fed must halt QT to prevent liquidity seizure.</div>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="qa-card" data-kw="dot plot sep modal probability cuts divergence sofr ois">
+                    <div class="qa-header">
+                        <div class="qa-num">Q05</div>
+                        <div class="qa-title">"Why does the market OIS curve routinely price more cuts than the median FOMC Dot Plot?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> The Dot Plot reflects each member's <strong>single modal (baseline non-recession) forecast</strong>. Market prices reflect the <strong>probability-weighted mean across all distributions</strong>, including hard landings where rates drop 300 bps.</p>
+                        <div class="qa-key-point">The divergence represents the market's priced probability of recession plus central bank credibility discounting.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Curve Trades & Inflation Q&A -->
+        <div class="tab-panel" id="tab-qa-curve">
+            <div class="card">
+                <h2>📈 Yield Curve Trading & Inflation Derivatives Q&A</h2>
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchCurve" placeholder="Search curve & inflation questions (e.g. Steepener, Butterfly, TIPS, Basis, Convexity)...">
+                    <button class="btn btn-secondary" id="btnToggleCurve">Expand / Collapse All</button>
+                </div>
+            </div>
+
+            <div id="curveQAList">
+                <!-- Q1 -->
+                <div class="qa-card" data-kw="bull steepener bear flattener curve shift dv01 notional">
+                    <div class="qa-header">
+                        <div class="qa-num">Q01</div>
+                        <div class="qa-title">"Contrast a Bull Steepener with a Bear Flattener in terms of macro drivers and execution."</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong></p>
+                        <ul>
+                            <li><strong>Bull Steepener:</strong> Yields fall across the curve; front end plunges faster ($\Delta y_{2\text{Y}} \ll \Delta y_{10\text{Y}} < 0$). Driven by recession and Fed emergency rate cuts. <em>Execution:</em> Long 2Y / Short 10Y (DV01=0).</li>
+                            <li><strong>Bear Flattener:</strong> Yields rise across the curve; front end surges faster ($\Delta y_{2\text{Y}} \gg \Delta y_{10\text{Y}} > 0$). Driven by aggressive central bank tightening to fight inflation. <em>Execution:</em> Short 2Y / Long 10Y (DV01=0).</li>
+                        </ul>
+                        <div class="qa-key-point">"Bulls cut rates, Bears hike rates." Steepeners expand spread; flatteners compress spread.</div>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="qa-card" data-kw="carry roll down negative carry inverted curve steepener bleed">
+                    <div class="qa-header">
+                        <div class="qa-num">Q02</div>
+                        <div class="qa-title">"Why is entering a steepener on an inverted yield curve an expensive negative carry trade?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> In an inverted curve, financing rates (repo/SOFR) are at the high front end. Shorting 10Y bonds forces you to pay high repo rates while receiving a lower coupon. Furthermore, rolling down an inverted curve causes bonds to shorten in maturity into higher yields, generating capital losses.</p>
+                        <div class="qa-key-point">This "steepener bleed" eats into profits daily; traders must have high conviction on the timing of Fed cuts.</div>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="qa-card" data-kw="butterfly 50 50 regression fly curvature belly wings beta">
+                    <div class="qa-header">
+                        <div class="qa-num">Q03</div>
+                        <div class="qa-title">"What is the advantage of a regression-weighted butterfly over a standard 50/50 butterfly?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> A 50/50 fly allocates 50% DV01 to the 2Y and 10Y wings. Because the 2s5s slope moves with ~1.4x the volatility of the 5s10s slope, a 50/50 fly suffers from directional curve slope leakage. A regression fly weights wings by historical beta ($\beta$), making the position genuinely <strong>slope-neutral</strong> and isolating pure belly curvature.</p>
+                        <div class="qa-key-point">Regression flies isolate whether the 5Y belly is rich or cheap without taking directional risk on curve slope.</div>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="qa-card" data-kw="tips breakeven fisher inflation risk premium index ratio">
+                    <div class="qa-header">
+                        <div class="qa-num">Q04</div>
+                        <div class="qa-title">"Decompose a 10Y nominal yield of 4.50% and 10Y TIPS yield of 2.00%. What is the breakeven rate?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> $\text{BEI} = y_{\text{nom}} - r_{\text{real}} = 4.50\% - 2.00\% = 2.50\%$. By the Fisher identity:</p>
+                        <div class="formula-block">$$\text{BEI} = \mathbb{E}[\pi] + \text{Inflation Risk Premium} - \text{TIPS Liquidity Discount}$$</div>
+                        <div class="qa-key-point">If actual cumulative headline CPI averages higher than 2.50% over the next decade, TIPS outperform nominals.</div>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="qa-card" data-kw="cash swap basis zcis march 2020 liquidity premium derivatives">
+                    <div class="qa-header">
+                        <div class="qa-num">Q05</div>
+                        <div class="qa-title">"What is the Cash-Swap Basis in the inflation market and why did it blow out to +60 bps in March 2020?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> $\text{Basis} = \text{ZCIS Swap Rate} - \text{Cash TIPS Breakeven}$. In March 2020, severe balance sheet constraints prevented primary dealers from absorbing funded cash TIPS sales. Cash breakevens plunged to 0.55% while unfunded swaps traded at 1.15%, blowing the basis out to +60 bps due to pure liquidity scarcity.</p>
+                        <div class="qa-key-point">The dislocation resolved back to +15 bps once the Fed launched unlimited QE and SLR exemptions.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Cross-Asset & Brainteasers -->
+        <div class="tab-panel" id="tab-qa-cross">
+            <div class="card">
+                <h2>🌐 Cross-Asset Signals, Placements & Desk Brainteasers</h2>
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="searchCross" placeholder="Search cross-asset & brainteasers (e.g. Copper, Dollar Smile, FX hedge, Brainteaser)...">
+                    <button class="btn btn-secondary" id="btnToggleCross">Expand / Collapse All</button>
+                </div>
+            </div>
+
+            <div id="crossQAList">
+                <!-- Q1 -->
+                <div class="qa-card" data-kw="copper gold ratio 10y treasury correlation decoupling">
+                    <div class="qa-header">
+                        <div class="qa-num">Q01</div>
+                        <div class="qa-title">"Why does the Copper/Gold ratio correlate strongly with 10Y US Treasury yields?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> Copper reflects cyclical industrial demand and global manufacturing output, while Gold is a safe-haven monetary asset that rallies on declining real yields and crisis fears. The Cu/Au ratio mirrors nominal GDP growth expectations, tracking 10Y yields with $R^2 \approx 0.70$.</p>
+                        <div class="qa-key-point">Decoupling occurs during physical copper mine supply strikes or massive sovereign debt supply term premia spikes.</div>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="qa-card" data-kw="dollar smile stephen jen g10 fx positioning safe haven">
+                    <div class="qa-header">
+                        <div class="qa-num">Q02</div>
+                        <div class="qa-title">"Explain the Dollar Smile theory and where the US Dollar weakens across the smile."</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> The Dollar rallies at both extremes: Left Wing (severe global crisis/liquidity flight into USD cash) and Right Wing (US economic boom with higher Fed rates). The Dollar <strong>only weakens at the bottom of the smile</strong>, when global growth outside the US accelerates and capital leaves the US to chase higher EM returns.</p>
+                        <div class="qa-key-point">Position short USD only during benign, synchronized global expansion.</div>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="qa-card" data-kw="japanese life insurer fx forward hedge negative yield jgb">
+                    <div class="qa-header">
+                        <div class="qa-num">Q03</div>
+                        <div class="qa-title">"10Y UST yields 4.50%. US 3M rate is 5.25%, Japanese 3M rate is 0.25%. What is the net hedged yield in JPY?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> Forward hedge cost $\approx 5.25\% - 0.25\% = 5.00\%$. Net hedged yield $= 4.50\% - 5.00\% = \mathbf{-0.50\%}$.</p>
+                        <div class="qa-key-point">Japanese institutions stop buying Treasuries because domestic JGBs (+0.80%) offer superior unhedged yield, removing an anchor on US long-end yields.</div>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="qa-card" data-kw="brainteaser bond price yield duration 100 bps rule of thumb">
+                    <div class="qa-header">
+                        <div class="qa-num">Q04</div>
+                        <div class="qa-title">"Brainteaser: A bond has a modified duration of 8.0 and convexity of 80. If yields fall by 100 bps, what is the exact percentage price change?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> Using the Taylor series duration-convexity expansion:</p>
+                        <div class="formula-block">$$\frac{\Delta P}{P} \approx -D \Delta y + \frac{1}{2} C (\Delta y)^2$$
+                        $$\frac{\Delta P}{P} \approx -8.0 \times (-0.01) + \frac{1}{2} \times 80 \times (-0.01)^2 = +0.08 + \frac{1}{2} \times 80 \times 0.0001 = +0.08 + 0.004 = \mathbf{+8.40\%}$$</div>
+                        <div class="qa-key-point">Convexity added +40 bps of extra upside performance on top of the +8.00% duration gain.</div>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="qa-card" data-kw="brainteaser inverted curve arbitrage forward rates compounding">
+                    <div class="qa-header">
+                        <div class="qa-num">Q05</div>
+                        <div class="qa-title">"Brainteaser: If the 1-year spot rate is 5.0% and the 2-year spot rate is 4.0%, what is the 1-year forward rate 1 year from now (1y1y)? Is this an arbitrage?"</div>
+                        <div class="qa-toggle">▼</div>
+                    </div>
+                    <div class="qa-body">
+                        <p><strong>Desk Answer:</strong> By no-arbitrage pricing: $(1 + s_2)^2 = (1 + s_1)(1 + f_{1,1})$</p>
+                        <div class="formula-block">$$(1.04)^2 = (1.05)(1 + f_{1,1}) \implies 1.0816 = 1.05(1 + f_{1,1}) \implies 1 + f_{1,1} = \frac{1.0816}{1.05} \approx 1.0301 \implies f_{1,1} \approx \mathbf{3.01\%}$$</div>
+                        <div class="qa-key-point">The market prices a 1-year rate of 3.01% in one year. It is not an arbitrage; it reflects expectations of aggressive rate cuts.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 08: Interview Cheatsheet · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                }
+            });
+        });
+
+        /* ===== Tab 1: Pitch Generator ===== */
+        (function() {
+            const inGrowth = document.getElementById('ptchGrowth');
+            const inInf = document.getElementById('ptchInflation');
+            const inSupply = document.getElementById('ptchSupply');
+            const inFed = document.getElementById('ptchFed');
+
+            const valGrowth = document.getElementById('valPtchGrowth');
+            const valInf = document.getElementById('valPtchInflation');
+            const valSupply = document.getElementById('valPtchSupply');
+            const valFed = document.getElementById('valPtchFed');
+
+            const kpiTrade = document.getElementById('kpiTradeRec');
+            const kpiDetails = document.getElementById('kpiTradeDetails');
+            const kpiDur = document.getElementById('kpiDurationStance');
+            const kpiCurve = document.getElementById('kpiCurveBias');
+            const kpiSec = document.getElementById('kpiSecondaryAsset');
+            const pitchOut = document.getElementById('pitchOutput');
+
+            function updatePitch() {
+                const growth = inGrowth.value;
+                const inf = inInf.value;
+                const supply = inSupply.value;
+                const fed = inFed.value;
+
+                valGrowth.textContent = inGrowth.options[inGrowth.selectedIndex].text;
+                valInf.textContent = inInf.options[inInf.selectedIndex].text;
+                valSupply.textContent = inSupply.options[inSupply.selectedIndex].text;
+                valFed.textContent = inFed.options[inFed.selectedIndex].text;
+
+                if (growth === 'slowing' && inf === 'cooling') {
+                    kpiTrade.textContent = 'Bull Steepener (2s10s)';
+                    kpiDetails.textContent = 'Long 2Y / Short 10Y (DV01=0)';
+                    kpiDur.textContent = 'Overweight Duration';
+                    kpiCurve.textContent = 'Steepening (Front End Leads)';
+                    kpiSec.textContent = 'Long Gold / Quality Tech';
+                    pitchOut.innerHTML = `"Over the next 6 to 12 months, my core macro view is centered on a decelerating growth backdrop paired with continued disinflation toward target. With labor market slack emerging as evidenced by hiring rates cooling and the Sahm rule signaling vulnerability, the Fed is structurally transitioning from inflation defense to growth protection. Given heavy Treasury coupon supply on the long end, I anticipate the curve to steepen aggressively. I express this view through a <strong>duration-neutral 2s10s Bull Steepener</strong> (Long 2Y vs. Short 10Y), funded by fading front-end yields while protecting against long-end supply concessions. The key invalidation risk would be a re-acceleration in SuperCore services inflation that forces the Fed into a hawkish pause."`;
+                } else if (growth === 'reflation' || inf === 'sticky') {
+                    kpiTrade.textContent = 'Bear Flattener (2s10s) or Pay 5Y';
+                    kpiDetails.textContent = 'Short 2Y / Long 10Y or Pay SOFR';
+                    kpiDur.textContent = 'Underweight Duration';
+                    kpiCurve.textContent = 'Flattening / Inversion';
+                    kpiSec.textContent = 'Commodities / Energy';
+                    pitchOut.innerHTML = `"My core macro thesis centers on an upside growth and inflation surprise driven by sticky wage pressures and resilient consumer demand. The market is pricing in an overly dovish cutting cycle that will prove unfeasible. As the Federal Reserve signals higher-for-longer policy rates, the front end must aggressively reprice higher. I express this view via a <strong>Bear Flattener</strong> (Short 2Y / Long 10Y) and by <strong>paying fixed on 5-Year SOFR swaps</strong> to capture terminal rate repricing. Key risk to this trade is an exogenous credit shock that prompts flight-to-quality front-end buying."`;
+                } else if (supply === 'heavy') {
+                    kpiTrade.textContent = 'Bear Steepener (5s30s)';
+                    kpiDetails.textContent = 'Long 5Y / Short 30Y (DV01=0)';
+                    kpiDur.textContent = 'Neutral Duration';
+                    kpiCurve.textContent = 'Term Premia Expansion';
+                    kpiSec.textContent = 'Short Long-End Sovereign Debt';
+                    pitchOut.innerHTML = `"My market view focuses on the structural imbalance between fiscal debt issuance and foreign absorption capacity. With the US fiscal deficit exceeding 6% of GDP and foreign central bank reserve buying stagnating under high FX hedging costs, the long end of the curve must clear at significantly higher term premia. I express this by going <strong>Short 30Y Treasuries against Long 5Y notes in a duration-neutral Bear Steepener</strong>, isolating the supply concession without taking directional market duration risk."`;
+                } else {
+                    kpiTrade.textContent = 'Carry & Range-Bound Swaps';
+                    kpiDetails.textContent = 'Receive 5y5y / Long Belly Carry';
+                    kpiDur.textContent = 'Neutral / Benchmark';
+                    kpiCurve.textContent = 'Stable / Range-Bound';
+                    kpiSec.textContent = 'Corporate Credit OAS';
+                    pitchOut.innerHTML = `"I view the macro environment as transitioning into a balanced, mid-cycle expansion where inflation is well anchored around 2.2% and economic growth remains trend-like. Because volatility is compressing and central banks are comfortable on hold, directional duration trades offer poor risk-adjusted returns. I structure my book around <strong>carry and roll-down</strong> in the 5-to-7 year belly of the curve and tight corporate credit spreads."`;
+                }
+            }
+
+            [inGrowth, inInf, inSupply, inFed].forEach(el => el.addEventListener('change', updatePitch));
+
+            document.getElementById('btnPresetPitch1').addEventListener('click', () => {
+                inGrowth.value = "slowing"; inInf.value = "cooling"; inSupply.value = "heavy"; inFed.value = "fadefed"; updatePitch();
+            });
+            document.getElementById('btnPresetPitch2').addEventListener('click', () => {
+                inGrowth.value = "reflation"; inInf.value = "sticky"; inSupply.value = "balanced"; inFed.value = "fademkt"; updatePitch();
+            });
+            document.getElementById('btnPresetPitch3').addEventListener('click', () => {
+                inGrowth.value = "trend"; inInf.value = "anchored"; inSupply.value = "heavy"; inFed.value = "fair"; updatePitch();
+            });
+
+            updatePitch();
+        })();
+
+        /* ===== Q&A Accordion & Search Logic ===== */
+        function setupQASection(listId, searchId, toggleBtnId) {
+            const list = document.getElementById(listId);
+            const search = document.getElementById(searchId);
+            const toggleBtn = document.getElementById(toggleBtnId);
+
+            list.querySelectorAll('.qa-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    header.parentElement.classList.toggle('open');
+                });
+            });
+
+            search.addEventListener('input', () => {
+                const q = search.value.toLowerCase().trim();
+                const cards = list.querySelectorAll('.qa-card');
+                cards.forEach(card => {
+                    const title = card.querySelector('.qa-title').textContent.toLowerCase();
+                    const body = card.querySelector('.qa-body').textContent.toLowerCase();
+                    const kw = (card.dataset.kw || '').toLowerCase();
+                    if (title.includes(q) || body.includes(q) || kw.includes(q)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+
+            let allOpen = false;
+            toggleBtn.addEventListener('click', () => {
+                allOpen = !allOpen;
+                list.querySelectorAll('.qa-card').forEach(card => {
+                    if (allOpen) card.classList.add('open');
+                    else card.classList.remove('open');
+                });
+                toggleBtn.textContent = allOpen ? 'Collapse All' : 'Expand / Collapse All';
+            });
+        }
+
+        setupQASection('macroQAList', 'searchMacro', 'btnToggleMacro');
+        setupQASection('curveQAList', 'searchCurve', 'btnToggleCurve');
+        setupQASection('crossQAList', 'searchCross', 'btnToggleCross');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Flows — Macro & Rates Academy</title>
+    <meta name="description" content="Capital flows, Balance of Payments, reserve management, the Global Savings Glut, FX hedging mechanics, cross-currency basis, and TIC Treasury flows.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        /* ===== CSS Custom Properties ===== */
+        :root {
+            --bg: #e0e6ee;
+            --bg-warm: #d5dce6;
+            --surface: #cad3df;
+            --surface-2: #c0cad8;
+            --surface-3: #b6c1d1;
+            --surface-hover: #acb8ca;
+            --border: #9dabbe;
+            --border-glow: #1a3a6b55;
+            --text: #141c2b;
+            --text-secondary: #35455e;
+            --text-muted: #627590;
+            --accent: #1a3a6b;
+            --accent-light: #2a5499;
+            --accent-dark: #122a4e;
+            --accent-glow: #1a3a6b20;
+            --accent-strong-glow: #1a3a6b38;
+            --green: #1a7a45;
+            --red: #a63d3d;
+            --blue: #2a6399;
+            --orange: #b07328;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-lg: 16px;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== Animated Globe Background ===== */
+        .flow-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .flow-bg canvas { width: 100%; height: 100%; }
+
+        /* ===== Layout ===== */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ===== Header ===== */
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--accent); }
+        .back-link svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .back-link:hover svg { transform: translateX(-3px); }
+
+        .module-badge {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .module-title-bar {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+
+        .module-title-bar h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .module-title-bar .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* ===== Tab Navigation ===== */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tab {
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            font-family: var(--font-body);
+            letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-secondary); }
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== Content Cards ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 {
+            font-size: 1.02rem;
+            font-weight: 650;
+            color: var(--text);
+            margin: 22px 0 10px;
+        }
+
+        .card p, .card li {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+
+        .card li { margin-bottom: 6px; }
+
+        /* ===== KaTeX ===== */
+        .formula-block {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .formula-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .katex-display, .katex {
+            text-transform: none !important;
+        }
+
+        /* ===== Tables ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        th {
+            background: var(--surface-2);
+            color: var(--text);
+            font-weight: 650;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--accent-glow); }
+
+        /* ===== Alerts ===== */
+        .alert {
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+        }
+
+        .alert-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+        .alert-info {
+            background: #2a639915;
+            border: 1px solid #2a639935;
+            color: var(--blue);
+        }
+
+        .alert-tip {
+            background: #1a7a4515;
+            border: 1px solid #1a7a4535;
+            color: var(--green);
+        }
+
+        .alert-warning {
+            background: #b0732815;
+            border: 1px solid #b0732835;
+            color: var(--orange);
+        }
+
+        .alert-key {
+            background: var(--accent-glow);
+            border: 1px solid var(--border-glow);
+            color: var(--accent-dark);
+        }
+
+        /* ===== Interactive Controls ===== */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-group label span.val-badge {
+            color: var(--accent);
+            font-family: var(--font-mono);
+        }
+
+        .control-group input[type="number"],
+        .control-group select {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .control-group input[type="range"] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            border-color: var(--accent);
+        }
+
+        /* ===== KPI Results ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-mono);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .kpi-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover { background: var(--surface-hover); }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* ===== Canvas Chart Wrapper ===== */
+        .chart-wrapper {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .chart-wrapper canvas {
+            width: 100%;
+            height: 320px;
+            display: block;
+            cursor: crosshair;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chart-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 14px;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ===== Hover HUD ===== */
+        .chart-hud {
+            position: absolute;
+            pointer-events: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 10;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .chart-hud .hud-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            line-height: 1.5;
+        }
+
+        .chart-hud .hud-label { color: var(--text-muted); }
+        .chart-hud .hud-val { font-weight: 600; color: var(--accent); }
+
+        /* ===== Interview Reveal Cards ===== */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .qa-card:hover { border-color: var(--accent); }
+
+        .qa-header {
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            gap: 12px;
+        }
+
+        .qa-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--accent-glow);
+            padding: 3px 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .qa-title {
+            font-weight: 650;
+            font-size: 0.92rem;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .qa-toggle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            transition: transform 0.2s;
+        }
+
+        .qa-card.open .qa-toggle {
+            transform: rotate(180deg);
+            color: var(--accent);
+        }
+
+        .qa-body {
+            padding: 0 22px 20px;
+            display: none;
+            border-top: 1px dashed var(--border);
+            padding-top: 14px;
+        }
+
+        .qa-card.open .qa-body { display: block; }
+
+        .qa-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .qa-key-point {
+            background: var(--surface-2);
+            border-left: 3px solid var(--accent);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: var(--text);
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .main-container { padding: 0 16px 40px; }
+            .module-title-bar h1 { font-size: 1.8rem; }
+            .card { padding: 20px 16px; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .chart-wrapper canvas { height: 260px; }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Globe Background -->
+    <div class="flow-bg">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="top-header">
+            <a href="index.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Macro & Rates Hub
+            </a>
+            <span class="module-badge">Module 05</span>
+        </header>
+
+        <!-- Title Bar -->
+        <div class="module-title-bar">
+            <h1>Global Capital & Reserve Flows</h1>
+            <p class="subtitle">Balance of Payments accounting, the Global Savings Glut, Petrodollar recycling, cross-currency basis swaps, FX hedging costs, and TIC Treasury flows.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tab-bop">1. Balance of Payments & Twin Deficits</button>
+            <button class="nav-tab" data-tab="tab-glut">2. The Savings Glut & Petrodollars</button>
+            <button class="nav-tab" data-tab="tab-hedging">3. FX Hedging & Cross-Currency Basis</button>
+            <button class="nav-tab" data-tab="tab-tic">4. TIC Data & Foreign Treasury Demand</button>
+            <button class="nav-tab" data-tab="tab-interview">5. Interview Masterclass</button>
+        </nav>
+
+        <!-- TAB 1: Balance of Payments & Twin Deficits -->
+        <div class="tab-panel active" id="tab-bop">
+            <div class="card">
+                <h2>🌐 The Balance of Payments (BoP) Accounting Identity</h2>
+                <p>Global macro rates traders track cross-border flows because an economy's trade imbalance must be mathematically mirrored in its capital and financial accounts:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">The Balance of Payments Identity</div>
+                    $$\text{Current Account (CA)} + \text{Financial Account (FA)} + \text{Capital Account (KA)} + \text{Statistical Discrepancy} \equiv 0$$
+                </div>
+
+                <p>When the United States runs a <strong>Current Account Deficit</strong> (importing more goods and services than it exports), it is importing foreign capital. Foreigners accumulate claims on US assets (Treasuries, equities, real estate, agency debt). Mathematically, the US Current Account deficit must equal the <strong>Net Financial Account Surplus</strong>:</p>
+
+                <div class="formula-block">
+                    <div class="formula-label">Current Account & National Savings Identity</div>
+                    $$\text{CA} = S - I = (S_{\text{private}} - I) + (T - G)$$
+                </div>
+
+                <p>Where $S$ is gross national savings, $I$ is gross domestic investment, $(S_{\text{private}} - I)$ is the private financial balance, and $(T - G)$ is the government fiscal balance.</p>
+
+                <h3>The Twin Deficits Hypothesis</h3>
+                <p>When the government runs an expansionary fiscal deficit ($(T - G) < 0$), if private domestic savings ($S_{\text{private}}$) do not rise one-for-one, the <strong>Current Account deficit must widen</strong>. The country must borrow from foreign surplus nations to fund its budget deficit:</p>
+
+                <div class="alert alert-key">
+                    <div class="alert-icon">💡</div>
+                    <div><strong>Rates Desk Transmission:</strong> A massive US fiscal deficit requires continuous foreign demand for Treasuries. If foreign buyers retreat (or if hedging costs turn negative), the US must offer higher <strong>term premia</strong> (higher 10Y/30Y yields) or the US Dollar must depreciate to restore external balance.</div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Financial Account Category</th>
+                                <th>Flow Characteristics</th>
+                                <th>Sensitivity to Interest Rates</th>
+                                <th>Flight Risk / Volatility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Foreign Direct Investment (FDI)</strong></td>
+                                <td>Greenfield investments, cross-border M&A, physical factories.</td>
+                                <td>Low (driven by multi-year ROI and tax policy).</td>
+                                <td>Very Low ("Sticky" capital).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Portfolio Investment (Bonds & Equities)</strong></td>
+                                <td>Purchases of sovereign debt, corporate paper, public stock.</td>
+                                <td><strong>Extreme</strong> (driven by yield spreads, forward points, and FX volatility).</td>
+                                <td><strong>Very High ("Hot Money")</strong>. Can reverse overnight.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Other Investment (Bank Loans & Repo)</strong></td>
+                                <td>Cross-border interbank deposits, trade credit, Eurodollar financing.</td>
+                                <td>High (driven by CIP spreads and short-term liquidity).</td>
+                                <td>High (vulnerable to global dollar crunches).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Official Reserve Assets</strong></td>
+                                <td>Central bank purchases/sales of foreign currencies and gold.</td>
+                                <td>Policy-driven (FX intervention to manage exchange rates).</td>
+                                <td>Asymmetric (interventions deplete reserves).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: The Savings Glut & Petrodollars -->
+        <div class="tab-panel" id="tab-glut">
+            <div class="card">
+                <h2>🌊 The Global Savings Glut & Petrodollar Recycling</h2>
+                <p>In 2005, Federal Reserve Chairman Ben Bernanke introduced the <strong>Global Savings Glut</strong> hypothesis to solve "Greenspan's Conundrum"—the bizarre phenomenon where the Fed hiked the Fed Funds rate by 400 bps, yet 10-year US Treasury yields actually fell!</p>
+
+                <h3>The Mechanics of the Glut</h3>
+                <ul>
+                    <li><strong>Asian Mercantilist Reserves:</strong> Following the devastating 1997 Asian Financial Crisis, developing Asian nations (especially China, South Korea, Taiwan) resolved never again to suffer an IMF-imposed dollar liquidity shortage. They ran deliberate trade surpluses and accumulated vast foreign exchange reserves in US Treasuries.</li>
+                    <li><strong>Petrodollar Recycling:</strong> Oil-exporting nations (Saudi Arabia, UAE, Kuwait, Norway) received trillions of US Dollars for oil exports. Rather than spending it domestically, sovereign wealth funds (ADIA, PIF, NBIM) recycled petrodollars into Western sovereign debt.</li>
+                    <li><strong>Demographic Aging in Surplus Nations:</strong> Aging workforces in Germany and Japan saved aggressively, seeking safe yield overseas and driving down global equilibrium real rates ($r^*$).</li>
+                </ul>
+
+                <div class="formula-block">
+                    <div class="formula-label">Impact on Treasury Term Premia</div>
+                    $$\text{Global Excess Savings} \uparrow \quad \implies \quad \text{Demand for Safe Sovereign Assets} \gg \text{Supply} \quad \implies \quad \text{Term Premium (TP)} \downarrow$$
+                </div>
+
+                <div class="alert alert-tip">
+                    <div class="alert-icon">📊</div>
+                    <div><strong>The De-Dollarization Reality Check:</strong> While the US Dollar's share of allocated global foreign exchange reserves has gradually decreased from ~71% in 2000 to ~58% today (driven primarily by central bank gold accumulation), the USD still commands <strong>88% of all global FX transactions</strong> and remains the supreme reserve currency due to the unmatched depth and liquidity of the US Treasury market.</div>
+                </div>
+            </div>
+
+            <!-- Interactive Savings Glut Simulator -->
+            <div class="card">
+                <h2>🧮 Interactive Global Savings & Petrodollar Flow Simulator</h2>
+                <p>Adjust oil prices, global reserve accumulation rates, and the US fiscal deficit to observe the net foreign Treasury absorption, term premium compression, and implied flow pressures.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="gltOil">Brent Crude Oil ($/bbl): <span class="val-badge" id="valGltOil">$75/bbl</span></label>
+                        <input type="range" id="gltOil" min="40" max="140" step="5" value="75">
+                    </div>
+                    <div class="control-group">
+                        <label for="gltReserves">Foreign FX Reserve Accumulation ($B/yr): <span class="val-badge" id="valGltReserves">$400B</span></label>
+                        <input type="range" id="gltReserves" min="0" max="1200" step="50" value="400">
+                    </div>
+                    <div class="control-group">
+                        <label for="gltDeficit">US Fiscal Deficit (% of GDP): <span class="val-badge" id="valGltDeficit">6.2%</span></label>
+                        <input type="range" id="gltDeficit" min="2.0" max="12.0" step="0.2" value="6.2">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Petrodollar Surplus</div>
+                        <div class="kpi-value" id="kpiPetro">$280B / yr</div>
+                        <div class="kpi-sub">Sovereign Wealth Recycling</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Foreign Treasury Demand</div>
+                        <div class="kpi-value" id="kpiUSTDemand">$480B / yr</div>
+                        <div class="kpi-sub">Official + SWF Purchases</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Term Premium Impact</div>
+                        <div class="kpi-value" id="kpiTermPrem">-42 bps</div>
+                        <div class="kpi-sub">Yield Curve Anchor</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Net US External Funding Gap</div>
+                        <div class="kpi-value" id="kpiFundingGap">$1,250B / yr</div>
+                        <div class="kpi-sub" id="kpiFundingStatus">Requires Private Inflows</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetGlut">Reinit Baseline Parameters</button>
+                    <button class="btn btn-secondary" id="btnPresetCommodityBoom">Simulate 2008-Style Oil Boom ($130/bbl)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: FX Hedging & Cross-Currency Basis -->
+        <div class="tab-panel" id="tab-hedging">
+            <div class="card">
+                <h2>💱 FX Hedged Yields & The Cross-Currency Basis</h2>
+                <p>Foreign institutional investors (such as Japanese life insurers or European pension funds) cannot simply look at the headline yield of a US Treasury. Because regulatory capital rules penalize unhedged currency volatility, they must hedge the US Dollar back into their domestic currency using <strong>FX Forward Contracts</strong>.</p>
+
+                <h3>The FX Hedged Yield Formula</h3>
+                <div class="formula-block">
+                    <div class="formula-label">FX-Hedged Foreign Bond Return</div>
+                    $$y_{\text{hedged}} \approx y_{\text{UST}} - \text{Annualized FX Forward Points} + \text{Cross-Currency Basis (CCBS)}$$
+                    $$\text{Forward Hedging Cost} \approx r_{\text{USD (Short)}} - r_{\text{Domestic (Short)}}$$
+                </div>
+
+                <p>When the Federal Reserve hikes interest rates far above the Bank of Japan (BoJ) or European Central Bank (ECB), the short-term interest rate differential widens dramatically. The 3-month forward hedging cost climbs to <strong>4.50% – 5.50% annualized</strong>.</p>
+
+                <div class="alert alert-warning">
+                    <div class="alert-icon">⚠️</div>
+                    <div><strong>The Negative Hedged Yield Trap:</strong> In 2023–2024, a 10Y US Treasury yielded <strong>4.50%</strong>. However, hedging USD into JPY cost <strong>5.10%</strong>. The net hedged yield for a Japanese insurer was:
+                    $$4.50\% - 5.10\% = -0.60\% \text{ JPY Net Yield!}$$
+                    Meanwhile, domestic 10Y JGBs yielded +0.80%. Japanese institutions completely halted purchases of US Treasuries and began repatriating capital into domestic debt, stripping away a trillion-dollar anchor from the US bond market!</div>
+                </div>
+
+                <h3>The Breakdown of Covered Interest Parity (CIP)</h3>
+                <p>According to classic finance theory, Covered Interest Parity should always hold ($F = S \frac{1+r_{\text{USD}}}{1+r_{\text{EUR}}}$). However, post-2008 banking regulations (Basel III leverage ratios, liquidity coverage rules) created balance sheet constraints on global dealers.</p>
+                <p>The <strong>Cross-Currency Basis (CCBS)</strong> measures the deviation from CIP. A negative basis (e.g. -30 bps on EUR/USD or JPY/USD) indicates that market participants are willing to pay a premium to borrow US Dollars against foreign collateral.</p>
+            </div>
+
+            <!-- Interactive FX Hedged Yield Engine -->
+            <div class="card">
+                <h2>🔬 Cross-Currency Hedged Yield Arbitrage Engine</h2>
+                <p>Calculate the exact net currency-hedged yield for foreign institutional investors (Japanese Life Insurers or European Pensions) investing in US Treasuries.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="hdgUST">10Y US Treasury Yield: <span class="val-badge" id="valHdgUST">4.40%</span></label>
+                        <input type="range" id="hdgUST" min="2.00" max="6.50" step="0.05" value="4.40">
+                    </div>
+                    <div class="control-group">
+                        <label for="hdgUSDShort">US 3M Short Rate (SOFR): <span class="val-badge" id="valHdgUSDShort">5.25%</span></label>
+                        <input type="range" id="hdgUSDShort" min="1.00" max="6.50" step="0.25" value="5.25">
+                    </div>
+                    <div class="control-group">
+                        <label for="hdgForeignShort">Foreign 3M Short Rate: <span class="val-badge" id="valHdgForeignShort">0.25%</span></label>
+                        <input type="range" id="hdgForeignShort" min="-0.50" max="4.50" step="0.25" value="0.25">
+                    </div>
+                    <div class="control-group">
+                        <label for="hdgForeignLocal">Domestic Sovereign Yield (e.g. JGB): <span class="val-badge" id="valHdgForeignLocal">0.90%</span></label>
+                        <input type="range" id="hdgForeignLocal" min="0.00" max="3.50" step="0.05" value="0.90">
+                    </div>
+                    <div class="control-group">
+                        <label for="hdgCCBS">Cross-Currency Basis (bps): <span class="val-badge" id="valHdgCCBS">-25 bps</span></label>
+                        <input type="range" id="hdgCCBS" min="-80" max="20" step="5" value="-25">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Annualized FX Hedge Cost</div>
+                        <div class="kpi-value" id="kpiHedgeCost">5.25% / yr</div>
+                        <div class="kpi-sub">Interest Rate Differential + Basis</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Net FX-Hedged Yield</div>
+                        <div class="kpi-value" id="kpiNetHedged">-0.85%</div>
+                        <div class="kpi-sub" id="kpiNetStatus">Deeply Inverted / Negative</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Domestic Yield Pickup</div>
+                        <div class="kpi-value" id="kpiPickup">-175 bps</div>
+                        <div class="kpi-sub">Penalty vs Domestic JGB</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Institutional Flow Action</div>
+                        <div class="kpi-value" id="kpiFlowAction">Capital Repatriation</div>
+                        <div class="kpi-sub">Dump Treasuries / Buy JGBs</div>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <div class="chart-header">
+                        <div class="chart-title">Net Hedged Yield vs. Domestic Yield Across US 10Y Rate Levels</div>
+                        <div class="chart-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#1a3a6b;"></div> Net Hedged UST Yield</div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#a63d3d;"></div> Domestic Hurdle Yield (JGB/Bund)</div>
+                        </div>
+                    </div>
+                    <canvas id="chartHedging"></canvas>
+                    <div class="chart-hud" id="hudHedging"></div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetHedging">Reinit Baseline Parameters</button>
+                    <button class="btn btn-secondary" id="btnPresetFedCuts">Simulate Fed Easing Cycle (Hedge Cost Drops)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TIC Data & Foreign Treasury Demand -->
+        <div class="tab-panel" id="tab-tic">
+            <div class="card">
+                <h2>📊 Treasury International Capital (TIC) Data Analysis</h2>
+                <p>Every month, the US Department of the Treasury publishes the <strong>TIC (Treasury International Capital)</strong> report. Macro strategists scrutinize this dataset to track who is buying and selling US sovereign debt:</p>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Investor Segment</th>
+                                <th>Key Entities</th>
+                                <th>Trading Motivation</th>
+                                <th>Curve Preference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Foreign Official Institutions</strong></td>
+                                <td>Central Banks (PBoC, BoJ, Swiss SNB), Sovereign Wealth Funds (ADIA, GIC).</td>
+                                <td>FX reserve management, exchange rate stabilization, liquidity buffer.</td>
+                                <td>Front end and belly (T-bills to 5Y Treasuries). Price-insensitive.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Foreign Private Investors</strong></td>
+                                <td>Asset managers, hedge funds, global banks, mutual funds.</td>
+                                <td>Relative value alpha, carry trades, duration matching.</td>
+                                <td>10Y and 30Y Treasuries. Highly sensitive to FX hedging costs.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Custodial / Offshore Hubs</strong></td>
+                                <td>Cayman Islands, Luxembourg, United Kingdom, Belgium (Euroclear).</td>
+                                <td>Offshore hedge fund leverage, Eurodollar repo, anonymous sovereign accounts.</td>
+                                <td>High-frequency trading, basis arbitrage, short positioning.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>The FX Intervention Mechanism</h3>
+                <p>When an emerging market currency or the Japanese Yen weakens rapidly, the domestic central bank steps in to support its currency:</p>
+                <div class="formula-block">
+                    $$\text{Defend Currency} \quad \implies \quad \text{Sell US Dollar Reserves} \quad \implies \quad \text{Liquidate US Treasuries / T-bills} \quad \implies \quad \text{Upward Pressure on US Yields}$$
+                </div>
+                <p>During episodes of aggressive BoJ intervention (e.g. selling $60B+ to defend USD/JPY at 160), short-dated US Treasury yields face immediate liquidation pressure.</p>
+            </div>
+
+            <!-- Interactive TIC Flow Simulator -->
+            <div class="card">
+                <h2>📈 Major Sovereign Treasury Holders & Flow Simulation</h2>
+                <p>Select a major foreign holder to simulate central bank balance sheet interventions and project the impact on 10Y US Treasury yields.</p>
+
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="ticCountry">Foreign Sovereign Holder: <span class="val-badge" id="valCountry">Japan (~$1,120B)</span></label>
+                        <select id="ticCountry">
+                            <option value="japan">Japan (Holdings: ~$1,120B)</option>
+                            <option value="china">China (Holdings: ~$760B)</option>
+                            <option value="uk">United Kingdom (Holdings: ~$700B)</option>
+                            <option value="cayman">Cayman Islands / Offshore Funds (Holdings: ~$340B)</option>
+                            <option value="mideast">Middle East Oil Exporters (Holdings: ~$290B)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ticIntervention">Monthly Intervention / Flow ($B): <span class="val-badge" id="valIntervention">-$30B (Sales)</span></label>
+                        <input type="range" id="ticIntervention" min="-80" max="60" step="5" value="-30">
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi">
+                        <div class="kpi-label">Simulated Monthly Flow</div>
+                        <div class="kpi-value" id="kpiMonthlyFlow">-$30B</div>
+                        <div class="kpi-sub" id="kpiFlowType">Official Reserve Liquidation</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">10Y Term Premium Impact</div>
+                        <div class="kpi-value" id="kpiTermPremShift">+6.5 bps</div>
+                        <div class="kpi-sub">Upward Yield Pressure</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Domestic Currency Reaction</div>
+                        <div class="kpi-value" id="kpiFXReaction">Currency Defended</div>
+                        <div class="kpi-sub">Temporary Spot Support</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Rates Desk Strategy</div>
+                        <div class="kpi-value" id="kpiDeskStrategy">Short 10Y / Curve Steepener</div>
+                        <div class="kpi-sub">Fade auction demand</div>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="btnResetTIC">Reinit Baseline Parameters</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Interview Masterclass -->
+        <div class="tab-panel" id="tab-interview">
+            <div class="card">
+                <h2>🎯 Global Capital Flows & Reserve Management Interview Masterclass</h2>
+                <p>Institutional interviewers on macro rates desks, cross-asset trading desks, and sovereign wealth funds demand a clear, mathematical understanding of cross-border flows, CIP breakdowns, and FX hedging costs. Click each card to reveal the desk breakdown.</p>
+            </div>
+
+            <!-- Q1 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q01</div>
+                    <div class="qa-title">"A Japanese life insurer buys a 10Y US Treasury yielding 4.50% and hedges the FX risk using 3-month rolling forwards. If US 3M rates are 5.25% and Japanese 3M rates are 0.25%, what is their net hedged yield and how does this impact the US yield curve?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> By Covered Interest Rate Parity, the cost of an FX forward hedge is governed by the short-term interest rate differential between the two currencies:</p>
+                    <div class="formula-block">
+                        $$\text{Annualized Forward Hedge Cost} \approx r_{\text{USD (3M)}} - r_{\text{JPY (3M)}} = 5.25\% - 0.25\% = 5.00\%$$
+                        $$y_{\text{hedged}} = y_{\text{UST (10Y)}} - \text{Hedge Cost} = 4.50\% - 5.00\% = -0.50\%$$
+                    </div>
+                    <ul>
+                        <li>The Japanese insurer receives a <strong>negative 50 bps return in Yen</strong>!</li>
+                        <li>Meanwhile, domestic 10-year Japanese Government Bonds (JGBs) yield +0.80% without any currency risk.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Impact on US Rates:</strong> Japanese institutional investors—the single largest foreign buyer of Treasuries—stop purchasing US paper and repatriate capital into domestic JGBs. The absence of foreign price-insensitive buyers forces US 10Y and 30Y yields higher, expanding the term premium and steepening the curve.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q02</div>
+                    <div class="qa-title">"Explain the Twin Deficits identity. What happens to the US Dollar and Treasury yields if foreign central banks reduce their appetite for US assets?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The national accounting identity links the fiscal deficit to the external balance:</p>
+                    <div class="formula-block">
+                        $$\text{Current Account (CA)} = (S_{\text{private}} - I) + (T - G)$$
+                    </div>
+                    <p>When the US government runs a fiscal deficit of $1.8T ($(T - G) < 0$), the US Current Account must run a substantial deficit unless domestic private savings surge.</p>
+                    <ul>
+                        <li>If foreign investors lose appetite for US assets (due to geopolitical diversification, petrodollar erosion, or sanction fears), the external deficit cannot be financed at prevailing prices.</li>
+                        <li>Two economic prices must adjust to restore equilibrium:
+                            <ol>
+                                <li><strong>The US Dollar must weaken:</strong> A cheaper dollar reduces imports and boosts exports, shrinking the current account deficit.</li>
+                                <li><strong>US Treasury yields must rise:</strong> Higher yields (higher term premia) are required to entice private market participants and foreign buyers to fund the deficit.</li>
+                            </ol>
+                        </li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Trading Implication:</strong> Weak foreign demand with persistent fiscal deficits leads to a classic <strong>Bear Steepener in Treasuries paired with US Dollar weakness</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q03</div>
+                    <div class="qa-title">"What is the Cross-Currency Basis (CCBS), and why did Covered Interest Parity (CIP) fail systematically after the 2008 Financial Crisis?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> The Cross-Currency Basis is the additional spread added to the non-USD floating rate in a cross-currency basis swap. Prior to 2008, CIP held tightly and the basis was essentially zero:</p>
+                    <ul>
+                        <li><strong>Post-2008 Regulatory Constraints:</strong> Basel III regulations imposed the Supplementary Leverage Ratio (SLR), Net Stable Funding Ratio (NSFR), and G-SIB capital surcharges. Global banks can no longer deploy unlimited balance sheet space for riskless arbitrage trades.</li>
+                        <li><strong>Structural Dollar Scarcity:</strong> Global corporations, non-US banks, and institutional investors outside the US have massive dollar liabilities but no direct access to the Fed's discount window or domestic deposit base.</li>
+                        <li>They must synthetic-borrow USD via FX swaps. This structural demand for USD drives the basis <strong>deeply negative</strong> (e.g. -30 to -60 bps on JPY/USD and EUR/USD).</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Arbitrage Indicator:</strong> A widening negative basis signals acute global dollar funding stress (a "dollar crunch"), causing swap spreads to widen and risk assets to sell off.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q04</div>
+                    <div class="qa-title">"When emerging market central banks intervene to defend their currencies, what is the mechanical transmission channel into the US Treasury market?"</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> When an EM central bank defends its depreciating currency:</p>
+                    <ul>
+                        <li>It must <strong>sell US Dollars and buy its own currency</strong> in the open market.</li>
+                        <li>However, central banks do not hold billions of dollars in physical cash; they hold foreign reserves in <strong>US Treasury bills and short-dated Treasury notes</strong>.</li>
+                        <li>To generate the USD cash needed for intervention, the central bank must liquidate its holdings of US Treasuries (or access the Fed's FIMA Repo facility).</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Market Impact:</strong> Synchronized EM interventions flood the US Treasury market with supply, causing short-end yields to rise, repo spreads to widen, and TIC data to show net official sales.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="qa-card">
+                <div class="qa-header">
+                    <div class="qa-num">Q05</div>
+                    <div class="qa-title">"Explain Ben Bernanke's 'Global Savings Glut' thesis and how it solved Greenspan's Conundrum in the mid-2000s."</div>
+                    <div class="qa-toggle">▼</div>
+                </div>
+                <div class="qa-body">
+                    <p><strong>Desk Answer:</strong> Between June 2004 and June 2006, the Federal Reserve raised the Fed Funds target rate from 1.00% to 5.25% (+425 bps). Alan Greenspan famously noted that 10-year Treasury yields remained stubbornly low around 4.00%–4.50%, calling it a "conundrum":</p>
+                    <ul>
+                        <li>Bernanke explained that long-term interest rates are set in a <strong>global market</strong>, not by the Federal Reserve alone.</li>
+                        <li>Following the 1997 Asian crisis and the 2000s oil boom, emerging Asian economies and OPEC nations generated a massive surplus of savings over domestic investment.</li>
+                        <li>Because developing financial markets could not absorb this capital safely, it flowed into Western sovereign bond markets, driving up bond prices and crushing term premia.</li>
+                    </ul>
+                    <div class="qa-key-point">
+                        <strong>Core Takeaway:</strong> The global supply of excess savings suppressed the global equilibrium real rate ($r^*$), proving that foreign central bank accumulation can completely overwhelm domestic monetary tightening.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast-Reference Global Flows Cheat Sheet -->
+            <div class="card" style="margin-top: 24px;">
+                <h2>⚡ Global Flows & Balance of Payments Cheat Sheet</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concept / Metric</th>
+                                <th>Definition</th>
+                                <th>Macro Significance</th>
+                                <th>Desk Trading Application</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Current Account (CA)</strong></td>
+                                <td>Exports minus Imports of goods, services, and net income</td>
+                                <td>Measures whether a country is a net creditor or net debtor to the world.</td>
+                                <td>Deficit countries must offer higher yields or risk currency depreciation.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FX Hedged Yield</strong></td>
+                                <td>$y_{\text{foreign}} - (r_{\text{USD}} - r_{\text{domestic}}) + \text{CCBS}$</td>
+                                <td>Determines cross-border capital allocation for foreign pensions and life insurers.</td>
+                                <td>Negative hedged yields trigger foreign buyer boycotts and curve steepening.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cross-Currency Basis (CCBS)</strong></td>
+                                <td>Deviation from Covered Interest Parity (CIP)</td>
+                                <td>Indicator of global US Dollar funding scarcity and dealer balance sheet capacity.</td>
+                                <td>Widening negative basis signals global liquidity stress and flight to USD cash.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TIC Data</strong></td>
+                                <td>Treasury International Capital monthly flow report</td>
+                                <td>Tracks foreign official (central banks) vs. private purchases of Treasuries.</td>
+                                <td>Surprise official selling flags central bank FX intervention episodes.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Petrodollar Recycling</strong></td>
+                                <td>Reinvestment of oil export surpluses into Western financial assets</td>
+                                <td>Historical anchor of US Treasury term premia and USD reserve primacy.</td>
+                                <td>High oil prices expand sovereign wealth fund bond buying.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 0 20px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border);">
+            Macro & Rates Academy · Module 05: Global Flows · Part of <a href="index.html" style="color:var(--accent); text-decoration:none;">Market Finance Mastery</a>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ],
+                throwOnError: false
+            });
+        });
+
+        /* ===== Animated Globe Background ===== */
+        (function() {
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let w, h, time = 0;
+
+            function resize() {
+                const dpr = window.devicePixelRatio || 1;
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w * dpr;
+                canvas.height = h * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = w + 'px';
+                canvas.style.height = h + 'px';
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                const cx = w * 0.5;
+                const cy = h * 0.35;
+                const r = Math.min(w, h) * 0.28;
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, r, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(26, 58, 107, 0.05)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                for (let i = -2; i <= 2; i++) {
+                    const yOff = i * r * 0.3;
+                    const latR = Math.sqrt(Math.max(0, r * r - yOff * yOff));
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy + yOff, latR, latR * 0.15, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.035)';
+                    ctx.stroke();
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI + time * 0.002;
+                    ctx.beginPath();
+                    ctx.ellipse(cx, cy, Math.abs(Math.cos(angle)) * r, r, 0, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(26, 58, 107, 0.03)';
+                    ctx.stroke();
+                }
+
+                time++;
+                requestAnimationFrame(draw);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            draw();
+        })();
+
+        /* ===== Tab Switching ===== */
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.tab-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.dataset.tab);
+                if (target) {
+                    target.classList.add('active');
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 50);
+                }
+            });
+        });
+
+        /* ===== Tab 2: Savings Glut & Petrodollars Calculator ===== */
+        (function() {
+            const inOil = document.getElementById('gltOil');
+            const inRes = document.getElementById('gltReserves');
+            const inDef = document.getElementById('gltDeficit');
+
+            const valOil = document.getElementById('valGltOil');
+            const valRes = document.getElementById('valGltReserves');
+            const valDef = document.getElementById('valGltDeficit');
+
+            const kpiPetro = document.getElementById('kpiPetro');
+            const kpiUSTDemand = document.getElementById('kpiUSTDemand');
+            const kpiTermPrem = document.getElementById('kpiTermPrem');
+            const kpiFundingGap = document.getElementById('kpiFundingGap');
+
+            function compute() {
+                const oil = parseFloat(inOil.value);
+                const reserves = parseFloat(inRes.value);
+                const deficitPct = parseFloat(inDef.value);
+
+                valOil.textContent = '$' + oil.toFixed(0) + '/bbl';
+                valRes.textContent = '$' + reserves.toFixed(0) + 'B';
+                valDef.textContent = deficitPct.toFixed(1) + '%';
+
+                // Petrodollar surplus heuristic: ~$3.7B per dollar of oil above $40
+                const petroSurplus = Math.max(50, Math.round((oil - 30) * 6.2));
+                kpiPetro.textContent = '$' + petroSurplus + 'B / yr';
+
+                // Foreign Treasury demand: ~60% of official reserves + ~40% of petrodollars
+                const totalDemand = Math.round(reserves * 0.60 + petroSurplus * 0.45);
+                kpiUSTDemand.textContent = '$' + totalDemand + 'B / yr';
+
+                // Term premium compression: ~6 bps compression per $100B of official demand
+                const tpCompBps = Math.round((totalDemand / 100) * -8.5);
+                kpiTermPrem.textContent = tpCompBps + ' bps';
+
+                // US GDP ~ $28,000B. Deficit in billions:
+                const usDeficitB = Math.round((deficitPct / 100) * 28000);
+                const gap = Math.max(0, usDeficitB - totalDemand);
+                kpiFundingGap.textContent = '$' + gap.toLocaleString() + 'B / yr';
+            }
+
+            [inOil, inRes, inDef].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetGlut').addEventListener('click', () => {
+                inOil.value = "75"; inRes.value = "400"; inDef.value = "6.2"; compute();
+            });
+
+            document.getElementById('btnPresetCommodityBoom').addEventListener('click', () => {
+                inOil.value = "130"; inRes.value = "900"; inDef.value = "7.5"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 3: FX Hedging Engine & Canvas ===== */
+        (function() {
+            const inUST = document.getElementById('hdgUST');
+            const inUSDShort = document.getElementById('hdgUSDShort');
+            const inForeignShort = document.getElementById('hdgForeignShort');
+            const inForeignLocal = document.getElementById('hdgForeignLocal');
+            const inCCBS = document.getElementById('hdgCCBS');
+
+            const valUST = document.getElementById('valHdgUST');
+            const valUSDShort = document.getElementById('valHdgUSDShort');
+            const valForeignShort = document.getElementById('valHdgForeignShort');
+            const valForeignLocal = document.getElementById('valHdgForeignLocal');
+            const valCCBS = document.getElementById('valHdgCCBS');
+
+            const kpiCost = document.getElementById('kpiHedgeCost');
+            const kpiNet = document.getElementById('kpiNetHedged');
+            const kpiNetStatus = document.getElementById('kpiNetStatus');
+            const kpiPickup = document.getElementById('kpiPickup');
+            const kpiAction = document.getElementById('kpiFlowAction');
+
+            const canvas = document.getElementById('chartHedging');
+            const ctx = canvas.getContext('2d');
+            const hud = document.getElementById('hudHedging');
+
+            let curvePoints = [];
+
+            function compute() {
+                const ust = parseFloat(inUST.value);
+                const usdShort = parseFloat(inUSDShort.value);
+                const forShort = parseFloat(inForeignShort.value);
+                const forLocal = parseFloat(inForeignLocal.value);
+                const ccbsBps = parseFloat(inCCBS.value);
+
+                valUST.textContent = ust.toFixed(2) + '%';
+                valUSDShort.textContent = usdShort.toFixed(2) + '%';
+                valForeignShort.textContent = forShort.toFixed(2) + '%';
+                valForeignLocal.textContent = forLocal.toFixed(2) + '%';
+                valCCBS.textContent = (ccbsBps >= 0 ? '+' : '') + ccbsBps + ' bps';
+
+                // Hedge cost = (USD_short - Foreign_short) - CCBS/100
+                // If CCBS is negative (-25 bps), hedging into domestic is more expensive: -(-0.25) = +0.25%
+                const hedgeCost = (usdShort - forShort) - (ccbsBps / 100);
+                kpiCost.textContent = hedgeCost.toFixed(2) + '% / yr';
+
+                const netHedged = ust - hedgeCost;
+                kpiNet.textContent = (netHedged >= 0 ? '+' : '') + netHedged.toFixed(2) + '%';
+
+                if (netHedged < 0) {
+                    kpiNetStatus.textContent = 'Deeply Inverted / Negative';
+                } else if (netHedged < forLocal) {
+                    kpiNetStatus.textContent = 'Sub-Domestic Return';
+                } else {
+                    kpiNetStatus.textContent = 'Positive Spread to Domestic';
+                }
+
+                const pickupBps = Math.round((netHedged - forLocal) * 100);
+                kpiPickup.textContent = (pickupBps >= 0 ? '+' : '') + pickupBps + ' bps';
+
+                if (pickupBps < -50) {
+                    kpiAction.textContent = 'Capital Repatriation (Dump Treasuries)';
+                    kpiAction.style.color = 'var(--red)';
+                } else if (pickupBps >= 30) {
+                    kpiAction.textContent = 'Aggressive Foreign Inflow (Buy Treasuries)';
+                    kpiAction.style.color = 'var(--green)';
+                } else {
+                    kpiAction.textContent = 'Neutral / Light Allocation';
+                    kpiAction.style.color = 'var(--accent)';
+                }
+
+                // Construct comparison line across US 10Y rates from 2.50% to 6.50%
+                curvePoints = [];
+                for (let r = 2.50; r <= 6.50; r += 0.25) {
+                    curvePoints.push({
+                        ustRate: r,
+                        hedged: r - hedgeCost,
+                        localHurdle: forLocal
+                    });
+                }
+
+                drawHedgingChart(ust, netHedged, forLocal);
+            }
+
+            function drawHedgingChart(currentUST, currentNet, hurdle) {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0) return;
+                canvas.width = rect.width * dpr;
+                canvas.height = 320 * dpr;
+                ctx.scale(dpr, dpr);
+
+                const W = rect.width;
+                const H = 320;
+                ctx.clearRect(0, 0, W, H);
+
+                const padL = 50, padR = 40, padT = 30, padB = 40;
+                const plotW = W - padL - padR;
+                const plotH = H - padT - padB;
+
+                const minRet = -3.0, maxRet = 4.0;
+
+                // Zero line
+                const zeroY = padT + plotH * (maxRet / (maxRet - minRet));
+                ctx.beginPath();
+                ctx.moveTo(padL, zeroY);
+                ctx.lineTo(padL + plotW, zeroY);
+                ctx.strokeStyle = '#9dabbe';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#627590';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                for (let r = -2; r <= 4; r += 1) {
+                    const py = padT + plotH * ((maxRet - r) / (maxRet - minRet));
+                    ctx.fillText((r >= 0 ? '+' : '') + r.toFixed(1) + '%', padL - 8, py + 3);
+                }
+
+                ctx.textAlign = 'center';
+                for (let u = 2.5; u <= 6.5; u += 1.0) {
+                    const px = padL + plotW * ((u - 2.5) / 4.0);
+                    ctx.fillText(u.toFixed(1) + '%', px, H - padB + 16);
+                }
+
+                // Hurdle line (Red dashed)
+                const hurdleY = padT + plotH * ((maxRet - hurdle) / (maxRet - minRet));
+                ctx.beginPath();
+                ctx.moveTo(padL, hurdleY);
+                ctx.lineTo(padL + plotW, hurdleY);
+                ctx.strokeStyle = '#a63d3d';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Net Hedged Line (Navy solid)
+                ctx.beginPath();
+                curvePoints.forEach((p, i) => {
+                    const px = padL + plotW * ((p.ustRate - 2.5) / 4.0);
+                    const py = padT + plotH * ((maxRet - p.hedged) / (maxRet - minRet));
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                });
+                ctx.strokeStyle = '#1a3a6b';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Operating Point
+                const optX = padL + plotW * ((currentUST - 2.5) / 4.0);
+                const optY = padT + plotH * ((maxRet - currentNet) / (maxRet - minRet));
+
+                ctx.beginPath();
+                ctx.arc(optX, optY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = currentNet >= hurdle ? '#1a7a45' : '#a63d3d';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const padL = 50, padR = 40;
+                const plotW = rect.width - padL - padR;
+
+                if (mouseX < padL || mouseX > padL + plotW) {
+                    hud.style.display = 'none';
+                    return;
+                }
+
+                const ratio = (mouseX - padL) / plotW;
+                const idx = Math.min(curvePoints.length - 1, Math.max(0, Math.round(ratio * (curvePoints.length - 1))));
+                const item = curvePoints[idx];
+
+                hud.style.display = 'block';
+                hud.style.left = (mouseX + 12) + 'px';
+                hud.style.top = '40px';
+                hud.innerHTML = `
+                    <div class="hud-row"><span class="hud-label">US 10Y Yield:</span> <span class="hud-val">${item.ustRate.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Net Hedged:</span> <span class="hud-val" style="color:#1a3a6b">${item.hedged.toFixed(2)}%</span></div>
+                    <div class="hud-row"><span class="hud-label">Domestic Hurdle:</span> <span class="hud-val" style="color:#a63d3d">${item.localHurdle.toFixed(2)}%</span></div>
+                `;
+            });
+
+            canvas.addEventListener('mouseleave', () => { hud.style.display = 'none'; });
+
+            [inUST, inUSDShort, inForeignShort, inForeignLocal, inCCBS].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetHedging').addEventListener('click', () => {
+                inUST.value = "4.40"; inUSDShort.value = "5.25"; inForeignShort.value = "0.25"; inForeignLocal.value = "0.90"; inCCBS.value = "-25"; compute();
+            });
+
+            document.getElementById('btnPresetFedCuts').addEventListener('click', () => {
+                inUST.value = "3.80"; inUSDShort.value = "3.25"; inForeignShort.value = "0.75"; inForeignLocal.value = "1.10"; inCCBS.value = "-15"; compute();
+            });
+
+            window.addEventListener('resize', compute);
+            compute();
+        })();
+
+        /* ===== Tab 4: TIC Flow Simulator ===== */
+        (function() {
+            const inCountry = document.getElementById('ticCountry');
+            const inFlow = document.getElementById('ticIntervention');
+
+            const valCountry = document.getElementById('valCountry');
+            const valFlow = document.getElementById('valIntervention');
+
+            const kpiMonthly = document.getElementById('kpiMonthlyFlow');
+            const kpiType = document.getElementById('kpiFlowType');
+            const kpiPrem = document.getElementById('kpiTermPremShift');
+            const kpiFX = document.getElementById('kpiFXReaction');
+            const kpiStrat = document.getElementById('kpiDeskStrategy');
+
+            const countryLabels = {
+                japan: 'Japan (~$1,120B)',
+                china: 'China (~$760B)',
+                uk: 'United Kingdom (~$700B)',
+                cayman: 'Cayman Islands / Offshore (~$340B)',
+                mideast: 'Middle East Exporters (~$290B)'
+            };
+
+            function compute() {
+                const country = inCountry.value;
+                const flowB = parseFloat(inFlow.value);
+
+                valCountry.textContent = countryLabels[country];
+                valFlow.textContent = (flowB >= 0 ? '+$' : '-$') + Math.abs(flowB) + 'B';
+
+                kpiMonthly.textContent = (flowB >= 0 ? '+$' : '-$') + Math.abs(flowB) + 'B';
+                kpiType.textContent = flowB < 0 ? 'Reserve Liquidation / Defense' : 'Reserve Reinvestment / Inflow';
+
+                // Rule of thumb: $50B sale = ~+10 bps on 10Y term premium
+                const tpShiftBps = (flowB / 50) * -10.5;
+                kpiPrem.textContent = (tpShiftBps >= 0 ? '+' : '') + tpShiftBps.toFixed(1) + ' bps';
+
+                if (flowB < -25) {
+                    kpiFX.textContent = 'Aggressive FX Defense (Short USD)';
+                    kpiStrat.textContent = 'Bear Steepener / Fade Auction Demand';
+                } else if (flowB > 25) {
+                    kpiFX.textContent = 'Domestic Currency Weakness (Accumulation)';
+                    kpiStrat.textContent = 'Bull Flattener / Buy Belly';
+                } else {
+                    kpiFX.textContent = 'Neutral / Normal Portfolio Turnover';
+                    kpiStrat.textContent = 'Range-Bound / Carry Focus';
+                }
+            }
+
+            [inCountry, inFlow].forEach(el => el.addEventListener('input', compute));
+
+            document.getElementById('btnResetTIC').addEventListener('click', () => {
+                inCountry.value = "japan"; inFlow.value = "-30"; compute();
+            });
+
+            compute();
+        })();
+
+        /* ===== Tab 5: Q&A Accordion ===== */
+        document.querySelectorAll('.qa-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                card.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>
